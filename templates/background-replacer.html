@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Stylic AI</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimal-ui">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" href="/static/external/favicon.svg" type="image/x-icon">
+  <link rel="stylesheet" href="/static/assets/css/plugins/animate.min.css"><!-- [Font] Family -->
+  <link rel="stylesheet" href="/static/assets/fonts/inter/inter.css" id="main-font-link">
+  <link rel="stylesheet" href="/static/assets/fonts/phosphor/duotone/style.css">
+  <link rel="stylesheet" href="/static/assets/fonts/tabler-icons.min.css">
+  <link rel="stylesheet" href="/static/assets/fonts/feather.css">
+  <link rel="stylesheet" href="/static/assets/fonts/fontawesome.css">
+  <link rel="stylesheet" href="/static/assets/fonts/material.css">
+  <link rel="stylesheet" href="/static/assets/css/style.css" id="main-style-link">
+  <script src="/static/assets/js/tech-stack.js"></script>
+  <link rel="stylesheet" href="/static/assets/css/style-preset.css">
+</head>
+
+<body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
+  data-pc-theme_contrast="" data-pc-theme="light">
+  <div class="loader-bg">
+    <div class="loader-track">
+      <div class="loader-fill"></div>
+    </div>
+  </div>
+  <nav class="pc-sidebar">
+        <div class="navbar-wrapper">
+            <div class="navbar-content">
+                <div class="card pc-user-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0"><img src="/static/assets/images/user/avatar-1.jpg"
+                                    alt="user-image" class="user-avtar wid-45 rounded-circle"></div>
+                            <div class="flex-grow-1 ms-3 me-2">
+                                <h6 class="mb-0" data-i18n="Jonh Smith">User</h6><small
+                                    data-i18n="Administrator">Administrator</small>
+                            </div><a class="btn btn-icon btn-link-secondary avtar" data-bs-toggle="collapse"
+                                href="#pc_sidebar_userlink"><svg class="pc-icon">
+                                    <use xlink:href="#custom-sort-outline"></use>
+                                </svg></a>
+                        </div>
+                        <div class="collapse pc-user-links" id="pc_sidebar_userlink">
+                            <div class="pt-3"><a href="/logout"><i class="ti ti-power"></i> <span
+                                        data-i18n="Logout">Logout</span></a></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="pc-navbar">
+                    <li class="pc-item pc-caption"><label data-i18n="Pages">Pages</label> <svg class="pc-icon">
+                            <use xlink:href="#custom-presentation-chart"></use>
+                        </svg></li>
+                    <li class="pc-item"><a href="/" class="pc-link"><span
+                                class="pc-micon"><svg class="pc-icon">
+                                    <use xlink:href="#custom-status-up"></use>
+                                </svg> </span><span class="pc-mtext" data-i18n="Dashboard">Dashboard</span></a></li>
+                    <li class="pc-item"><a href="/ai-photoshoot" class="pc-link"><span class="pc-micon"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
+                                    fill="none">
+                                    <path
+                                        d="M7.27065 12.7362C6.85644 12.7362 6.52065 13.072 6.52065 13.4862C6.52065 13.9005 6.85644 14.2362 7.27065 14.2362H12.5C12.9142 14.2362 13.25 13.9005 13.25 13.4862C13.25 13.072 12.9142 12.7362 12.5 12.7362H7.27065Z"
+                                        fill="currentColor"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M8.50537 0.534424C7.78468 0.534424 7.15047 1.01008 6.94867 1.70195L6.76165 2.34316L4.4589 2.62513C3.64563 2.72472 3.03442 3.41533 3.03442 4.23467V6.90951C3.03442 7.47281 3.32456 7.94108 3.68142 8.24241C3.96697 8.48352 4.26315 8.81088 4.44929 9.17328C4.63102 9.5271 4.69143 9.87687 4.58965 10.2258C4.27056 11.3198 3.72752 13.3579 3.34341 14.821C3.0733 15.8499 3.85103 16.8509 4.91076 16.8509H9.13533V17.9656H5.52753C5.11332 17.9656 4.77753 18.3014 4.77753 18.7156C4.77753 19.1298 5.11332 19.4656 5.52753 19.4656H14.2431C14.6573 19.4656 14.9931 19.1298 14.9931 18.7156C14.9931 18.3014 14.6573 17.9656 14.2431 17.9656H10.6353V16.8509H14.8599C15.9197 16.8509 16.6974 15.8499 16.4273 14.821C16.0432 13.3579 15.5001 11.3198 15.181 10.2258C15.0793 9.87687 15.1397 9.5271 15.3214 9.17328C15.5075 8.81088 15.8037 8.48352 16.0893 8.24241C16.4461 7.94108 16.7363 7.47281 16.7363 6.90951V4.23467C16.7363 3.41533 16.1251 2.72472 15.3118 2.62513L13.009 2.34316L12.822 1.70195C12.6202 1.01008 11.986 0.534424 11.2653 0.534424H8.50537ZM8.38867 2.12195C8.4038 2.07008 8.45135 2.03442 8.50537 2.03442H11.2653C11.3193 2.03442 11.3669 2.07008 11.382 2.12195L11.7074 3.23754C11.7913 3.52537 12.0386 3.73554 12.3362 3.77198L15.1295 4.11401C15.1904 4.12148 15.2363 4.17325 15.2363 4.23467V6.90951C15.2363 6.93933 15.2178 7.015 15.1215 7.09633C14.7347 7.42293 14.2896 7.89897 13.9871 8.48795C13.6802 9.08551 13.5046 9.83511 13.741 10.6458C14.0535 11.7171 14.5914 13.7354 14.9764 15.2019C14.9959 15.276 14.9405 15.3509 14.8599 15.3509L4.91076 15.3509C4.8302 15.3509 4.77479 15.276 4.79424 15.2019C5.17924 13.7354 5.7172 11.7171 6.02965 10.6458C6.26611 9.83511 6.0905 9.08551 5.78358 8.48795C5.48106 7.89897 5.03594 7.42293 4.64915 7.09633C4.55284 7.015 4.53442 6.93933 4.53442 6.90951V4.23467C4.53442 4.17325 4.58024 4.12148 4.64121 4.11401L7.43445 3.77198C7.73204 3.73554 7.97934 3.52537 8.06329 3.23754L8.38867 2.12195Z"
+                                        fill="currentColor"></path>
+                                </svg></span><span class="pc-mtext" data-i18n="AI Photoshoot">AI Photoshoot</span></a>
+                    </li>
+                    <li class="pc-item"><a href="/ai-video-generation" class="pc-link"><span class="pc-micon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M10.0643 17.3786H4.3754C3.47771 17.3786 2.75 16.6509 2.75 15.7532V4.3754C2.75 3.47771 3.47772 2.75 4.3754 2.75H15.7532C16.6509 2.75 17.3786 3.47772 17.3786 4.3754V10.0643"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    <path
+                                        d="M8 8.05971C8 7.59334 8.50878 7.30527 8.9087 7.54522L12.1425 9.4855C12.5309 9.71855 12.5309 10.2815 12.1425 10.5145L8.9087 12.4548C8.50878 12.6947 8 12.4067 8 11.9403V8.05971Z"
+                                        stroke="currentColor" stroke-width="1.5"></path>
+                                    <path
+                                        d="M15.1138 12.4345C15.22 12.0399 15.78 12.0399 15.8862 12.4345L16.3049 13.9895C16.3976 14.3336 16.6664 14.6024 17.0105 14.6951L18.5655 15.1138C18.9601 15.22 18.9601 15.78 18.5655 15.8862L17.0105 16.3049C16.6664 16.3976 16.3976 16.6664 16.3049 17.0105L15.8862 18.5655C15.78 18.9601 15.22 18.9601 15.1138 18.5655L14.6951 17.0105C14.6024 16.6664 14.3336 16.3976 13.9895 16.3049L12.4345 15.8862C12.0399 15.78 12.0399 15.22 12.4345 15.1138L13.9895 14.6951C14.3336 14.6024 14.6024 14.3336 14.6951 13.9895L15.1138 12.4345Z"
+                                        fill="currentColor"></path>
+                                </svg>
+                            </span><span class="pc-mtext" data-i18n="Chart">AI Video Generation</span></a>
+                    </li>
+                    <li class="pc-item"><a href="/image-upscaler" class="pc-link"><span class="pc-micon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M16.5 14.1272C16.5 13.8875 16.5574 13.6513 16.6675 13.4384C17.1991 12.4101 17.5 11.2424 17.5 10C17.5 5.85786 14.1421 2.5 10 2.5C5.85786 2.5 2.5 5.85786 2.5 10C2.5 14.1421 5.85786 17.5 10 17.5C11.2424 17.5 12.4101 17.1991 13.4384 16.6675C13.6513 16.5574 13.8875 16.5 14.1272 16.5H16.5V14.1272ZM14.1272 18C12.891 18.6391 11.4876 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10C19 11.4876 18.6391 12.891 18 14.1272V17C18 17.5523 17.5523 18 17 18H14.1272ZM7 6.25C7.41421 6.25 7.75 6.58579 7.75 7V9C7.75 9.41421 7.41421 9.75 7 9.75C6.58579 9.75 6.25 9.41421 6.25 9V7C6.25 6.58579 6.58579 6.25 7 6.25ZM13.75 7C13.75 6.58579 13.4142 6.25 13 6.25C12.5858 6.25 12.25 6.58579 12.25 7V9C12.25 9.41421 12.5858 9.75 13 9.75C13.4142 9.75 13.75 9.41421 13.75 9V7Z"
+                                        fill="currentColor"></path>
+                                </svg>
+                            </span><span class="pc-mtext" data-i18n="Chart">Image Upscaler</span></a></li>
+                    <li class="pc-item"><a href="/background-replacer" class="pc-link"><span class="pc-micon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
+                                    fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M11.0196 6.15804C11.0196 6.15804 11.0198 6.15896 11.0202 6.16104L11.0199 6.15948L11.0226 6.17017C11.0268 6.18586 11.0353 6.21517 11.0498 6.25419C11.0791 6.33316 11.1306 6.44531 11.2151 6.56372C11.3741 6.78637 11.6704 7.06377 12.2584 7.16745C12.8465 7.27113 13.2198 7.11183 13.4454 6.95697C13.5653 6.87462 13.652 6.78683 13.7066 6.72266C13.7336 6.69096 13.7516 6.66632 13.7609 6.653L13.767 6.64388C13.9788 6.29396 14.433 6.17775 14.7873 6.38496C15.1448 6.59408 15.2651 7.05346 15.056 7.41101L14.4086 7.03235C15.056 7.41101 15.056 7.41101 15.056 7.41101L15.0551 7.4125L15.0542 7.41411L15.0521 7.41767L15.047 7.42607L15.0334 7.4479C15.0228 7.46459 15.009 7.48552 14.9919 7.50998C14.958 7.55881 14.9106 7.62231 14.8491 7.69461C14.7267 7.83846 14.5441 8.02212 14.2944 8.19354C13.7807 8.54625 13.0139 8.8238 11.998 8.64466C10.982 8.46552 10.3564 7.94244 9.99432 7.43532C9.81834 7.18884 9.70953 6.95379 9.64373 6.77676C9.61067 6.68779 9.58789 6.61192 9.57265 6.55441C9.56501 6.5256 9.55922 6.50122 9.55495 6.48191L9.54963 6.45674L9.54774 6.44711L9.54697 6.44305L9.54663 6.44121C9.54663 6.44121 9.54631 6.4395 10.2842 6.3051L9.54631 6.4395C9.47209 6.03199 9.74227 5.64147 10.1498 5.56724C10.5535 5.4937 10.9406 5.75825 11.0199 6.15948L11.0196 6.15804ZM11.021 6.16501L11.0215 6.16764L11.0204 6.16217L11.021 6.16501Z"
+                                        fill="currentColor"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M5.91011 3.69743C6.14188 2.38302 7.3953 1.50536 8.70971 1.73713L17.4566 3.27944C18.771 3.51121 19.6487 4.76463 19.4169 6.07904L17.8746 14.8259C17.6428 16.1403 16.3894 17.018 15.075 16.7862L14.0271 16.6015C13.8988 16.6476 13.7648 16.6835 13.6259 16.708L4.87903 18.2503C3.56462 18.4821 2.3112 17.6044 2.07943 16.29L0.537119 7.54312C0.305352 6.22871 1.18301 4.97528 2.49742 4.74352L5.82925 4.15603L5.91011 3.69743ZM6.3281 15.2439L9.80952 15.8578L4.61856 16.7731C4.11999 16.861 3.64455 16.5281 3.55664 16.0295L2.01433 7.28265C1.92642 6.78408 2.25932 6.30864 2.75789 6.22073L5.55206 5.72804L4.3678 12.4443C4.13603 13.7587 5.01369 15.0122 6.3281 15.2439ZM8.44924 3.21434C7.95067 3.12643 7.47523 3.45934 7.38732 3.95791L5.84501 12.7048C5.7571 13.2034 6.09 13.6788 6.58857 13.7667L15.3355 15.309C15.834 15.3969 16.3095 15.064 16.3974 14.5655L17.9397 5.81857C18.0276 5.32 17.6947 4.84457 17.1961 4.75665L8.44924 3.21434Z"
+                                        fill="currentColor"></path>
+                                </svg> </span><span class="pc-mtext" data-i18n="Chart">Background Replacer</span></a>
+                    </li>
+                    <li class="pc-item"><a href="/my-creation-history" class="pc-link"><span class="pc-micon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.5 10.5H12.5" stroke="currentColor" stroke-width="1.5"
+                                        stroke-linecap="round"></path>
+                                    <path
+                                        d="M2.5 5.5H17.5V15.5C17.5 16.6046 16.6046 17.5 15.5 17.5H4.5C3.39543 17.5 2.5 16.6046 2.5 15.5V5.5Z"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+                                    <path
+                                        d="M4.40031 3.21963C4.7803 2.76365 5.34319 2.5 5.93675 2.5H14.0633C14.6568 2.5 15.2197 2.76365 15.5997 3.21963L17.5 5.5H2.5L4.40031 3.21963Z"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+                                </svg>
+                            </span><span class="pc-mtext" data-i18n="Chart">My Creations</span></a></li>
+                    <li class="pc-item"><a href="/credit-history" class="pc-link"><span class="pc-micon"><svg
+                                    class="pc-icon">
+                                    <use xlink:href="#custom-presentation-chart"></use>
+                                </svg> </span><span class="pc-mtext" data-i18n="Chart">Credit History</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav><!-- [ Sidebar Menu ] end --><!-- [ Header Topbar ] start -->
+    <header class="pc-header">
+        <div class="header-wrapper"><!-- [Mobile Media Block] start -->
+            <div class="me-auto pc-mob-drp">
+                <ul class="list-unstyled"><!-- ======= Menu collapse Icon ===== -->
+                    <li class="pc-h-item pc-sidebar-collapse"><a href="#" class="pc-head-link ms-0" id="sidebar-hide"><i
+                                class="ti ti-menu-2"></i></a></li>
+                    <li class="pc-h-item pc-sidebar-popup"><a href="#" class="pc-head-link ms-0" id="mobile-collapse"><i
+                                class="ti ti-menu-2"></i></a></li>
+                </ul>
+            </div><!-- [Mobile Media Block end] -->
+            <div class="ms-auto">
+                <ul class="list-unstyled">
+                    <li class="pc-h-item" style="margin-right: 10px;"><a href="#" class="btn btn-primary"><svg
+                                class="pc-icon" style="margin-right: 6px;">
+                                <use xlink:href="#custom-flash"></use>
+                            </svg>10 Credits</a></li>
+                    <li class="dropdown pc-h-item header-user-profile"><a
+                            class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
+                            role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false"><img
+                                src="/static/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar"></a>
+                        <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
+                            <div class="dropdown-header d-flex align-items-center justify-content-between">
+                                <h5 class="m-0">Profile</h5>
+                            </div>
+                            <div class="dropdown-body">
+                                <div class="profile-notification-scroll position-relative"
+                                    style="max-height: calc(100vh - 225px)">
+                                    <div class="d-flex mb-1">
+                                        <div class="flex-shrink-0"><img src="/static/assets/images/user/avatar-2.jpg"
+                                                alt="user-image" class="user-avtar wid-35"></div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1">User 🖖</h6><span><a href="#">Company</a></span>
+                                        </div>
+                                    </div>
+                                    <hr class="border-secondary border-opacity-50">
+                                    <div class="card">
+                                        <div class="card-body py-3">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <h5 class="mb-0 d-inline-flex align-items-center"><svg
+                                                        class="pc-icon text-muted me-2">
+                                                        <use xlink:href="#custom-flash"></use>
+                                                    </svg>Get More Credit</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-span">Manage</p><a href="#" class="dropdown-item"><span><i
+                                            class="ti ti-headset"></i><span>Support</span> </span></a><a href="#"
+                                    class="dropdown-item"><span><svg class="pc-icon text-muted me-2">
+                                            <use xlink:href="#custom-lock-outline"></use>
+                                        </svg> <span>Change Password</span></span></a>
+                                <a href="#" class="dropdown-item"><span><svg class="pc-icon text-muted me-2">
+                                            <use xlink:href="#custom-flash"></use>
+                                        </svg> <span>What's New</span></span></a>
+
+                                <hr class="border-secondary border-opacity-50">
+                                <div class="d-grid mb-3"><a href="/logout" class="btn btn-primary"><svg class="pc-icon me-2">
+                                            <use xlink:href="#custom-logout-1-outline"></use>
+                                        </svg>Logout</a></div>
+                            </div>
+                        </div>
+            </div>
+            </li>
+            </ul>
+        </div>
+        </div>
+    </header>
+  <div class="pc-container">
+    <div class="pc-content"><!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Background Replacer</a></li>
+              </ul>
+            </div>
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h2 class="mb-0">Background Replacer</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- [ breadcrumb ] end --><!-- [ Main Content ] start -->
+      <div class="row"><!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card">
+            
+            <div class="card-body">
+              <form class="animation-type">
+                <div class="container">
+                  <div class="row align-items-center mb-3 g-2">
+                    <div class="col-lg-4 offset-lg-3 col-md-12"><select class="form-select select-animations">
+                        <optgroup label="Attention Seekers">
+                          <option value="bounce">bounce</option>
+                          <option value="flash">flash</option>
+                          <option value="pulse">pulse</option>
+                          <option value="rubberBand">rubberBand</option>
+                          <option value="shake">shake</option>
+                          <option value="swing">swing</option>
+                          <option value="tada">tada</option>
+                          <option value="wobble">wobble</option>
+                          <option value="jello">jello</option>
+                        </optgroup>
+                        <optgroup label="Bouncing Entrances">
+                          <option value="bounceIn">bounceIn</option>
+                          <option value="bounceInDown">bounceInDown</option>
+                          <option value="bounceInLeft">bounceInLeft</option>
+                          <option value="bounceInRight">bounceInRight</option>
+                          <option value="bounceInUp">bounceInUp</option>
+                        </optgroup>
+                        <optgroup label="Bouncing Exits">
+                          <option value="bounceOut">bounceOut</option>
+                          <option value="bounceOutDown">bounceOutDown</option>
+                          <option value="bounceOutLeft">bounceOutLeft</option>
+                          <option value="bounceOutRight">bounceOutRight</option>
+                          <option value="bounceOutUp">bounceOutUp</option>
+                        </optgroup>
+                        <optgroup label="Fading Entrances">
+                          <option value="fadeIn">fadeIn</option>
+                          <option value="fadeInDown">fadeInDown</option>
+                          <option value="fadeInDownBig">fadeInDownBig</option>
+                          <option value="fadeInLeft">fadeInLeft</option>
+                          <option value="fadeInLeftBig">fadeInLeftBig</option>
+                          <option value="fadeInRight">fadeInRight</option>
+                          <option value="fadeInRightBig">fadeInRightBig</option>
+                          <option value="fadeInUp">fadeInUp</option>
+                          <option value="fadeInUpBig">fadeInUpBig</option>
+                        </optgroup>
+                        <optgroup label="Fading Exits">
+                          <option value="fadeOut">fadeOut</option>
+                          <option value="fadeOutDown">fadeOutDown</option>
+                          <option value="fadeOutDownBig">fadeOutDownBig</option>
+                          <option value="fadeOutLeft">fadeOutLeft</option>
+                          <option value="fadeOutLeftBig">fadeOutLeftBig</option>
+                          <option value="fadeOutRight">fadeOutRight</option>
+                          <option value="fadeOutRightBig">fadeOutRightBig</option>
+                          <option value="fadeOutUp">fadeOutUp</option>
+                          <option value="fadeOutUpBig">fadeOutUpBig</option>
+                        </optgroup>
+                        <optgroup label="Flippers">
+                          <option value="flip">flip</option>
+                          <option value="flipInX">flipInX</option>
+                          <option value="flipInY">flipInY</option>
+                          <option value="flipOutX">flipOutX</option>
+                          <option value="flipOutY">flipOutY</option>
+                        </optgroup>
+                        <optgroup label="Lightspeed">
+                          <option value="lightSpeedIn">lightSpeedIn</option>
+                          <option value="lightSpeedOut">lightSpeedOut</option>
+                        </optgroup>
+                        <optgroup label="Rotating Entrances">
+                          <option value="rotateIn">rotateIn</option>
+                          <option value="rotateInDownLeft">rotateInDownLeft</option>
+                          <option value="rotateInDownRight">rotateInDownRight</option>
+                          <option value="rotateInUpLeft">rotateInUpLeft</option>
+                          <option value="rotateInUpRight">rotateInUpRight</option>
+                        </optgroup>
+                        <optgroup label="Rotating Exits">
+                          <option value="rotateOut">rotateOut</option>
+                          <option value="rotateOutDownLeft">rotateOutDownLeft</option>
+                          <option value="rotateOutDownRight">rotateOutDownRight</option>
+                          <option value="rotateOutUpLeft">rotateOutUpLeft</option>
+                          <option value="rotateOutUpRight">rotateOutUpRight</option>
+                        </optgroup>
+                        <optgroup label="Sliding Entrances">
+                          <option value="slideInUp">slideInUp</option>
+                          <option value="slideInDown">slideInDown</option>
+                          <option value="slideInLeft">slideInLeft</option>
+                          <option value="slideInRight">slideInRight</option>
+                        </optgroup>
+                        <optgroup label="Sliding Exits">
+                          <option value="slideOutUp">slideOutUp</option>
+                          <option value="slideOutDown">slideOutDown</option>
+                          <option value="slideOutLeft">slideOutLeft</option>
+                          <option value="slideOutRight">slideOutRight</option>
+                        </optgroup>
+                        <optgroup label="Zoom Entrances">
+                          <option value="zoomIn">zoomIn</option>
+                          <option value="zoomInDown">zoomInDown</option>
+                          <option value="zoomInLeft">zoomInLeft</option>
+                          <option value="zoomInRight">zoomInRight</option>
+                          <option value="zoomInUp">zoomInUp</option>
+                        </optgroup>
+                        <optgroup label="Zoom Exits">
+                          <option value="zoomOut">zoomOut</option>
+                          <option value="zoomOutDown">zoomOutDown</option>
+                          <option value="zoomOutLeft">zoomOutLeft</option>
+                          <option value="zoomOutRight">zoomOutRight</option>
+                          <option value="zoomOutUp">zoomOutUp</option>
+                        </optgroup>
+                        <optgroup label="Specials">
+                          <option value="hinge">hinge</option>
+                          <option value="rollIn">rollIn</option>
+                          <option value="rollOut">rollOut</option>
+                        </optgroup>
+                      </select></div>
+                    <div class="col-lg-3 col-md-12"><button type="button"
+                        class="btn btn-primary triggerAnimation">Animate me!</button></div>
+                  </div>
+                  <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6">
+                      <div class="text-center animation-image"><img class="img-fluid img-thumbnail"
+                          src="/static/assets/images/light-box/l3.jpg" alt="animate images"></div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div><!-- [ sample-page ] end -->
+      </div><!-- [ Main Content ] end -->
+    </div>
+  </div><!-- [ Main Content ] end -->
+  <script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="/static/assets/js/plugins/popper.min.js"></script>
+  <script src="/static/assets/js/plugins/simplebar.min.js"></script>
+  <script src="/static/assets/js/plugins/bootstrap.min.js"></script>
+  <script src="/static/assets/js/plugins/i18next.min.js"></script>
+  <script src="/static/assets/js/plugins/i18nextHttpBackend.min.js"></script>
+  <script src="/static/assets/js/icon/custom-font.js"></script>
+  <script src="/static/assets/js/script.js"></script>
+  <script src="/static/assets/js/theme.js"></script>
+  <script src="/static/assets/js/multi-lang.js"></script>
+  <script src="/static/assets/js/plugins/feather.min.js"></script>
+</body>
+</html>

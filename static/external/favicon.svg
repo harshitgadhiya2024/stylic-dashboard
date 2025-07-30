@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-3 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="158.7" y1="350.91" x2="634.62" y2="822.74" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a56c0b"/>
+      <stop offset=".17" stop-color="#dfc25b"/>
+      <stop offset=".25" stop-color="#f8e67d"/>
+      <stop offset=".46" stop-color="#d6b64f"/>
+      <stop offset=".57" stop-color="#c9a33d"/>
+      <stop offset=".66" stop-color="#ceaa44"/>
+      <stop offset=".81" stop-color="#ddc058"/>
+      <stop offset=".98" stop-color="#f5e279"/>
+      <stop offset="1" stop-color="#f8e67d"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="376.82" y1="130.9" x2="852.73" y2="602.73" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-3" x1="35.12" y1="330.07" x2="964.88" y2="669.94" xlink:href="#linear-gradient"/>
+  </defs>
+  <g>
+    <path class="cls-3" d="M560.03,453.11h-23.76l44.38,97.25c40.29,10.86,69.71,47.68,69.24,91.27h.16c-2.99,47.05-42.02,84.19-89.69,84.19l-303.08-.16-.16,93.16h302.92c98.98,0,179.55-78.84,182.54-177.19h.32c0-.94-.16-2.05-.16-2.99,0-1.1.16-2.05.16-3.15-.32-100.87-81.99-182.38-182.86-182.38Z"/>
+    <path class="cls-1" d="M424.23,547.05h99.45l-24.16-59.35c-8.51-20.92-28.85-34.6-51.43-34.6h-19.93c-52.09,0-78.52-42.65-78.05-94.73h-.31c3.15-47.05,42.01-84.19,89.85-84.19l110.68.06v-.11h381.35l-63.87-92.95h-427.84c-99.14,0-179.55,78.84-182.54,177.19h-.31c0,.94.16,2.05.16,2.99,0,1.1-.16,2.05-.16,3.15.16,100.87,66.25,182.54,167.12,182.54Z"/>
+  </g>
+  <path class="cls-2" d="M499.99,994.94C227.09,994.94,5.06,772.91,5.06,499.99S227.09,5.06,499.99,5.06s494.94,222.03,494.94,494.93-222.03,494.94-494.94,494.94ZM499.99,20.72C235.72,20.72,20.72,235.72,20.72,499.99s215,479.29,479.27,479.29,479.29-215.01,479.29-479.29S764.27,20.72,499.99,20.72Z"/>
+</svg>

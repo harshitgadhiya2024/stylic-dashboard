@@ -1,0 +1,10 @@
+pymongo
+requests
+Flask
+Flask-Cors
+python-dotenv
+secure-smtplib
+razorpay==1.4.1
+requests==2.31.0
+openai
+pillow

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photoshoot Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/css/lightbox.min.css" rel="stylesheet">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: white;
+            opacity: 0.8;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #8B5CF6;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .images-section {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .image-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+        }
+
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-item:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .overlay-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .overlay-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .overlay-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .image-index {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .download-all-section {
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .download-all-btn {
+            background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .download-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .poses-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .pose-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 4rem 0;
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .detail-header {
+                padding: 1rem 0;
+            }
+
+            .detail-card {
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .image-item img {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-header">
+        <div class="container">
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Gallery
+            </a>
+            <h1 class="mb-0">Photoshoot Details</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading photoshoot details...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+            <h3>Error Loading Photoshoot</h3>
+            <p id="errorText"></p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- Photoshoot Information -->
+            <div class="detail-card">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Photoshoot Information
+                </h2>
+
+                <div class="info-grid" id="infoGrid">
+                    <!-- Info items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Images Section -->
+            <div class="images-section">
+                <h2 class="section-title">
+                    <i class="fas fa-images"></i>
+                    Generated Images
+                    <span id="imageCount" class="badge bg-primary ms-2"></span>
+                </h2>
+
+                <div class="images-grid" id="imagesGrid">
+                    <!-- Images will be populated here -->
+                </div>
+
+                <!-- Download All Section -->
+                <div class="download-all-section">
+                    <h4 class="mb-3">Download All Images</h4>
+                    <p class="text-muted mb-4">Get all photoshoot images in a single ZIP file</p>
+                    <button class="download-all-btn" id="downloadAllBtn">
+                        <i class="fas fa-download"></i>
+                        Download ZIP File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
+    <script>
+        class PhotoshootDetail {
+            constructor() {
+                this.photoshootId = '{{ photoshoot_id }}';
+                this.photoshootData = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadPhotoshootDetail();
+                this.bindEvents();
+            }
+
+            async loadPhotoshootDetail() {
+                try {
+                    const response = await fetch(`/api/photoshoot/${this.photoshootId}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.photoshootData = result.data;
+                        this.renderPhotoshootInfo();
+                        this.renderImages();
+                        this.showMainContent();
+                    } else {
+                        throw new Error(result.error || 'Failed to load photoshoot');
+                    }
+                } catch (error) {
+                    console.error('Error loading photoshoot:', error);
+                    this.showError(error.message);
+                }
+            }
+
+            renderPhotoshootInfo() {
+                const infoGrid = document.getElementById('infoGrid');
+                const data = this.photoshootData;
+
+                const createdDate = new Date(data.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const statusClass = `status-${data.status || 'unknown'}`;
+
+                infoGrid.innerHTML = `
+                    <div class="info-item">
+                        <div class="info-label">Photoshoot ID</div>
+                        <div class="info-value">${data.photoshoot_id || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            <span class="status-badge ${statusClass}">
+                                ${data.status || 'Unknown'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Gender</div>
+                        <div class="info-value">${data.gender || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Age Group</div>
+                        <div class="info-value">${data.age_group || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Age</div>
+                        <div class="info-value">${data.age || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Ethnicity</div>
+                        <div class="info-value">${data.ethnicity || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Height</div>
+                        <div class="info-value">${data.height || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Width</div>
+                        <div class="info-value">${data.width || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Garment Type</div>
+                        <div class="info-value">${data.upload_garment_type || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Upper Garment</div>
+                        <div class="info-value">${data.upper_garment_type || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Lower Garment</div>
+                        <div class="info-value">${data.lower_garment_type || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Total Credits</div>
+                        <div class="info-value">${data.total_credit || 'N/A'}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Created Date</div>
+                        <div class="info-value">${createdDate}</div>
+                    </div>
+
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <div class="info-label">Selected Poses</div>
+                        <div class="info-value">
+                            <div class="poses-list">
+                                ${(data.selected_poses || []).map(pose =>
+                                    `<span class="pose-tag">${pose}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderImages() {
+                const imagesGrid = document.getElementById('imagesGrid');
+                const imageCount = document.getElementById('imageCount');
+                const images = this.photoshootData.all_images || [];
+
+                imageCount.textContent = images.length;
+
+                if (images.length === 0) {
+                    imagesGrid.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Images Available</h4>
+                            <p class="text-muted">This photoshoot doesn't have any generated images yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                imagesGrid.innerHTML = images.map((imageUrl, index) => `
+                    <div class="image-item">
+                        <div class="image-index">${index + 1}</div>
+                        <img src="${imageUrl}" alt="Photoshoot Image ${index + 1}"
+                             data-lightbox="photoshoot-gallery"
+                             data-title="Image ${index + 1} of ${images.length}">
+
+                        <div class="image-overlay">
+                            <div class="overlay-buttons">
+                                <button class="overlay-btn"
+                                        onclick="detail.viewImage('${imageUrl}')"
+                                        title="View Full Size">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                                <button class="overlay-btn"
+                                        onclick="detail.downloadSingleImage('${imageUrl}', ${index + 1})"
+                                        title="Download Image">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            viewImage(imageUrl) {
+                // Trigger lightbox programmatically
+                const img = document.querySelector(`img[src="${imageUrl}"]`);
+                if (img) {
+                    img.click();
+                }
+            }
+
+            async downloadSingleImage(imageUrl, imageNumber) {
+                try {
+                    const response = await fetch(`/api/download/${this.photoshootId}?url=${encodeURIComponent(imageUrl)}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `photoshoot_${this.photoshootId}_image_${imageNumber}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        throw new Error('Download failed');
+                    }
+                } catch (error) {
+                    console.error('Error downloading image:', error);
+                    alert('Failed to download image. Please try again.');
+                }
+            }
+
+            async downloadAllImages() {
+                try {
+                    const btn = document.getElementById('downloadAllBtn');
+                    const originalText = btn.innerHTML;
+
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing Download...';
+                    btn.disabled = true;
+
+                    const response = await fetch(`/api/download-all/${this.photoshootId}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `photoshoot_${this.photoshootId}_all_images.zip`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        throw new Error('Download failed');
+                    }
+
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                } catch (error) {
+                    console.error('Error downloading all images:', error);
+                    alert('Failed to download images. Please try again.');
+
+                    const btn = document.getElementById('downloadAllBtn');
+                    btn.innerHTML = '<i class="fas fa-download"></i> Download ZIP File';
+                    btn.disabled = false;
+                }
+            }
+
+            bindEvents() {
+                document.getElementById('downloadAllBtn').addEventListener('click', () => {
+                    this.downloadAllImages();
+                });
+            }
+
+            showMainContent() {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+
+            showError(message) {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('errorText').textContent = message;
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+
+        // Initialize when page loads
+        let detail;
+        document.addEventListener('DOMContentLoaded', () => {
+            detail = new PhotoshootDetail();
+        });
+    </script>
+</body>
+</html>

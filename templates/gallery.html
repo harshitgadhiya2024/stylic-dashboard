@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Creations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gallery-item {
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .overlay-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .overlay-buttons .btn {
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-metadata {
+            padding: 15px;
+            background: white;
+        }
+
+        .metadata-item {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #666;
+            border: none;
+            background: none;
+            padding: 10px 0;
+            margin-right: 30px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #8B5CF6;
+            border-bottom-color: #8B5CF6;
+            background: none;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .image-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .download-all-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(139, 92, 246, 0.9);
+        }
+
+        .download-all-btn:hover {
+            background: rgba(139, 92, 246, 1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4 py-3">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">My Creations</h2>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="image-tab" data-bs-toggle="tab">Image</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="video-tab" data-bs-toggle="tab">Video</button>
+                    </li>
+                </ul>
+
+                <!-- Filters -->
+                <div class="filter-section">
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <select class="form-select" id="statusFilter">
+                                <option value="all">All Status</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="garmentFilter">
+                                <option value="all">All Garments</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="genderFilter">
+                                <option value="all">All Genders</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="ageGroupFilter">
+                                <option value="all">All Age Groups</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div id="galleryGrid" class="row g-4" style="display: none;">
+                    <!-- Gallery items will be inserted here -->
+                </div>
+
+                <!-- No Results -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <i class="fas fa-search fa-3x mb-3"></i>
+                    <h4>No results found</h4>
+                    <p>Try adjusting your filters or search criteria</p>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Gallery pagination" class="mt-4">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination will be inserted here -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Image Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Preview" class="img-fluid">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="downloadImageBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        class PhotoshootGallery {
+            constructor() {
+                this.photoshoots = [];
+                this.filteredPhotoshoots = [];
+                this.currentPage = 1;
+                this.itemsPerPage = 12;
+                this.currentImageUrl = '';
+                this.currentPhotoshootId = '';
+
+                this.init();
+            }
+
+            async init() {
+                await this.loadFilters();
+                await this.loadPhotoshoots();
+                this.bindEvents();
+            }
+
+            async loadFilters() {
+                try {
+                    console.log('Loading filters...');
+                    const response = await fetch('/api/filters');
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Filter data:', data);
+
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    this.populateFilter('statusFilter', data.statuses || []);
+                    this.populateFilter('garmentFilter', data.garment_types || []);
+                    this.populateFilter('genderFilter', data.genders || []);
+                    this.populateFilter('ageGroupFilter', data.age_groups || []);
+                } catch (error) {
+                    console.error('Error loading filters:', error);
+                    // Set default filters if API fails
+                    this.populateFilter('statusFilter', ['completed', 'processing', 'failed']);
+                    this.populateFilter('garmentFilter', ['upper_garment', 'lower_garment']);
+                    this.populateFilter('genderFilter', ['male', 'female']);
+                    this.populateFilter('ageGroupFilter', ['child', 'teen', 'young-adult', 'adult']);
+                }
+            }
+
+            populateFilter(selectId, options) {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+
+                // Clear existing options except the first one
+                while (select.children.length > 1) {
+                    select.removeChild(select.lastChild);
+                }
+
+                options.forEach(option => {
+                    if (option) {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1).replace('_', ' ');
+                        select.appendChild(optionElement);
+                    }
+                });
+
+                select.value = currentValue;
+            }
+
+            async loadPhotoshoots() {
+                try {
+                    const params = new URLSearchParams({
+                        status: document.getElementById('statusFilter').value,
+                        garment_type: document.getElementById('garmentFilter').value,
+                        gender: document.getElementById('genderFilter').value,
+                        age_group: document.getElementById('ageGroupFilter').value
+                    });
+
+                    console.log('Loading photoshoots with params:', params.toString());
+
+                    const response = await fetch(`/api/photoshoots?${params}`);
+                    const data = await response.json();
+
+                    console.log('Response data:', data);
+
+                    if (data.success) {
+                        this.photoshoots = data.data || [];
+                        this.applyFilters();
+                    } else {
+                        throw new Error(data.error || 'Unknown error occurred');
+                    }
+                } catch (error) {
+                    console.error('Error loading photoshoots:', error);
+                    this.showError(`Failed to load photoshoots: ${error.message}`);
+                }
+            }
+
+            applyFilters() {
+                this.filteredPhotoshoots = this.photoshoots.filter(photoshoot => {
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+
+                    if (startDate || endDate) {
+                        const photoDate = new Date(photoshoot.created_at);
+                        if (startDate && photoDate < new Date(startDate)) return false;
+                        if (endDate && photoDate > new Date(endDate)) return false;
+                    }
+
+                    return true;
+                });
+
+                this.currentPage = 1;
+                this.renderGallery();
+                this.renderPagination();
+            }
+
+            renderGallery() {
+                const gallery = document.getElementById('galleryGrid');
+                const loading = document.getElementById('loadingSpinner');
+                const noResults = document.getElementById('noResults');
+
+                loading.style.display = 'none';
+
+                if (this.filteredPhotoshoots.length === 0) {
+                    gallery.style.display = 'none';
+                    noResults.style.display = 'block';
+                    return;
+                }
+
+                noResults.style.display = 'none';
+                gallery.style.display = 'flex';
+
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = startIndex + this.itemsPerPage;
+                const pagePhotoshoots = this.filteredPhotoshoots.slice(startIndex, endIndex);
+
+                gallery.innerHTML = pagePhotoshoots.map(photoshoot => {
+                    const primaryImage = photoshoot.all_images && photoshoot.all_images.length > 0
+                        ? photoshoot.all_images[photoshoot.all_images.length - 1]
+                        : '';
+
+                    const createdDate = new Date(photoshoot.created_at).toLocaleDateString();
+                    const imageCount = photoshoot.all_images ? photoshoot.all_images.length : 0;
+
+                    return `
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                            <div class="gallery-item" data-photoshoot-id="${photoshoot.photoshoot_id}">
+                                <img src="${primaryImage}" alt="Photoshoot" loading="lazy"
+                                     onclick="gallery.openDetailPage('${photoshoot.photoshoot_id}')"
+                                     style="cursor: pointer;">
+
+                                <div class="image-count">
+                                    <i class="fas fa-images"></i> ${imageCount}
+                                </div>
+
+                                <div class="image-overlay">
+                                    <div class="overlay-buttons">
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="gallery.openDetailPage('${photoshoot.photoshoot_id}')"
+                                                title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-primary btn-sm"
+                                                onclick="event.stopPropagation(); gallery.downloadImage('${primaryImage}', '${photoshoot.photoshoot_id}')"
+                                                title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary btn-sm download-all-btn"
+                                        onclick="event.stopPropagation(); gallery.downloadAllImages('${photoshoot.photoshoot_id}')"
+                                        title="Download All">
+                                    <i class="fas fa-download"></i> All
+                                </button>
+
+                                <div class="gallery-metadata">
+                                    <div class="metadata-item">
+                                        <strong>${photoshoot.gender || 'Unknown'}</strong> •
+                                        ${photoshoot.age_group || 'Unknown'}
+                                    </div>
+                                    <div class="metadata-item">
+                                        ${photoshoot.upload_garment_type || 'Unknown Garment'}
+                                    </div>
+                                    <div class="metadata-item">
+                                        <small class="text-muted">${createdDate}</small>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <span class="badge bg-${photoshoot.status === 'completed' ? 'success' : 'warning'}">
+                                            ${photoshoot.status || 'Unknown'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderPagination() {
+                const pagination = document.getElementById('pagination');
+                const totalPages = Math.ceil(this.filteredPhotoshoots.length / this.itemsPerPage);
+
+                if (totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+
+                let paginationHTML = '';
+
+                // Previous button
+                paginationHTML += `
+                    <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="gallery.goToPage(${this.currentPage - 1})">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                `;
+
+                // Page numbers
+                for (let i = 1; i <= Math.min(5, totalPages); i++) {
+                    paginationHTML += `
+                        <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="gallery.goToPage(${i})">${i}</a>
+                        </li>
+                    `;
+                }
+
+                // Next button
+                paginationHTML += `
+                    <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="gallery.goToPage(${this.currentPage + 1})">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                `;
+
+                pagination.innerHTML = paginationHTML;
+            }
+
+            openDetailPage(photoshootId) {
+                window.location.href = `/photoshoot/${photoshootId}`;
+            }
+
+            goToPage(page) {
+                const totalPages = Math.ceil(this.filteredPhotoshoots.length / this.itemsPerPage);
+                if (page >= 1 && page <= totalPages) {
+                    this.currentPage = page;
+                    this.renderGallery();
+                    this.renderPagination();
+                }
+            }
+
+            showImageModal(imageUrl, photoshootId) {
+                this.currentImageUrl = imageUrl;
+                this.currentPhotoshootId = photoshootId;
+
+                document.getElementById('modalImage').src = imageUrl;
+                new bootstrap.Modal(document.getElementById('imageModal')).show();
+            }
+
+            async downloadImage(imageUrl, photoshootId) {
+                try {
+                    const response = await fetch(`/api/download/${photoshootId}?url=${encodeURIComponent(imageUrl)}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `image_${Date.now()}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        throw new Error('Download failed');
+                    }
+                } catch (error) {
+                    console.error('Error downloading image:', error);
+                    alert('Failed to download image');
+                }
+            }
+
+            async downloadAllImages(photoshootId) {
+                try {
+                    const response = await fetch(`/api/download-all/${photoshootId}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `photoshoot_${photoshootId}.zip`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        throw new Error('Download failed');
+                    }
+                } catch (error) {
+                    console.error('Error downloading all images:', error);
+                    alert('Failed to download images');
+                }
+            }
+
+            bindEvents() {
+                // Filter change events
+                document.getElementById('statusFilter').addEventListener('change', () => this.loadPhotoshoots());
+                document.getElementById('garmentFilter').addEventListener('change', () => this.loadPhotoshoots());
+                document.getElementById('genderFilter').addEventListener('change', () => this.loadPhotoshoots());
+                document.getElementById('ageGroupFilter').addEventListener('change', () => this.loadPhotoshoots());
+                document.getElementById('startDate').addEventListener('change', () => this.applyFilters());
+                document.getElementById('endDate').addEventListener('change', () => this.applyFilters());
+
+                // Modal download button
+                document.getElementById('downloadImageBtn').addEventListener('click', () => {
+                    this.downloadImage(this.currentImageUrl, this.currentPhotoshootId);
+                });
+
+                // Prevent default link behavior for pagination
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.page-link')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            showError(message) {
+                const gallery = document.getElementById('galleryGrid');
+                const loading = document.getElementById('loadingSpinner');
+                const noResults = document.getElementById('noResults');
+
+                loading.style.display = 'none';
+                gallery.style.display = 'none';
+                noResults.style.display = 'block';
+                noResults.innerHTML = `
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3 text-danger"></i>
+                    <h4>Error</h4>
+                    <p>${message}</p>
+                `;
+            }
+        }
+
+        // Initialize gallery when page loads
+        let gallery;
+        document.addEventListener('DOMContentLoaded', () => {
+            gallery = new PhotoshootGallery();
+        });
+    </script>
+</body>
+</html>

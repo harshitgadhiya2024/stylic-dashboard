@@ -1,0 +1,1 @@
+.cartBtn.v-btn{height:52px;position:fixed;right:-2px;top:70%;z-index:9;border-radius:50% 0 0 50%;background:rgb(var(--v-theme-surface));box-shadow:var(--v-card-shadow)}[dir=rtl] .cartBtn.v-btn{right:unset;left:-2px;border-radius:0 50% 50% 0}.cartBtn.v-btn.v-btn--variant-tonal .v-btn__underlay{opacity:0}
