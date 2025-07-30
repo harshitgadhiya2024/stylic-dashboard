@@ -71,6 +71,7 @@ def login():
         login_dict = session.get("login_dict", {})
         print(login_dict)
         if login_dict:
+            print("coming")
             return redirect("/dashboard")
         if request.method == "POST":
             email = request.form.get("email", "").strip()
@@ -78,6 +79,7 @@ def login():
             print(email, password)
             if not email or not password:
                 flash("Email and password are required", "danger")
+                print("coming")
                 return redirect("/")
 
             all_data = list(
@@ -86,14 +88,18 @@ def login():
                 is_active = all_data[0]["is_active"]
                 if is_active:
                     session["login_dict"] = {"id": all_data[0]["id"], "email": email, "role": all_data[0]["role"]}
+                    print("coming")
                     return redirect("/dashboard")
                 else:
+                    print("coming")
                     flash("Please activate your account", "danger")
                     return redirect("/")
             else:
+                print("coming")
                 flash("Please enter correct credentials", "danger")
                 return redirect("/")
         else:
+            print("coming")
             return render_template("login.html")
 
     except Exception as e:
