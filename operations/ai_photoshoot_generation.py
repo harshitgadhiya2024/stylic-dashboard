@@ -435,9 +435,8 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 print(f"Failed to generate image for pose: {body_pose}")
 
         if len(all_generated_images)<2:
-            email = session.get("login_dict").get("email")
             html_format = htmlOperation().photoshoot_faileur(photoshoot_id)
-            emailOperation().send_email(email, "Stylic: Your Reset Password Link", html_format)
+            emailOperation().send_email("info.stylicai@gmail.com", "Stylic: Your Reset Password Link", html_format)
             return {
                 'status': 'failed',
                 'total_images': len(all_generated_images),
