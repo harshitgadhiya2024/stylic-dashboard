@@ -181,7 +181,7 @@ def forgot_password():
             email_data = mongoOperation().get_spec_data_from_coll("login_mapping", email_condition_dict)
             if email_data:
                 if email_data[0]["is_active"]:
-                    forgot_password_link = f"{constant_dict.get('domain_url', 'http://127.0.0.1:5000/')}/reset-password?email={email}"
+                    forgot_password_link = f"{constant_dict.get('domain_url', 'https://app.stylic.ai')}/reset-password?email={email}"
                     html_format = htmlOperation().forgot_password_mail_template(forgot_password_link)
                     emailOperation().send_email(email, "Stylic: Your Reset Password Link", html_format)
                     flash("Reset link sent successfully. Please check your mail", "success")

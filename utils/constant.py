@@ -14,7 +14,7 @@ constant_dict = {
     "mongo_url": MONGO_URL,
     "secreat_key": secreat_key,
     "openai_key": os.getenv("OPENAI_KEY"),
-    "domain_url": "http://127.0.0.1:8060",
+    "domain_url": "https://app.stylic.ai",
     "smtp_server": "smtp.hostinger.com",
     "smtp_port": 587,
     "email_address": "info@stylic.ai",
