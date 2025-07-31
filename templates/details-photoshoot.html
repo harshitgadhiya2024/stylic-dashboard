@@ -276,6 +276,68 @@
             }
         }
     </style>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .modal-content {
+            -ms-overflow-style: none;
+            /* IE 10+ */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .credit-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .credit-label strong {
+            font-size: 1rem;
+        }
+
+        .credit-meta {
+            text-align: right;
+        }
+
+        .credit-meta small {
+            display: block;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .credit-meta span {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .modal-lg {
+                max-width: 95%;
+            }
+
+            .pricing-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .credit-meta {
+                text-align: left;
+                margin-top: 5px;
+            }
+        }
+    </style>
 </head>
 
 <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
@@ -419,10 +481,17 @@
                                     <div class="card">
                                         <div class="card-body py-3">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h5 class="mb-0 d-inline-flex align-items-center"><svg
+                                                <!-- <h5 class="mb-0 d-inline-flex align-items-center"><svg
                                                         class="pc-icon text-muted me-2">
                                                         <use xlink:href="#custom-flash"></use>
-                                                    </svg>Get More Credit</h5>
+                                                    </svg>Get More Credit</h5> -->
+                                                <button type="button" style="background: transparent; border: none;"
+                                                    class="mb-0 d-inline-flex align-items-center" data-bs-toggle="modal"
+                                                    data-bs-target="#purchaseModal">
+                                                    <svg class="pc-icon text-muted me-2">
+                                                        <use xlink:href="#custom-flash"></use>
+                                                    </svg>Get More Credit
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -586,6 +655,328 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="/change-password?email={{login_dict['email']}}" method="post"
+                    enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">New Password <span
+                                    style="color: red; font-weight: 600;">*</span></label>
+                            <div class="input-group">
+                                <input type="password" name="password" class="form-control" id="password" required>
+                                <button type="button" class="btn btn-outline-secondary"
+                                    onclick="togglePasswordVisibility()">
+                                    <i id="eyeIcon" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password <span
+                                    style="color: red; font-weight: 600;">*</span></label>
+                            <div class="input-group">
+                                <input type="password" name="confirm_password" class="form-control"
+                                    id="confirm_password" required>
+                                <button type="button" class="btn btn-outline-secondary"
+                                    onclick="togglePasswordVisibility1()">
+                                    <i id="eyeIcon1" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="purchaseModalLabel">Select Your Credit Plan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="payment-form" style="overflow-y: scroll;">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <div class="pricing-row">
+                                <div class="credit-label">
+                                    <input class="form-check-input" type="radio" name="credits" id="c50" value="50">
+                                    <label for="c50"><strong>50 credits</strong> <small class="text-muted">/
+                                            lifetime</small></label>
+                                </div>
+                                <div class="credit-meta">
+                                    <small>₹50 per credit</small>
+                                    <span>₹2500</span>
+                                </div>
+                            </div>
+
+                            <div class="pricing-row">
+                                <div class="credit-label">
+                                    <input class="form-check-input" type="radio" name="credits" id="c100" value="100">
+                                    <label for="c100"><strong>100 credits</strong> <small class="text-muted">/
+                                            lifetime</small></label>
+                                </div>
+                                <div class="credit-meta">
+                                    <small>₹45 per credit</small>
+                                    <span>₹4500</span>
+                                </div>
+                            </div>
+
+                            <div class="pricing-row">
+                                <div class="credit-label">
+                                    <input class="form-check-input" type="radio" name="credits" id="c500" value="500">
+                                    <label for="c500"><strong>500 credits</strong> <small class="text-muted">/
+                                            lifetime</small></label>
+                                </div>
+                                <div class="credit-meta">
+                                    <small>₹40 per credit</small>
+                                    <span>₹20000</span>
+                                </div>
+                            </div>
+
+                            <div class="pricing-row">
+                                <div class="credit-label">
+                                    <input class="form-check-input" type="radio" name="credits" id="c1000" value="1000">
+                                    <label for="c1000"><strong>1000 credits</strong> <small class="text-muted">/
+                                            lifetime</small></label>
+                                </div>
+                                <div class="credit-meta">
+                                    <small>₹35 per credit</small>
+                                    <span>₹35000</span>
+                                </div>
+                            </div>
+                            <div class="pricing-row">
+                                <div class="credit-label">
+                                    <input class="form-check-input" type="radio" name="credits" id="c2500" value="2500">
+                                    <label for="c2500"><strong>2500 credits</strong> <small class="text-muted">/
+                                            lifetime</small></label>
+                                </div>
+                                <div class="credit-meta">
+                                    <small>₹25 per credit</small>
+                                    <span>₹62500</span>
+                                </div>
+                            </div>
+                            <div class="pricing-row">
+                                <div class="credit-label">
+                                    <input class="form-check-input" type="radio" name="credits" id="c5000" value="5000">
+                                    <label for="c5000"><strong>5000 credits</strong> <small class="text-muted">/
+                                            lifetime</small></label>
+                                </div>
+                                <div class="credit-meta">
+                                    <small>₹20 per credit</small>
+                                    <span>₹100000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <!-- Coupon Code -->
+                        <div class="mb-3">
+                            <h6 class="mb-3">Apply Coupon Code</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="coupon" placeholder="Enter coupon code">
+                                <button class="btn btn-primary" type="button" onclick="applyCoupon()">Apply</button>
+                            </div>
+                            <div id="couponMessage" class="form-text text-success mt-1"></div>
+                        </div>
+
+                        <!-- Payment Form -->
+                        <h6 class="mb-3">Payment Details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount (₹)</label>
+                                <input type="text" class="form-control" id="amount" name="amount"
+                                    placeholder="Auto-filled" required>
+                            </div>
+                            <div class="col-md-6" style="display: none;">
+                                <label for="credit" class="form-label">Credit</label>
+                                <input type="text" class="form-control" id="credit" name="credit"
+                                    placeholder="Auto-filled" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="John Doe"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    placeholder="john@example.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact" class="form-label">Contact</label>
+                                <input type="text" class="form-control" id="contact" name="contact"
+                                    placeholder="9999999999" required>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer" style="margin-bottom: 30px;">
+                        <button type="submit" class="btn btn-success w-100">Pay Now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Hidden form for payment verification -->
+    <form id="verification-form" action="/verify-payment" method="POST" style="display: none;">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    </form>
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            console.log("coming to submit");
+            const amount = 100;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const contact = document.getElementById('contact').value;
+            const credit = document.getElementById('credit').value;
+            console.log(credit);
+
+            // Create order
+            fetch(`/create-order?credit=${credit}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: amount,
+                    credit: credit
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Initialize Razorpay
+                        const options = {
+                            "key": data.key_id,
+                            "amount": data.amount,
+                            "currency": data.currency,
+                            "name": "Stylic AI",
+                            "description": "Payment for get fresh credit",
+                            "image": "https://stylic.ai/assets/stylic-logo-1-BQOP5sjr.png",
+                            "order_id": data.order_id,
+                            "handler": function (response) {
+                                // Payment successful callback
+                                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+
+                                // Submit verification form
+                                document.getElementById('verification-form').submit();
+                            },
+                            "prefill": {
+                                "name": name,
+                                "email": email,
+                                "contact": contact
+                            },
+                            "notes": {
+                                "address": "Customer Address"
+                            },
+                            "theme": {
+                                "color": "#3399cc"
+                            },
+                            "modal": {
+                                "ondismiss": function () {
+                                    alert('Payment cancelled by user');
+                                }
+                            }
+                        };
+
+                        const rzp = new Razorpay(options);
+                        rzp.open();
+                    } else {
+                        alert('Error creating order: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+        });
+    </script>
+    <script>
+        const creditPricing = {
+            50: 2500,
+            100: 4500,
+            500: 20000,
+            1000: 35000,
+            2500: 62500,
+            5000: 100000
+        };
+
+        let selectedCredits = null;
+        let appliedDiscount = 0;
+
+        // Plan selection handler
+        document.querySelectorAll('input[name="credits"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                selectedCredits = radio.value;
+                document.getElementById('credit').value = radio.value;
+                appliedDiscount = 0;
+                document.getElementById("couponMessage").textContent = "";
+                updateAmount();
+            });
+        });
+
+        function updateAmount() {
+            if (!selectedCredits) return;
+            const base = creditPricing[selectedCredits];
+            var discounted = 0
+            if (appliedDiscount !== 0) {
+                console.log("apply disount");
+                var discounted = appliedDiscount ? base - (base * appliedDiscount / 100) : base;
+            } else {
+                var discounted = base;
+                console.log(discounted);
+
+            }
+            // const discounted = appliedDiscount ? base - (base * appliedDiscount / 100) : base;
+            document.getElementById("amount").value = Math.round(discounted);
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById("coupon").value.trim();
+            if (!code || !selectedCredits) {
+                alert("Select a plan and enter a coupon code.");
+                return;
+            }
+
+            fetch(`/api/check-coupon?code=${code}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.valid) {
+                        appliedDiscount = data.discount
+                        console.log(appliedDiscount);
+                        updateAmount();
+                        document.getElementById("couponMessage").textContent = `✅ ${appliedDiscount}% discount applied!`;
+                    } else {
+                        appliedDiscount = 0;
+                        updateAmount();
+                        document.getElementById("couponMessage").textContent = `❌ Invalid coupon code.`;
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("couponMessage").textContent = "Error checking coupon.";
+                });
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
     <script>
         class PhotoshootDetail {

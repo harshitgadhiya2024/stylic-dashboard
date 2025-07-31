@@ -213,16 +213,27 @@ def forgot_password():
         flash("An error occurred during password reset", "danger")
         return render_template("forgot-password.html")
 
-@app.route('/payment')
-def payment():
-    return render_template('payment.html')
+# @app.route('/payment')
+# def payment():
+#     return render_template('payment.html')
 
 @app.route('/create-order', methods=['POST'])
+@token_required
 def create_order():
     try:
-        # Get amount from frontend (in paisa/cents)
+        user_id = session.get("login_dict").get("id")
         amount = int(request.json['amount']) * 100  # Convert to paisa
         currency = 'INR'
+        payment_request_mapping = {
+            "id": user_id,
+            "credit": int(request.json['credit']),
+            "order_id": str(uuid.uuid4()),
+            "amount": int(request.json['amount']),
+            "currency": currency,
+            "created_at": datetime.utcnow()
+        }
+        session[f"order_{user_id}"] = payment_request_mapping
+        print(payment_request_mapping)
 
         # Create Razorpay order - syntax for v1.4.1
         order_data = {
@@ -234,6 +245,7 @@ def create_order():
                 'version': 'v1.4.1'
             }
         }
+
 
         order = razorpay_client.order.create(data=order_data)
 
@@ -263,7 +275,21 @@ def create_order():
 
 
 @app.route('/verify-payment', methods=['POST'])
+@token_required
 def verify_payment():
+    # Verify signature - updated method for v1.4.1
+    user_id = session.get("login_dict", {}).get("id", "")
+    payment_mapping = session[f"order_{user_id}"]
+    mapping_dict = {
+        "id": user_id,
+        "order_id": "",
+        "payment_id": "",
+        "credit": payment_mapping.get("credit"),
+        "amount": payment_mapping.get("amount"),
+        "currency": payment_mapping.get("currency"),
+        "status": "failed",
+        "created_at": datetime.utcnow()
+    }
     try:
         # Get payment details from frontend
         payment_id = request.form['razorpay_payment_id']
@@ -276,114 +302,109 @@ def verify_payment():
             'razorpay_payment_id': payment_id,
             'razorpay_signature': signature
         }
-
-        # Verify signature - updated method for v1.4.1
+        mapping_dict["order_id"] = order_id
+        mapping_dict["payment_id"] = payment_id
         try:
             razorpay_client.utility.verify_payment_signature(params_dict)
-
             # Payment is successful
             # Here you can update your database, send confirmation emails, etc.
             print(f"Payment successful: {payment_id}")
-
-            return redirect(url_for('payment_success', payment_id=payment_id))
+            all_company_data = list(mongoOperation().get_spec_data_from_coll("company_data", {"id": user_id}))
+            addited_credit = int(all_company_data[0]["credit"])+int(mapping_dict["credit"])
+            mongoOperation().update_mongo_data("company_data", {"id": user_id}, {"credit": addited_credit})
+            mapping_dict["status"]="success"
+            mongoOperation().insert_data_from_coll("order_data", mapping_dict)
+            flash("Payment successfully...", "success")
+            return redirect('/dashboard')
 
         except razorpay.errors.SignatureVerificationError:
             print(f"Payment verification failed for: {payment_id}")
-            return redirect(url_for('payment_failed'))
+            mapping_dict["status"] = "failed"
+            mongoOperation().insert_data_from_coll("order_data", mapping_dict)
+            return redirect("/dashboard")
 
     except Exception as e:
         print(f"Error in payment verification: {str(e)}")
-        return redirect(url_for('payment_failed'))
-
-
-@app.route('/payment-success')
-def payment_success():
-    payment_id = request.args.get('payment_id')
-    return render_template('success.html', payment_id=payment_id)
-
-
-@app.route('/payment-failed')
-def payment_failed():
-    return render_template('failed.html')
-
-
-# Get payment details (v1.4.1 feature)
-@app.route('/payment-details/<payment_id>')
-def get_payment_details(payment_id):
-    try:
-        payment = razorpay_client.payment.fetch(payment_id)
-        return jsonify({
-            'success': True,
-            'payment': payment
-        })
-    except razorpay.errors.BadRequestError as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 400
-
-
-# Refund payment (v1.4.1 syntax)
-@app.route('/refund-payment', methods=['POST'])
-def refund_payment():
-    try:
-        payment_id = request.json['payment_id']
-        amount = request.json.get('amount')  # Optional partial refund
-
-        refund_data = {}
-        if amount:
-            refund_data['amount'] = int(amount) * 100  # Convert to paisa
-
-        refund = razorpay_client.payment.refund(payment_id, refund_data)
-
-        return jsonify({
-            'success': True,
-            'refund': refund
-        })
-
-    except razorpay.errors.BadRequestError as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 400
-
-
-# Get all orders (useful for admin dashboard)
-@app.route('/orders')
-def get_orders():
-    try:
-        orders = razorpay_client.order.all()
-        return jsonify({
-            'success': True,
-            'orders': orders
-        })
-    except razorpay.errors.BadRequestError as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 400
-
-
-# Check payment status by order ID
-@app.route('/check-payment-status/<order_id>')
-def check_payment_status(order_id):
-    try:
-        # Get order details
-        order = razorpay_client.order.fetch(order_id)
-
-        # Get payments for this order
-        payments = razorpay_client.order.payments(order_id)
-
-        return jsonify({
-            'success': True,
-            'order': order,
-            'payments': payments
-        })
-    except razorpay.errors.BadRequestError as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 400
+        mongoOperation().insert_data_from_coll("order_data", mapping_dict)
+        return redirect("/dashboard")
+#
+# # Get payment details (v1.4.1 feature)
+# @app.route('/payment-details/<payment_id>')
+# def get_payment_details(payment_id):
+#     try:
+#         payment = razorpay_client.payment.fetch(payment_id)
+#         return jsonify({
+#             'success': True,
+#             'payment': payment
+#         })
+#     except razorpay.errors.BadRequestError as e:
+#         return jsonify({
+#             'success': False,
+#             'error': str(e)
+#         }), 400
+#
+#
+# # Refund payment (v1.4.1 syntax)
+# @app.route('/refund-payment', methods=['POST'])
+# def refund_payment():
+#     try:
+#         payment_id = request.json['payment_id']
+#         amount = request.json.get('amount')  # Optional partial refund
+#
+#         refund_data = {}
+#         if amount:
+#             refund_data['amount'] = int(amount) * 100  # Convert to paisa
+#
+#         refund = razorpay_client.payment.refund(payment_id, refund_data)
+#
+#         return jsonify({
+#             'success': True,
+#             'refund': refund
+#         })
+#
+#     except razorpay.errors.BadRequestError as e:
+#         return jsonify({
+#             'success': False,
+#             'error': str(e)
+#         }), 400
+#
+#
+# # Get all orders (useful for admin dashboard)
+# @app.route('/orders')
+# def get_orders():
+#     try:
+#         orders = razorpay_client.order.all()
+#         return jsonify({
+#             'success': True,
+#             'orders': orders
+#         })
+#     except razorpay.errors.BadRequestError as e:
+#         return jsonify({
+#             'success': False,
+#             'error': str(e)
+#         }), 400
+#
+#
+# # Check payment status by order ID
+# @app.route('/check-payment-status/<order_id>')
+# def check_payment_status(order_id):
+#     try:
+#         # Get order details
+#         order = razorpay_client.order.fetch(order_id)
+#
+#         # Get payments for this order
+#         payments = razorpay_client.order.payments(order_id)
+#
+#         return jsonify({
+#             'success': True,
+#             'order': order,
+#             'payments': payments
+#         })
+#     except razorpay.errors.BadRequestError as e:
+#         return jsonify({
+#             'success': False,
+#             'error': str(e)
+#         }), 400
 
 @app.route("/reset-password", methods=["GET", "POST"])
 def reset_password():
@@ -660,8 +681,9 @@ def ai_photoshoot():
 
 
 @app.route('/photoshoot/<photoshoot_id>')
+@token_required
 def photoshoot_detail(photoshoot_id):
-    return render_template('details-photoshoot.html', photoshoot_id=photoshoot_id, login_dict=session.get("login_dict"))
+    return render_template('details-photoshoot.html', photoshoot_id=photoshoot_id, login_dict=session.get("login_dict", {}),)
 
 
 @app.route('/api/photoshoot/<photoshoot_id>')
@@ -920,6 +942,31 @@ def my_creation_history():
     except Exception as e:
         print(f"{datetime.now()}: Error in my creation history route: {str(e)}")
         return redirect("/my-creation-history")
+
+@app.route("/order-history", methods=["GET", "POST"])
+@token_required
+def order_history():
+    try:
+        user_id = session.get("login_dict", {}).get("id", "")
+        photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": user_id}))
+        mapping_dict = {}
+        mapping_dict["total_photoshoot"]=len(photoshoot_data)
+        total_photos = 0
+        pending_photoshoot = 0
+        for photoshoot in photoshoot_data:
+            status = photoshoot["status"]
+            if status=="completed":
+                total_photos+=len(photoshoot["selected_poses"])
+            else:
+                pending_photoshoot+=1
+
+        mapping_dict["total_photos"]=total_photos
+        mapping_dict["pending_photoshoot"]=pending_photoshoot
+        return render_template("order-history.html", login_dict=session.get("login_dict", {}), mapping_dict=mapping_dict)
+
+    except Exception as e:
+        print(f"{datetime.now()}: Error in dashboard route: {str(e)}")
+        return redirect("/order-history")
 
 
 @app.route("/credit-history", methods=["GET", "POST"])

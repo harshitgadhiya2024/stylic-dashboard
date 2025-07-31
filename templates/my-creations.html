@@ -136,6 +136,68 @@
       background: rgba(139, 92, 246, 1);
     }
   </style>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    .modal-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .modal-content {
+      -ms-overflow-style: none;
+      /* IE 10+ */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    .pricing-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .credit-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .credit-label strong {
+      font-size: 1rem;
+    }
+
+    .credit-meta {
+      text-align: right;
+    }
+
+    .credit-meta small {
+      display: block;
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .credit-meta span {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 576px) {
+      .modal-lg {
+        max-width: 95%;
+      }
+
+      .pricing-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .credit-meta {
+        text-align: left;
+        margin-top: 5px;
+      }
+    }
+  </style>
 </head>
 
 <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
@@ -146,46 +208,45 @@
     </div>
   </div>
   <nav class="pc-sidebar">
-        <div class="navbar-wrapper">
-            <div class="navbar-content">
-                <div class="card pc-user-card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0"><img src="/static/assets/images/user/avatar-1.jpg"
-                                    alt="user-image" class="user-avtar wid-45 rounded-circle"></div>
-                            <div class="flex-grow-1 ms-3 me-2">
-                                <h6 class="mb-0" data-i18n="Jonh Smith">{{login_dict["id"][:6]}}</h6><small
-                                    data-i18n="Administrator">Company</small>
-                            </div><a class="btn btn-icon btn-link-secondary avtar" data-bs-toggle="collapse"
-                                href="#pc_sidebar_userlink"><svg class="pc-icon">
-                                    <use xlink:href="#custom-sort-outline"></use>
-                                </svg></a>
-                        </div>
-                        <div class="collapse pc-user-links" id="pc_sidebar_userlink">
-                            <div class="pt-3"><a href="/logout"><i class="ti ti-power"></i> <span
-                                        data-i18n="Logout">Logout</span></a></div>
-                        </div>
-                    </div>
-                </div>
-                <ul class="pc-navbar">
-                    <li class="pc-item pc-caption"><label data-i18n="Pages">Pages</label> <svg class="pc-icon">
-                            <use xlink:href="#custom-presentation-chart"></use>
-                        </svg></li>
-                    <li class="pc-item"><a href="/" class="pc-link"><span class="pc-micon"><svg class="pc-icon">
-                                    <use xlink:href="#custom-status-up"></use>
-                                </svg> </span><span class="pc-mtext" data-i18n="Dashboard">Dashboard</span></a></li>
-                    <li class="pc-item"><a href="/ai-photoshoot" class="pc-link"><span class="pc-micon"><svg
-                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
-                                    fill="none">
-                                    <path
-                                        d="M7.27065 12.7362C6.85644 12.7362 6.52065 13.072 6.52065 13.4862C6.52065 13.9005 6.85644 14.2362 7.27065 14.2362H12.5C12.9142 14.2362 13.25 13.9005 13.25 13.4862C13.25 13.072 12.9142 12.7362 12.5 12.7362H7.27065Z"
-                                        fill="currentColor"></path>
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M8.50537 0.534424C7.78468 0.534424 7.15047 1.01008 6.94867 1.70195L6.76165 2.34316L4.4589 2.62513C3.64563 2.72472 3.03442 3.41533 3.03442 4.23467V6.90951C3.03442 7.47281 3.32456 7.94108 3.68142 8.24241C3.96697 8.48352 4.26315 8.81088 4.44929 9.17328C4.63102 9.5271 4.69143 9.87687 4.58965 10.2258C4.27056 11.3198 3.72752 13.3579 3.34341 14.821C3.0733 15.8499 3.85103 16.8509 4.91076 16.8509H9.13533V17.9656H5.52753C5.11332 17.9656 4.77753 18.3014 4.77753 18.7156C4.77753 19.1298 5.11332 19.4656 5.52753 19.4656H14.2431C14.6573 19.4656 14.9931 19.1298 14.9931 18.7156C14.9931 18.3014 14.6573 17.9656 14.2431 17.9656H10.6353V16.8509H14.8599C15.9197 16.8509 16.6974 15.8499 16.4273 14.821C16.0432 13.3579 15.5001 11.3198 15.181 10.2258C15.0793 9.87687 15.1397 9.5271 15.3214 9.17328C15.5075 8.81088 15.8037 8.48352 16.0893 8.24241C16.4461 7.94108 16.7363 7.47281 16.7363 6.90951V4.23467C16.7363 3.41533 16.1251 2.72472 15.3118 2.62513L13.009 2.34316L12.822 1.70195C12.6202 1.01008 11.986 0.534424 11.2653 0.534424H8.50537ZM8.38867 2.12195C8.4038 2.07008 8.45135 2.03442 8.50537 2.03442H11.2653C11.3193 2.03442 11.3669 2.07008 11.382 2.12195L11.7074 3.23754C11.7913 3.52537 12.0386 3.73554 12.3362 3.77198L15.1295 4.11401C15.1904 4.12148 15.2363 4.17325 15.2363 4.23467V6.90951C15.2363 6.93933 15.2178 7.015 15.1215 7.09633C14.7347 7.42293 14.2896 7.89897 13.9871 8.48795C13.6802 9.08551 13.5046 9.83511 13.741 10.6458C14.0535 11.7171 14.5914 13.7354 14.9764 15.2019C14.9959 15.276 14.9405 15.3509 14.8599 15.3509L4.91076 15.3509C4.8302 15.3509 4.77479 15.276 4.79424 15.2019C5.17924 13.7354 5.7172 11.7171 6.02965 10.6458C6.26611 9.83511 6.0905 9.08551 5.78358 8.48795C5.48106 7.89897 5.03594 7.42293 4.64915 7.09633C4.55284 7.015 4.53442 6.93933 4.53442 6.90951V4.23467C4.53442 4.17325 4.58024 4.12148 4.64121 4.11401L7.43445 3.77198C7.73204 3.73554 7.97934 3.52537 8.06329 3.23754L8.38867 2.12195Z"
-                                        fill="currentColor"></path>
-                                </svg></span><span class="pc-mtext" data-i18n="AI Photoshoot">AI Photoshoot</span></a>
-                    </li>
-                    <!-- <li class="pc-item" style="user-select: none; pointer-events: none;"><a href="/ai-video-generation" class="pc-link"><span class="pc-micon">
+    <div class="navbar-wrapper">
+      <div class="navbar-content">
+        <div class="card pc-user-card">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0"><img src="/static/assets/images/user/avatar-1.jpg" alt="user-image"
+                  class="user-avtar wid-45 rounded-circle"></div>
+              <div class="flex-grow-1 ms-3 me-2">
+                <h6 class="mb-0" data-i18n="Jonh Smith">{{login_dict["id"][:6]}}</h6><small
+                  data-i18n="Administrator">Company</small>
+              </div><a class="btn btn-icon btn-link-secondary avtar" data-bs-toggle="collapse"
+                href="#pc_sidebar_userlink"><svg class="pc-icon">
+                  <use xlink:href="#custom-sort-outline"></use>
+                </svg></a>
+            </div>
+            <div class="collapse pc-user-links" id="pc_sidebar_userlink">
+              <div class="pt-3"><a href="/logout"><i class="ti ti-power"></i> <span data-i18n="Logout">Logout</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ul class="pc-navbar">
+          <li class="pc-item pc-caption"><label data-i18n="Pages">Pages</label> <svg class="pc-icon">
+              <use xlink:href="#custom-presentation-chart"></use>
+            </svg></li>
+          <li class="pc-item"><a href="/" class="pc-link"><span class="pc-micon"><svg class="pc-icon">
+                  <use xlink:href="#custom-status-up"></use>
+                </svg> </span><span class="pc-mtext" data-i18n="Dashboard">Dashboard</span></a></li>
+          <li class="pc-item"><a href="/ai-photoshoot" class="pc-link"><span class="pc-micon"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M7.27065 12.7362C6.85644 12.7362 6.52065 13.072 6.52065 13.4862C6.52065 13.9005 6.85644 14.2362 7.27065 14.2362H12.5C12.9142 14.2362 13.25 13.9005 13.25 13.4862C13.25 13.072 12.9142 12.7362 12.5 12.7362H7.27065Z"
+                    fill="currentColor"></path>
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M8.50537 0.534424C7.78468 0.534424 7.15047 1.01008 6.94867 1.70195L6.76165 2.34316L4.4589 2.62513C3.64563 2.72472 3.03442 3.41533 3.03442 4.23467V6.90951C3.03442 7.47281 3.32456 7.94108 3.68142 8.24241C3.96697 8.48352 4.26315 8.81088 4.44929 9.17328C4.63102 9.5271 4.69143 9.87687 4.58965 10.2258C4.27056 11.3198 3.72752 13.3579 3.34341 14.821C3.0733 15.8499 3.85103 16.8509 4.91076 16.8509H9.13533V17.9656H5.52753C5.11332 17.9656 4.77753 18.3014 4.77753 18.7156C4.77753 19.1298 5.11332 19.4656 5.52753 19.4656H14.2431C14.6573 19.4656 14.9931 19.1298 14.9931 18.7156C14.9931 18.3014 14.6573 17.9656 14.2431 17.9656H10.6353V16.8509H14.8599C15.9197 16.8509 16.6974 15.8499 16.4273 14.821C16.0432 13.3579 15.5001 11.3198 15.181 10.2258C15.0793 9.87687 15.1397 9.5271 15.3214 9.17328C15.5075 8.81088 15.8037 8.48352 16.0893 8.24241C16.4461 7.94108 16.7363 7.47281 16.7363 6.90951V4.23467C16.7363 3.41533 16.1251 2.72472 15.3118 2.62513L13.009 2.34316L12.822 1.70195C12.6202 1.01008 11.986 0.534424 11.2653 0.534424H8.50537ZM8.38867 2.12195C8.4038 2.07008 8.45135 2.03442 8.50537 2.03442H11.2653C11.3193 2.03442 11.3669 2.07008 11.382 2.12195L11.7074 3.23754C11.7913 3.52537 12.0386 3.73554 12.3362 3.77198L15.1295 4.11401C15.1904 4.12148 15.2363 4.17325 15.2363 4.23467V6.90951C15.2363 6.93933 15.2178 7.015 15.1215 7.09633C14.7347 7.42293 14.2896 7.89897 13.9871 8.48795C13.6802 9.08551 13.5046 9.83511 13.741 10.6458C14.0535 11.7171 14.5914 13.7354 14.9764 15.2019C14.9959 15.276 14.9405 15.3509 14.8599 15.3509L4.91076 15.3509C4.8302 15.3509 4.77479 15.276 4.79424 15.2019C5.17924 13.7354 5.7172 11.7171 6.02965 10.6458C6.26611 9.83511 6.0905 9.08551 5.78358 8.48795C5.48106 7.89897 5.03594 7.42293 4.64915 7.09633C4.55284 7.015 4.53442 6.93933 4.53442 6.90951V4.23467C4.53442 4.17325 4.58024 4.12148 4.64121 4.11401L7.43445 3.77198C7.73204 3.73554 7.97934 3.52537 8.06329 3.23754L8.38867 2.12195Z"
+                    fill="currentColor"></path>
+                </svg></span><span class="pc-mtext" data-i18n="AI Photoshoot">AI Photoshoot</span></a>
+          </li>
+          <!-- <li class="pc-item" style="user-select: none; pointer-events: none;"><a href="/ai-video-generation" class="pc-link"><span class="pc-micon">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -219,27 +280,25 @@
                                         fill="currentColor"></path>
                                 </svg> </span><span class="pc-mtext" data-i18n="Chart">Background Replacer</span></a>
                     </li> -->
-                    <li class="pc-item"><a href="/my-creation-history" class="pc-link"><span class="pc-micon">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7.5 10.5H12.5" stroke="currentColor" stroke-width="1.5"
-                                        stroke-linecap="round"></path>
-                                    <path
-                                        d="M2.5 5.5H17.5V15.5C17.5 16.6046 16.6046 17.5 15.5 17.5H4.5C3.39543 17.5 2.5 16.6046 2.5 15.5V5.5Z"
-                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-                                    <path
-                                        d="M4.40031 3.21963C4.7803 2.76365 5.34319 2.5 5.93675 2.5H14.0633C14.6568 2.5 15.2197 2.76365 15.5997 3.21963L17.5 5.5H2.5L4.40031 3.21963Z"
-                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-                                </svg>
-                            </span><span class="pc-mtext" data-i18n="Chart">My Creations</span></a></li>
-                    <!-- <li class="pc-item"><a href="/credit-history" class="pc-link"><span class="pc-micon"><svg
+          <li class="pc-item"><a href="/my-creation-history" class="pc-link"><span class="pc-micon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.5 10.5H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path
+                    d="M2.5 5.5H17.5V15.5C17.5 16.6046 16.6046 17.5 15.5 17.5H4.5C3.39543 17.5 2.5 16.6046 2.5 15.5V5.5Z"
+                    stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+                  <path
+                    d="M4.40031 3.21963C4.7803 2.76365 5.34319 2.5 5.93675 2.5H14.0633C14.6568 2.5 15.2197 2.76365 15.5997 3.21963L17.5 5.5H2.5L4.40031 3.21963Z"
+                    stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+                </svg>
+              </span><span class="pc-mtext" data-i18n="Chart">My Creations</span></a></li>
+          <!-- <li class="pc-item"><a href="/credit-history" class="pc-link"><span class="pc-micon"><svg
                                     class="pc-icon">
                                     <use xlink:href="#custom-presentation-chart"></use>
                                 </svg> </span><span class="pc-mtext" data-i18n="Chart">Credit History</span></a></li> -->
-                </ul>
-            </div>
-        </div>
-    </nav><!-- [ Sidebar Menu ] end --><!-- [ Header Topbar ] start -->
+        </ul>
+      </div>
+    </div>
+  </nav><!-- [ Sidebar Menu ] end --><!-- [ Header Topbar ] start -->
   <header class="pc-header">
     <div class="header-wrapper"><!-- [Mobile Media Block] start -->
       <div class="me-auto pc-mob-drp">
@@ -277,9 +336,17 @@
                   <div class="card">
                     <div class="card-body py-3">
                       <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0 d-inline-flex align-items-center"><svg class="pc-icon text-muted me-2">
+                        <!-- <h5 class="mb-0 d-inline-flex align-items-center"><svg
+                                                        class="pc-icon text-muted me-2">
+                                                        <use xlink:href="#custom-flash"></use>
+                                                    </svg>Get More Credit</h5> -->
+                        <button type="button" style="background: transparent; border: none;"
+                          class="mb-0 d-inline-flex align-items-center" data-bs-toggle="modal"
+                          data-bs-target="#purchaseModal">
+                          <svg class="pc-icon text-muted me-2">
                             <use xlink:href="#custom-flash"></use>
-                          </svg>Get More Credit</h5>
+                          </svg>Get More Credit
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -402,6 +469,7 @@
     </div>
   </div><!-- [ Main Content ] end -->
   <!-- Image Modal -->
+
   <div class="modal fade" id="imageModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -439,6 +507,320 @@
     {% endif %}
     {% endwith %}
   </div>
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="/change-password?email={{login_dict['email']}}" method="post" enctype="multipart/form-data">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="password" class="form-label">New Password <span
+                  style="color: red; font-weight: 600;">*</span></label>
+              <div class="input-group">
+                <input type="password" name="password" class="form-control" id="password" required>
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
+                  <i id="eyeIcon" class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label">Confirm New Password <span
+                  style="color: red; font-weight: 600;">*</span></label>
+              <div class="input-group">
+                <input type="password" name="confirm_password" class="form-control" id="confirm_password" required>
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility1()">
+                  <i id="eyeIcon1" class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Change Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="purchaseModalLabel">Select Your Credit Plan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="payment-form" style="overflow-y: scroll;">
+          <div class="modal-body">
+            <div class="mb-4">
+              <div class="pricing-row">
+                <div class="credit-label">
+                  <input class="form-check-input" type="radio" name="credits" id="c50" value="50">
+                  <label for="c50"><strong>50 credits</strong> <small class="text-muted">/
+                      lifetime</small></label>
+                </div>
+                <div class="credit-meta">
+                  <small>₹50 per credit</small>
+                  <span>₹2500</span>
+                </div>
+              </div>
+
+              <div class="pricing-row">
+                <div class="credit-label">
+                  <input class="form-check-input" type="radio" name="credits" id="c100" value="100">
+                  <label for="c100"><strong>100 credits</strong> <small class="text-muted">/
+                      lifetime</small></label>
+                </div>
+                <div class="credit-meta">
+                  <small>₹45 per credit</small>
+                  <span>₹4500</span>
+                </div>
+              </div>
+
+              <div class="pricing-row">
+                <div class="credit-label">
+                  <input class="form-check-input" type="radio" name="credits" id="c500" value="500">
+                  <label for="c500"><strong>500 credits</strong> <small class="text-muted">/
+                      lifetime</small></label>
+                </div>
+                <div class="credit-meta">
+                  <small>₹40 per credit</small>
+                  <span>₹20000</span>
+                </div>
+              </div>
+
+              <div class="pricing-row">
+                <div class="credit-label">
+                  <input class="form-check-input" type="radio" name="credits" id="c1000" value="1000">
+                  <label for="c1000"><strong>1000 credits</strong> <small class="text-muted">/
+                      lifetime</small></label>
+                </div>
+                <div class="credit-meta">
+                  <small>₹35 per credit</small>
+                  <span>₹35000</span>
+                </div>
+              </div>
+              <div class="pricing-row">
+                <div class="credit-label">
+                  <input class="form-check-input" type="radio" name="credits" id="c2500" value="2500">
+                  <label for="c2500"><strong>2500 credits</strong> <small class="text-muted">/
+                      lifetime</small></label>
+                </div>
+                <div class="credit-meta">
+                  <small>₹25 per credit</small>
+                  <span>₹62500</span>
+                </div>
+              </div>
+              <div class="pricing-row">
+                <div class="credit-label">
+                  <input class="form-check-input" type="radio" name="credits" id="c5000" value="5000">
+                  <label for="c5000"><strong>5000 credits</strong> <small class="text-muted">/
+                      lifetime</small></label>
+                </div>
+                <div class="credit-meta">
+                  <small>₹20 per credit</small>
+                  <span>₹100000</span>
+                </div>
+              </div>
+            </div>
+
+            <hr>
+            <!-- Coupon Code -->
+            <div class="mb-3">
+              <h6 class="mb-3">Apply Coupon Code</h6>
+              <div class="input-group">
+                <input type="text" class="form-control" id="coupon" placeholder="Enter coupon code">
+                <button class="btn btn-primary" type="button" onclick="applyCoupon()">Apply</button>
+              </div>
+              <div id="couponMessage" class="form-text text-success mt-1"></div>
+            </div>
+
+            <!-- Payment Form -->
+            <h6 class="mb-3">Payment Details</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="amount" class="form-label">Amount (₹)</label>
+                <input type="text" class="form-control" id="amount" name="amount" placeholder="Auto-filled" required>
+              </div>
+              <div class="col-md-6" style="display: none;">
+                <label for="credit" class="form-label">Credit</label>
+                <input type="text" class="form-control" id="credit" name="credit" placeholder="Auto-filled" required>
+              </div>
+              <div class="col-md-6">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com"
+                  required>
+              </div>
+              <div class="col-md-6">
+                <label for="contact" class="form-label">Contact</label>
+                <input type="text" class="form-control" id="contact" name="contact" placeholder="9999999999" required>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer" style="margin-bottom: 30px;">
+            <button type="submit" class="btn btn-success w-100">Pay Now</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Hidden form for payment verification -->
+  <form id="verification-form" action="/verify-payment" method="POST" style="display: none;">
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+  </form>
+  <script>
+    document.getElementById('payment-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      console.log("coming to submit");
+      const amount = 100;
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const contact = document.getElementById('contact').value;
+      const credit = document.getElementById('credit').value;
+      console.log(credit);
+
+      // Create order
+      fetch(`/create-order?credit=${credit}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          credit: credit
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Initialize Razorpay
+            const options = {
+              "key": data.key_id,
+              "amount": data.amount,
+              "currency": data.currency,
+              "name": "Stylic AI",
+              "description": "Payment for get fresh credit",
+              "image": "https://stylic.ai/assets/stylic-logo-1-BQOP5sjr.png",
+              "order_id": data.order_id,
+              "handler": function (response) {
+                // Payment successful callback
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+
+                // Submit verification form
+                document.getElementById('verification-form').submit();
+              },
+              "prefill": {
+                "name": name,
+                "email": email,
+                "contact": contact
+              },
+              "notes": {
+                "address": "Customer Address"
+              },
+              "theme": {
+                "color": "#3399cc"
+              },
+              "modal": {
+                "ondismiss": function () {
+                  alert('Payment cancelled by user');
+                }
+              }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+          } else {
+            alert('Error creating order: ' + data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred. Please try again.');
+        });
+    });
+  </script>
+  <script>
+    const creditPricing = {
+      50: 2500,
+      100: 4500,
+      500: 20000,
+      1000: 35000,
+      2500: 62500,
+      5000: 100000
+    };
+
+    let selectedCredits = null;
+    let appliedDiscount = 0;
+
+    // Plan selection handler
+    document.querySelectorAll('input[name="credits"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        selectedCredits = radio.value;
+        document.getElementById('credit').value = radio.value;
+        appliedDiscount = 0;
+        document.getElementById("couponMessage").textContent = "";
+        updateAmount();
+      });
+    });
+
+    function updateAmount() {
+      if (!selectedCredits) return;
+      const base = creditPricing[selectedCredits];
+      var discounted = 0
+      if (appliedDiscount !== 0) {
+        console.log("apply disount");
+        var discounted = appliedDiscount ? base - (base * appliedDiscount / 100) : base;
+      } else {
+        var discounted = base;
+        console.log(discounted);
+
+      }
+      // const discounted = appliedDiscount ? base - (base * appliedDiscount / 100) : base;
+      document.getElementById("amount").value = Math.round(discounted);
+    }
+
+    function applyCoupon() {
+      const code = document.getElementById("coupon").value.trim();
+      if (!code || !selectedCredits) {
+        alert("Select a plan and enter a coupon code.");
+        return;
+      }
+
+      fetch(`/api/check-coupon?code=${code}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            appliedDiscount = data.discount
+            console.log(appliedDiscount);
+            updateAmount();
+            document.getElementById("couponMessage").textContent = `✅ ${appliedDiscount}% discount applied!`;
+          } else {
+            appliedDiscount = 0;
+            updateAmount();
+            document.getElementById("couponMessage").textContent = `❌ Invalid coupon code.`;
+          }
+        })
+        .catch(() => {
+          document.getElementById("couponMessage").textContent = "Error checking coupon.";
+        });
+    }
+  </script>
   <script>
     class PhotoshootGallery {
       constructor() {
