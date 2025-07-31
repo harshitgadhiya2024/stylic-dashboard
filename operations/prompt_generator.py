@@ -36,7 +36,7 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. UPPER GARMENT: Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
+2. UPPER GARMENT: Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, sleeve partially folded upward and garment construction identically
 3. LOWER GARMENT: Wear complementary {lower_garment_type} that harmonizes with the upper garment - coordinate colors, maintain style consistency, ensure appropriate fit and length
 4. POSE: {body_pose} with natural, confident posture
 5. BACKGROUND: {background_description}

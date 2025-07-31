@@ -2,13 +2,16 @@ import base64
 import random
 import uuid
 
+from flask import url_for, session
 from openai import OpenAI
 import os
 from PIL import Image
 
+from operations.mail_sending import emailOperation
 from operations.mongo_operation import mongoOperation
 from operations.prompt_generator import generate_fashion_prompt
 from utils.constant import constant_dict
+from utils.html_format import htmlOperation
 
 # Configuration parameters (same as your original)
 model_generation_params = {
@@ -306,11 +309,6 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         all_generated_images = []
 
-        if gender == "male":
-            hair = "medium"
-        else:
-            hair = "very long"
-
         # Face parameters for consistent generation
         face_params = {
             "facial_structure": {
@@ -360,7 +358,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         mongoOperation().update_mongo_data(
             "photoshoot_data",
             {"id": user_id, "photoshoot_id": photoshoot_id},
-            {"status": "model_generated"}
+            {"status": "model_face_generated"}
         )
 
         all_generated_images.append(photo_file_name)
@@ -372,7 +370,6 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         garment_type = garment_mapping_dict.get("upload_garment_type")
 
         poses = garment_mapping_dict.get("selected_poses", [])
-        total_poses = len(poses)
 
         fashion_poses = [
             "Model standing straight, facing camera, hands on hips, confident look, full outfit in view",
@@ -437,11 +434,16 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             else:
                 print(f"Failed to generate image for pose: {body_pose}")
 
-            mongoOperation().update_mongo_data(
-                "photoshoot_data",
-                {"id": user_id, "photoshoot_id": photoshoot_id},
-                {"status": f"{body_pose}_completed"}
-            )
+        if len(all_generated_images)<2:
+            email = session.get("login_dict").get("email")
+            html_format = htmlOperation().photoshoot_faileur(photoshoot_id)
+            emailOperation().send_email(email, "Stylic: Your Reset Password Link", html_format)
+            return {
+                'status': 'failed',
+                'total_images': len(all_generated_images),
+                'total_credit': 0,
+                'all_images': garment_mapping_dict.get("all_images", [])
+            }
 
         total_credit = len(all_generated_images) - 1
         user_id = garment_mapping_dict.get("id")
@@ -454,8 +456,10 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         all_images = garment_mapping_dict.get("all_images", [])
         for images in all_generated_images:
-            # Create URL without Flask context (since we're in a worker)
-            garment_image_url = f"{constant_dict.get('domain_url')}/static/photoshoots_folders/{photoshoot_id}/{images}"
+            garment_image_url = url_for('static',
+                                              filename=f'photoshoots_folders/{photoshoot_id}/{images}',
+                                              _external=True)
+            # garment_image_url = f"{constant_dict.get('domain_url')}/static/photoshoots_folders/{photoshoot_id}/{images}"
             all_images.append(garment_image_url)
 
         photoshoot_mapping = {

@@ -30,6 +30,12 @@ razorpay_client.set_app_details({
     "version": "1.0.0"
 })
 
+COUPONS = {
+    "HAGH56SD": 15,
+    "WELCOME50": 10,
+    "SAVE10": 10
+}
+
 executor = ProcessPoolExecutor(max_workers=5)
 
 app = Flask(__name__)
@@ -63,6 +69,13 @@ def token_required(func):
         return func(*args, **kwargs)
 
     return decorated
+
+@app.route("/api/check-coupon")
+def check_coupon():
+    code = request.args.get("code", "").upper()
+    if code in COUPONS:
+        return jsonify({"valid": True, "discount": COUPONS[code]})
+    return jsonify({"valid": False, "discount": 0})
 
 
 @app.route("/", methods=["GET", "POST"])

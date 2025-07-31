@@ -3,3 +3,6 @@
 *.xml
 *.pyc
 *.iml
+*.log
+/h1
+/static/photoshoots_folders
