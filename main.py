@@ -141,7 +141,7 @@ def register():
                 "password": password,
                 "phone": phone,
                 "is_privacy_accepted": is_privacy,
-                "credit": 10,
+                "credit": 15,
                 "plan": "",
                 "role": "company",
                 "is_active": True,
@@ -443,7 +443,22 @@ def change_password():
 @token_required
 def dashboard():
     try:
-        return render_template("index.html", login_dict=session.get("login_dict", {}))
+        user_id = session.get("login_dict", {}).get("id", "")
+        photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": user_id}))
+        mapping_dict = {}
+        mapping_dict["total_photoshoot"]=len(photoshoot_data)
+        total_photos = 0
+        pending_photoshoot = 0
+        for photoshoot in photoshoot_data:
+            status = photoshoot["status"]
+            if status=="completed":
+                total_photos+=len(photoshoot["selected_poses"])
+            else:
+                pending_photoshoot+=1
+
+        mapping_dict["total_photos"]=total_photos
+        mapping_dict["pending_photoshoot"]=pending_photoshoot
+        return render_template("index.html", login_dict=session.get("login_dict", {}), mapping_dict=mapping_dict)
 
     except Exception as e:
         print(f"{datetime.now()}: Error in dashboard route: {str(e)}")
@@ -456,6 +471,7 @@ def ai_photoshoot():
     try:
         login_dict = session.get("login_dict", {})
         if request.method == "POST":
+            credit = int(login_dict.get("credit"))
             user_id = login_dict.get("id")
             upper_garment_image = request.files.get("upper_garment_image")
             lower_garment_image = request.files.get("lower_garment_image")
@@ -473,6 +489,19 @@ def ai_photoshoot():
             selected_poses = selected_poses.split(",") if selected_poses else []
             age = int(age) if age else 25
             print(selected_poses)
+
+            photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": user_id}))
+            total_pending_photos = 0
+            for photoshoot in photoshoot_data:
+                status = photoshoot["status"]
+                if status != "completed":
+                    total_pending_photos += len(photoshoot["selected_poses"])
+
+            credit = credit - total_pending_photos
+            if credit<=0:
+                flash("You don't have sufficient credits..", "danger")
+                return redirect("ai-photoshoot")
+
             photoshoot_id = str(uuid.uuid4())
             all_images = []
             os.makedirs(f"static/photoshoots_folders/{photoshoot_id}", exist_ok=True)
@@ -575,6 +604,8 @@ def ai_photoshoot():
                     else:
                         flash("Your lower garment image not valid...", "danger")
                         return redirect("/ai-photoshoot")
+
+
 
             mapping_dict = {
                 "id": user_id,
