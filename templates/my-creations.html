@@ -686,7 +686,7 @@
     document.getElementById('payment-form').addEventListener('submit', function (e) {
       e.preventDefault();
       console.log("coming to submit");
-      const amount = 100;
+      const amount = document.getElementById('amount').value;
       const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
       const contact = document.getElementById('contact').value;
