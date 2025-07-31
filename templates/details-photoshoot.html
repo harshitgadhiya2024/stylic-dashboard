@@ -977,6 +977,37 @@
                 });
         }
     </script>
+    <script>
+        function togglePasswordVisibility() {
+            const input = document.getElementById("password");
+            const icon = document.getElementById("eyeIcon");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            }
+        }
+
+        function togglePasswordVisibility1() {
+            const input1 = document.getElementById("confirm_password");
+            const icon1 = document.getElementById("eyeIcon1");
+
+            if (input1.type === "password") {
+                input1.type = "text";
+                icon1.classList.remove("bi-eye");
+                icon1.classList.add("bi-eye-slash");
+            } else {
+                input1.type = "password";
+                icon1.classList.remove("bi-eye-slash");
+                icon1.classList.add("bi-eye");
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
     <script>
         class PhotoshootDetail {

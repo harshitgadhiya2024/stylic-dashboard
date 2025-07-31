@@ -1173,6 +1173,37 @@
       gallery = new PhotoshootGallery();
     });
   </script>
+  <script>
+        function togglePasswordVisibility() {
+            const input = document.getElementById("password");
+            const icon = document.getElementById("eyeIcon");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            }
+        }
+
+        function togglePasswordVisibility1() {
+            const input1 = document.getElementById("confirm_password");
+            const icon1 = document.getElementById("eyeIcon1");
+
+            if (input1.type === "password") {
+                input1.type = "text";
+                icon1.classList.remove("bi-eye");
+                icon1.classList.add("bi-eye-slash");
+            } else {
+                input1.type = "password";
+                icon1.classList.remove("bi-eye-slash");
+                icon1.classList.add("bi-eye");
+            }
+        }
+    </script>
   <script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script src="/static/assets/js/plugins/popper.min.js"></script>
   <script src="/static/assets/js/plugins/simplebar.min.js"></script>
