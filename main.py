@@ -945,5 +945,40 @@ def internal_error(error):
     return redirect("/dashboard")
 
 
+@app.route("/developer-api", methods=["GET", "POST"])
+def developer_api():
+    try:
+        photoshoot_id = request.args.get("photoshoot_id")
+        user_id = request.args.get("id")
+        photoimage = request.files.get("photoimage")
+        photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": id, "photoshoot_id": photoshoot_id}))
+        all_images = photoshoot_data[0]["all_images"]
+        total_credit = photoshoot_data[0]["total_credit"]
+        output_filename = f"{uuid.uuid4()}_photoshoot.png"
+        filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", output_filename)
+        photoimage.save(filepath)
+        upper_garment_image_url = url_for('static',
+                                          filename=f'photoshoots_folders/{photoshoot_id}/{output_filename}',
+                                          _external=True)
+        all_images.append(upper_garment_image_url)
+
+        photoshoot_mapping = {
+            "is_credit_debited": True,
+            "is_completed": True,
+            "total_credit": total_credit+1,
+            "all_images": all_images,
+            "status": "completed"
+        }
+
+        mongoOperation().update_mongo_data("photoshoot_data", {"id": user_id, "photoshoot_id": photoshoot_id},
+                                           photoshoot_mapping)
+
+        return {"photoshoot": "complete uploaded"}
+
+    except Exception as e:
+        print(f"{datetime.now()}: Error in upload photo manual route: {str(e)}")
+        return {"photoshoot": "not complete uploaded"}
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8060)
