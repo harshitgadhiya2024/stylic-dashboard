@@ -951,9 +951,10 @@ def developer_api():
         photoshoot_id = request.args.get("photoshoot_id")
         user_id = request.args.get("id")
         photoimage = request.files.get("photoimage")
-        photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": id, "photoshoot_id": photoshoot_id}))
+        photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": user_id, "photoshoot_id": photoshoot_id}))
         all_images = photoshoot_data[0]["all_images"]
         total_credit = photoshoot_data[0]["total_credit"]
+        is_credit_debited = photoshoot_data[0]["is_credit_debited"]
         output_filename = f"{uuid.uuid4()}_photoshoot.png"
         filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", output_filename)
         photoimage.save(filepath)
@@ -962,13 +963,27 @@ def developer_api():
                                           _external=True)
         all_images.append(upper_garment_image_url)
 
-        photoshoot_mapping = {
-            "is_credit_debited": True,
-            "is_completed": True,
-            "total_credit": total_credit+1,
-            "all_images": all_images,
-            "status": "completed"
-        }
+        if is_credit_debited:
+            photoshoot_mapping = {
+                "is_credit_debited": True,
+                "is_completed": True,
+                "all_images": all_images,
+                "status": "completed"
+            }
+        else:
+            user_data = list(mongoOperation().get_spec_data_from_coll("company_data", {"id": user_id}))
+
+            user_credit = int(user_data[0]["credit"])
+            remaining_credit = user_credit - 1
+            mongoOperation().update_mongo_data("company_data", {"id": user_id}, {"credit": remaining_credit})
+
+            photoshoot_mapping = {
+                "is_credit_debited": True,
+                "is_completed": True,
+                "total_credit": total_credit+1,
+                "all_images": all_images,
+                "status": "completed"
+            }
 
         mongoOperation().update_mongo_data("photoshoot_data", {"id": user_id, "photoshoot_id": photoshoot_id},
                                            photoshoot_mapping)
@@ -977,7 +992,7 @@ def developer_api():
 
     except Exception as e:
         print(f"{datetime.now()}: Error in upload photo manual route: {str(e)}")
-        return {"photoshoot": "not complete uploaded"}
+        return {"photoshoot": f"not complete uploaded: {e}"}
 
 
 if __name__ == "__main__":
