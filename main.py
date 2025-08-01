@@ -154,7 +154,7 @@ def register():
                 "password": password,
                 "phone": phone,
                 "is_privacy_accepted": is_privacy,
-                "credit": 15,
+                "credit": 5,
                 "plan": "",
                 "role": "company",
                 "is_active": True,

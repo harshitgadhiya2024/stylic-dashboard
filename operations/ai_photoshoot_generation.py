@@ -309,6 +309,11 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         all_generated_images = []
 
+        if gender=="male":
+            hair="medium"
+        else:
+            hair=" very long"
+
         # Face parameters for consistent generation
         face_params = {
             "facial_structure": {
@@ -333,7 +338,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             "hair": {
                 "color": random.choice(["black", "dark brown", "brown"]),
                 "texture": random.choice(["straight", "wavy", "curly", "coily"]),
-                "length": random.choice(["short", "medium", "long"]),
+                "length": hair,
                 "style": random.choice(["loose", "ponytail", "bun", "braided", "tousled", "sleek"])
             },
             "skin": {
