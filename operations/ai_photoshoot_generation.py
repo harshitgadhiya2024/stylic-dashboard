@@ -9,7 +9,7 @@ from PIL import Image
 
 from operations.mail_sending import emailOperation
 from operations.mongo_operation import mongoOperation
-from operations.prompt_generator import generate_fashion_prompt
+from operations.prompt_generator import generate_fashion_prompt, single_generate_fashion_prompt
 from utils.constant import constant_dict
 from utils.html_format import htmlOperation
 
@@ -169,22 +169,11 @@ class GarmentPhotoshootGenerator:
             prompt_parts = []
 
             # Basic description
-            prompt_parts.append(f"Professional headshot portrait of a {params['age']} years of {params['gender']} person")
-
-            # Face structure
-            face_desc = f"{params['facial_structure']['face_shape']} face with {params['facial_structure']['jawline']} jawline and {params['facial_structure']['cheekbones']} cheekbones"
-            prompt_parts.append(face_desc)
-
-            # Eyes
-            eye_desc = f"{params['eyes']['size']} {params['eyes']['shape']} {params['eyes']['color']} eyes with {params['eyes']['eyebrows']} eyebrows"
-            prompt_parts.append(eye_desc)
-
-            # Nose and mouth
-            prompt_parts.append(f"{params['nose']['size']} {params['nose']['shape']} nose")
-            prompt_parts.append(f"{params['mouth']['lips']} {params['mouth']['shape']} lips")
+            prompt_parts.append(
+                f"{params['ethnicity']} Professional headshot portrait of a {params['age']} years of {params['gender']} person")
 
             # Hair
-            hair_desc = f"{params['hair']['length']} {params['hair']['texture']} {params['hair']['color']} hair styled {params['hair']['style']}"
+            hair_desc = f"{params['hair']['color']} hair color"
             prompt_parts.append(hair_desc)
 
             # Skin
@@ -271,6 +260,73 @@ class GarmentPhotoshootGenerator:
             print(f"Error generating photoshoot image: {e}")
             return None
 
+    def single_generate_photoshoot_image(self, photoshoot_id, image_prompt, face_image, garment_type, upper_garment,
+                                  lower_garment, output_filename):
+        """Generate photoshoot image with consistent face and garments"""
+        try:
+            upper_garment = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment}"
+            lower_garment = f"static/photoshoots_folders/{photoshoot_id}/{lower_garment}"
+
+            client = OpenAI(
+                api_key=constant_dict.get("openai_key"))
+
+            if garment_type == "upper_garment":
+                result = client.images.edit(
+                    model="gpt-image-1",
+                    image=[open(upper_garment, "rb")],
+                    prompt=image_prompt,
+                    input_fidelity="high"
+                )
+
+            elif garment_type == "lower_garment":
+                result = client.images.edit(
+                    model="gpt-image-1",
+                    image=[open(lower_garment, "rb")],
+                    prompt=image_prompt,
+                    input_fidelity="high"
+                )
+
+            elif garment_type == "full_body_garment":
+                result = client.images.edit(
+                    model="gpt-image-1",
+                    image=[open(upper_garment, "rb"), open(lower_garment, "rb")],
+                    prompt=image_prompt,
+                    input_fidelity="high"
+                )
+
+            elif garment_type == "one_piece_garment":
+                result = client.images.edit(
+                    model="gpt-image-1",
+                    image=[open(upper_garment, "rb")],
+                    prompt=image_prompt,
+                    input_fidelity="high"
+                )
+            elif garment_type == "full_body_dress_garment":
+                result = client.images.edit(
+                    model="gpt-image-1",
+                    image=[open(upper_garment, "rb"), open(lower_garment, "rb")],
+                    prompt=image_prompt,
+                    input_fidelity="high"
+                )
+            else:
+                result = client.images.edit(
+                    model="gpt-image-1",
+                    image=[open(upper_garment, "rb"), open(lower_garment, "rb")],
+                    prompt=image_prompt,
+                    input_fidelity="high"
+                )
+
+            image_base64 = result.data[0].b64_json
+            image_bytes = base64.b64decode(image_base64)
+
+            with open(f"static/photoshoots_folders/{photoshoot_id}/{output_filename}", "wb") as f:
+                f.write(image_bytes)
+            return "done"
+
+        except Exception as e:
+            print(f"Error generating photoshoot image: {e}")
+            return None
+
 
 def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upper_garment_filename,
                                         lower_garment_filename):
@@ -306,59 +362,41 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         body_type = f"{standing_pose} with {facial_expression} expression"
         body_structure = f"height: {height}, weight: {weight}, muscle tone: {muscle_tone}"
         model_description = f"{model_type}, {body_type}, {body_structure}"
+        poses = garment_mapping_dict.get("selected_poses", [])
 
         all_generated_images = []
 
-        if gender=="male":
-            hair="medium"
-        else:
-            hair=" very long"
-
-        # Face parameters for consistent generation
         face_params = {
-            "facial_structure": {
-                "face_shape": random.choice(["oval", "round", "square", "heart-shaped", "diamond", "oblong"]),
-                "jawline": "soft",
-                "cheekbones": random.choice(["subtle", "moderate", "prominent", "high"])
-            },
-            "eyes": {
-                "shape": random.choice(["almond", "round", "hooded", "deep-set", "upturned", "downturned"]),
-                "color": "dark brown",
-                "size": random.choice(["small", "medium", "large"]),
-                "eyebrows": random.choice(["thin", "medium", "thick", "arched", "straight", "bushy"])
-            },
-            "nose": {
-                "shape": random.choice(["straight", "button", "roman", "aquiline", "snub", "broad"]),
-                "size": "small"
-            },
-            "mouth": {
-                "lips": "thin",
-                "shape": "straight"
-            },
             "hair": {
-                "color": random.choice(["black", "dark brown", "brown"]),
-                "texture": random.choice(["straight", "wavy", "curly", "coily"]),
-                "length": hair,
-                "style": random.choice(["loose", "ponytail", "bun", "braided", "tousled", "sleek"])
+                "color": "black",
             },
             "skin": {
-                "tone": random.choice(["light", "medium", "olive"]),
+                "tone": "light",
                 "texture": "smooth"
             },
-            "age_group": garment_mapping_dict.get("age_group"),
-            "age": garment_mapping_dict.get("age"),
-            "gender": garment_mapping_dict.get("gender"),
-            "expression": random.choice(["neutral", "slight smile", "warm smile", "confident"]),
-            "lighting": random.choice(["soft natural light", "dramatic lighting", "golden hour", "studio lighting", "side lighting"])
+            "age_group": age_group,
+            "age": age,
+            "gender": gender,
+            "expression": "neutral",
+            "ethnicity": ethnicity,
+            "lighting": "soft natural light"
         }
 
         # Generate face
-        photo_file_name = f"{uuid.uuid4()}generatedface.png"
-        face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
-
-        # Fix the logic issue with face generation loop
-        while not face_photo_url:  # Changed from "while face_photo_url:" which was incorrect
+        face_photo_url = ""
+        if age_group in ['toddler', 'young-child', 'pre-teen', 'early-teen']:
+            pass
+        elif len(poses) > 1:
+            photo_file_name = f"{uuid.uuid4()}generatedface.png"
             face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
+
+            # Fix the logic issue with face generation loop
+            while not face_photo_url:  # Changed from "while face_photo_url:" which was incorrect
+                face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
+
+            all_generated_images.append(photo_file_name)
+        else:
+            pass
 
         mongoOperation().update_mongo_data(
             "photoshoot_data",
@@ -366,15 +404,12 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             {"status": "model_face_generated"}
         )
 
-        all_generated_images.append(photo_file_name)
 
         upper_garment_image = upper_garment_filename
         below_garment_image = lower_garment_filename
         upper_garment_category = garment_mapping_dict.get("upper_garment_type")
         below_garment_category = garment_mapping_dict.get("lower_garment_type")
         garment_type = garment_mapping_dict.get("upload_garment_type")
-
-        poses = garment_mapping_dict.get("selected_poses", [])
 
         fashion_poses = [
             "Model standing straight, facing camera, hands on hips, confident look, full outfit in view",
@@ -424,30 +459,40 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 'lower_garment_type': below_garment_category,
                 'pose': body_pose
             }
+            if age_group in ['toddler', 'young-child', 'pre-teen', 'early-teen']:
+                print("coming to children")
+                image_prompt = single_generate_fashion_prompt(garment_type, sample_params)
 
-            image_prompt = generate_fashion_prompt(garment_type, sample_params)
+                output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
+                result = generator.single_generate_photoshoot_image(
+                    photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
+                    output_filename
+                )
+            elif len(poses)>1:
+                print("coming to multi photo")
+                image_prompt = generate_fashion_prompt(garment_type, sample_params)
 
-            output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
-            result = generator.generate_photoshoot_image(
-                photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
-                output_filename
-            )
+                output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
+                result = generator.generate_photoshoot_image(
+                    photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
+                    output_filename
+                )
+            else:
+                print("coming to single photo")
+                image_prompt = single_generate_fashion_prompt(garment_type, sample_params)
+
+                output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
+                result = generator.single_generate_photoshoot_image(
+                    photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
+                    output_filename
+                )
+
 
             if result:
                 all_generated_images.append(output_filename)
                 print(f"Successfully generated: {result}")
             else:
                 print(f"Failed to generate image for pose: {body_pose}")
-
-        if len(all_generated_images)<2:
-            html_format = htmlOperation().photoshoot_faileur(photoshoot_id)
-            emailOperation().send_email("info.stylicai@gmail.com", "Stylic: Your Reset Password Link", html_format)
-            return {
-                'status': 'failed',
-                'total_images': len(all_generated_images),
-                'total_credit': 0,
-                'all_images': garment_mapping_dict.get("all_images", [])
-            }
 
         total_credit = len(all_generated_images) - 1
         user_id = garment_mapping_dict.get("id")
@@ -460,9 +505,11 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         all_images = garment_mapping_dict.get("all_images", [])
         for images in all_generated_images:
-            garment_image_url = url_for('static',
-                                              filename=f'photoshoots_folders/{photoshoot_id}/{images}',
-                                              _external=True)
+            base_url = constant_dict.get('domain_url', 'http://localhost:8060')  # Your domain
+            garment_image_url = f"{base_url}/static/photoshoots_folders/{photoshoot_id}/{images}"
+            # garment_image_url = url_for('static',
+            #                                   filename=f'photoshoots_folders/{photoshoot_id}/{images}',
+            #                                   _external=True)
             # garment_image_url = f"{constant_dict.get('domain_url')}/static/photoshoots_folders/{photoshoot_id}/{images}"
             all_images.append(garment_image_url)
 

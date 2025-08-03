@@ -1,3 +1,5 @@
+import random
+
 import requests
 from operations.ai_photoshoot_generation import generate_photoshoot_background_task
 from operations.mongo_operation import mongoOperation
@@ -133,6 +135,16 @@ def register():
             password = request.form.get('password', '')
             phone = request.form.get('phone', '')
 
+            TEMP_EMAIL_DOMAINS = {
+                '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
+                'tempmail.org', 'yopmail.com', 'throwaway.email',
+                'temp-mail.org', 'dispostable.com', 'fakemailgenerator.com'
+            }
+            domain = email.split("@")[-1]
+            if domain in TEMP_EMAIL_DOMAINS:
+                flash("Email not valid...", "danger")
+                return redirect("/")
+
             all_data = list(mongoOperation().get_all_data_from_coll("login_mapping"))
             allemails = [user_data["email"] for user_data in all_data]
 
@@ -171,11 +183,14 @@ def register():
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow()
             }
-
-            mongoOperation().insert_data_from_coll("company_data", company_data)
-            mongoOperation().insert_data_from_coll("login_mapping", login_mapping_data)
-            flash("Company added successfully", "success")
-            return redirect("/")
+            generated_otp = random.randint(100000, 999999)
+            otp_html_template = htmlOperation().otp_verification_process(generated_otp)
+            emailOperation().send_email(company_data["email"], "Account OTP Verification: Stylic AI", otp_html_template)
+            session["register_dict"] = {"otp":generated_otp, "company_data": company_data, "login_mapping_data": login_mapping_data}
+            # mongoOperation().insert_data_from_coll("company_data", company_data)
+            # mongoOperation().insert_data_from_coll("login_mapping", login_mapping_data)
+            flash("Do OTP Verification, Check your mail", "success")
+            return redirect("/otp-verification")
         else:
             return render_template("register.html")
     except Exception as e:
@@ -183,6 +198,56 @@ def register():
         flash("An error occurred while register", "danger")
         return redirect("/register")
 
+@app.route("/otp-verification", methods=["GET", "POST"])
+def otp_verification():
+    try:
+        if request.method == 'POST':
+            entered_otp = int(request.form.get('otp', '').lower())
+            print(entered_otp, session["register_dict"]["otp"])
+            if entered_otp==session["register_dict"]["otp"]:
+                registered_dict = session["register_dict"]
+                company_data = registered_dict["company_data"]
+                login_mapping_data = registered_dict["login_mapping_data"]
+                mongoOperation().insert_data_from_coll("company_data", company_data)
+                try:
+                    del company_data["_id"]
+                except:
+                    pass
+                mongoOperation().insert_data_from_coll("login_mapping", login_mapping_data)
+                try:
+                    del login_mapping_data["_id"]
+                except:
+                    pass
+                welcome_html = htmlOperation().welcome_user_mail(company_data["first_name"])
+                emailOperation().send_email(company_data["email"], f"Welcome {company_data['first_name']}", welcome_html)
+                flash("Register successful..", "success")
+                return redirect("/")
+            else:
+                flash("Wrong OTP, Please try again..", "danger")
+                return redirect("/otp-verification")
+        else:
+            return render_template("otp-verification.html")
+
+    except Exception as e:
+        print(f"{datetime.now()}: Error in otp verification route: {str(e)}")
+        flash("An error occurred while otp verification", "danger")
+        return redirect("/otp-verification")
+
+@app.route("/resend-otp", methods=["GET", "POST"])
+def resend_otp():
+    try:
+        company_data = session.get("register_dict", {}).get("company_data",  {})
+        generated_otp = random.randint(100000, 999999)
+        session["register_dict"]["otp"] = generated_otp
+        otp_html_template = htmlOperation().otp_verification_process(generated_otp)
+        emailOperation().send_email(company_data["email"], "Account OTP Verification: Stylic AI", otp_html_template)
+        flash("OTP Sent Successfully...", "success")
+        return redirect("/otp-verification")
+
+    except Exception as e:
+        print(f"{datetime.now()}: Error in resend otp route: {str(e)}")
+        flash("An error occurred in OTP sending", "danger")
+        return redirect("/otp-verification")
 
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
@@ -668,7 +733,8 @@ def ai_photoshoot():
             except:
                 pass
 
-            executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename)
+            with app.app_context():
+                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename)
 
             flash("Photoshoot Generation started successfully...", "success")
             return redirect("/ai-photoshoot")
