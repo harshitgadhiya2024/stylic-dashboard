@@ -194,6 +194,7 @@ pose: {body_pose} with natural, confident posture
 upper garment type: {upper_garment_type}
 
 TECHNICAL SPECIFICATIONS:
+- If upper garment is formal shirt then only wearing a shirt tucked into pants or a skirt.
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
 - Precise fabric texture rendering and authentic draping
