@@ -494,7 +494,11 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             else:
                 print(f"Failed to generate image for pose: {body_pose}")
 
-        total_credit = len(all_generated_images) - 1
+        if face_photo_url:
+            total_credit = len(all_generated_images) - 1
+        else:
+            total_credit = len(all_generated_images)
+
         user_id = garment_mapping_dict.get("id")
         user_data = list(mongoOperation().get_spec_data_from_coll("company_data", {"id": user_id}))
 
