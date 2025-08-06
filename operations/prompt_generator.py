@@ -58,7 +58,7 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, Clearly shows: The elastic waistband fit, Button detailing, Pocket placement and size, Leg width and cut waistband details, and garment construction identically
+2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements and garment construction identically
 3. UPPER GARMENT: Don't wear anything in upper garment show only upper body
 4. POSE: Only show half lower body pose and show lower garment detailed work
 5. BACKGROUND: {background_description}
@@ -67,7 +67,6 @@ TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
 - Show only lower garment showcase pose
-- Exact match The elastic waistband fit, Button detailing, Pocket placement and size, Leg width and cut
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
 - Sharp focus on model and garments with depth of field
