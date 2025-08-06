@@ -381,20 +381,20 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             "ethnicity": ethnicity,
             "lighting": "soft natural light"
         }
+        garment_type = garment_mapping_dict.get("upload_garment_type")
 
         # Generate face
         face_photo_url = ""
         if age_group in ['toddler', 'young-child', 'pre-teen', 'early-teen']:
             pass
-        elif len(poses) > 1:
+        elif len(poses) > 1 and garment_type!="lower_garment":
             photo_file_name = f"{uuid.uuid4()}generatedface.png"
             face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
 
             # Fix the logic issue with face generation loop
             while not face_photo_url:  # Changed from "while face_photo_url:" which was incorrect
                 face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
-
-            all_generated_images.append(photo_file_name)
+            # all_generated_images.append(photo_file_name)
         else:
             pass
 
@@ -409,7 +409,6 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         below_garment_image = lower_garment_filename
         upper_garment_category = garment_mapping_dict.get("upper_garment_type")
         below_garment_category = garment_mapping_dict.get("lower_garment_type")
-        garment_type = garment_mapping_dict.get("upload_garment_type")
 
         fashion_poses = [
             "Model standing straight, facing camera, hands on hips, confident look, full outfit in view",
@@ -494,10 +493,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             else:
                 print(f"Failed to generate image for pose: {body_pose}")
 
-        if face_photo_url:
-            total_credit = len(all_generated_images) - 1
-        else:
-            total_credit = len(all_generated_images)
+        total_credit = len(all_generated_images)
 
         user_id = garment_mapping_dict.get("id")
         user_data = list(mongoOperation().get_spec_data_from_coll("company_data", {"id": user_id}))

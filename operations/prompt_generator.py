@@ -36,7 +36,7 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. UPPER GARMENT: Replicate the EXACT upper garment ({upper_garment_type}) from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, sleeve partially folded upward and garment construction identically
+2. UPPER GARMENT: Replicate the EXACT upper garment ({upper_garment_type}) from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, sleeve partially folded upward and garment construction identically
 3. LOWER GARMENT: Wear complementary {lower_garment_type} that harmonizes with the upper garment - coordinate colors, maintain style consistency, ensure appropriate fit and length
 4. POSE: {body_pose} with natural, confident posture
 5. BACKGROUND: {background_description}
@@ -58,8 +58,8 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, Clearly shows: The elastic waistband fit, Button detailing, Pocket placement and size, Leg width and cut waistband details, and garment construction identically
-3. UPPER GARMENT: Don't wear anything in upper garment show only upper body
+2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements and garment construction identically
+3. UPPER GARMENT: Wear any upper garment related to lower garment
 4. POSE: Only show half lower body pose and show lower garment detailed work
 5. BACKGROUND: {background_description}
 
@@ -67,7 +67,8 @@ TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
 - Show only lower garment showcase pose
-- Exact match The elastic waistband fit, Button detailing, Pocket placement and size, Leg width and cut
+- Exact match if we have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
+- Clearly shows: if we have the button and pocket then exact match Button detailing, Pocket placement and size 
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
 - Sharp focus on model and garments with depth of field
@@ -82,7 +83,7 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. ONE-PIECE GARMENT: Replicate the EXACT dress/one-piece from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, neckline, hemline, and garment construction identically
+2. ONE-PIECE GARMENT: Replicate the EXACT dress/one-piece from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, neckline, hemline, and garment construction identically
 3. COVERAGE ADAPTATION: 
    - If dress is full-length: Wear as standalone piece with appropriate undergarments
    - If dress is above-knee/short: Add complementary lower garment (leggings, tights, or appropriate bottom wear) that enhances the dress style
@@ -106,8 +107,8 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. UPPER GARMENT: Replicate the EXACT upper garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, and garment construction identically
-3. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, and garment construction identically
+2. UPPER GARMENT: Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
+3. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
 4. OUTFIT COORDINATION: Ensure both garments work harmoniously together while maintaining their individual reference accuracy
 5. POSE: {body_pose} with natural, confident posture showcasing the complete outfit
 6. BACKGROUND: {background_description}
@@ -129,7 +130,7 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. MAIN DRESS: Replicate the EXACT dress from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, and garment construction identically
+2. MAIN DRESS: Replicate the EXACT dress from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
 3. ADDITIONAL GARMENTS: Replicate the EXACT additional pieces (leggings, jacket, accessories, etc.) from reference images - match all details precisely including fabric, color, pattern, and fit
 4. LAYERED STYLING: Ensure all garment layers work together cohesively while maintaining individual reference accuracy
 5. POSE: {body_pose} with natural, confident posture showcasing the complete layered ensemble
@@ -186,7 +187,7 @@ def single_generate_fashion_prompt(
         'upper_garment': f"""
 Could you please create a model photoshoot for this upper garment
 
-Replicate the EXACT upper garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
+Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
 
 Human model age: {age} years ({ethnicity})
 background: {background_description}
@@ -209,7 +210,7 @@ Ensure perfect visual consistency while maintaining natural, realistic appearanc
         'lower_garment': f"""
 Could you please create a model photoshoot for this upper garment
 
-Replicate the EXACT lower garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, Clearly shows: The elastic waistband fit, Button detailing, Pocket placement and size, Leg width and cut waistband details, and garment construction identically
+Replicate the EXACT lower garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements and garment construction identically
 
 Human model age: {age} years ({ethnicity})
 background: {background_description}
@@ -220,7 +221,8 @@ TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
 - Show only lower garment showcase pose
-- Exact match The elastic waistband fit, Button detailing, Pocket placement and size, Leg width and cut
+- Exact match if we have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
+- Clearly shows: if we have the button and pocket then exact match Button detailing, Pocket placement and size 
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
 - Sharp focus on model and garments with depth of field
@@ -234,7 +236,7 @@ Ensure perfect visual consistency while maintaining natural, realistic appearanc
 Create a professional fashion photoshoot image of a {model_description} wearing the specified one-piece dress or garment.
 
 CRITICAL REQUIREMENTS:
-1. ONE-PIECE GARMENT: Replicate the EXACT dress/one-piece from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, neckline, hemline, and garment construction identically
+1. ONE-PIECE GARMENT: Replicate the EXACT dress/one-piece from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, neckline, hemline, and garment construction identically
 2. COVERAGE ADAPTATION: 
    - If dress is full-length: Wear as standalone piece with appropriate undergarments
    - If dress is above-knee/short: Add complementary lower garment (leggings, tights, or appropriate bottom wear) that enhances the dress style
@@ -257,8 +259,8 @@ Ensure perfect visual consistency while maintaining natural, realistic appearanc
 Create a professional fashion photoshoot image of a {model_description} wearing the specified complete outfit with separate upper and lower garments.
 
 CRITICAL REQUIREMENTS:
-1. UPPER GARMENT: Replicate the EXACT upper garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, and garment construction identically
-2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, and garment construction identically
+1. UPPER GARMENT: Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
+2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
 3. OUTFIT COORDINATION: Ensure both garments work harmoniously together while maintaining their individual reference accuracy
 4. POSE: {body_pose} with natural, confident posture showcasing the complete outfit
 5. BACKGROUND: {background_description}
@@ -279,7 +281,7 @@ Ensure perfect visual consistency across all elements while maintaining natural,
 Create a professional fashion photoshoot image of a {model_description} wearing the specified complete dress outfit with additional garments.
 
 CRITICAL REQUIREMENTS:
-1. MAIN DRESS: Replicate the EXACT dress from reference image - match fabric texture, color saturation and shades like dark and light, pattern details, fit precision, style elements, and garment construction identically
+1. MAIN DRESS: Replicate the EXACT dress from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, and garment construction identically
 2. ADDITIONAL GARMENTS: Replicate the EXACT additional pieces (leggings, jacket, accessories, etc.) from reference images - match all details precisely including fabric, color, pattern, and fit
 3. LAYERED STYLING: Ensure all garment layers work together cohesively while maintaining individual reference accuracy
 4. POSE: {body_pose} with natural, confident posture showcasing the complete layered ensemble

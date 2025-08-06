@@ -823,7 +823,10 @@ def get_photoshoots():
         print(f"MongoDB query: {query}")  # Debug print
 
         # Get data from MongoDB
-        photoshoots = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", query))
+        db = mongoOperation().get_specific_db("stylic")
+        coll = db["photoshoot_data"]
+        photoshoots = list(coll.find(query).sort("_id", -1))
+        # photoshoots = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", query))
         print(f"Found {len(photoshoots)} photoshoots")  # Debug print
 
         # Convert ObjectId to string and format data
