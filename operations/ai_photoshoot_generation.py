@@ -348,6 +348,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         gender = garment_mapping_dict.get("gender")
         ethnicity = garment_mapping_dict.get("ethnicity")
         height = garment_mapping_dict.get("height")
+        fitting = garment_mapping_dict.get("fitting")
         weight = garment_mapping_dict.get("width")
         muscle_tone = "toned"
         standing_pose = "confident"
@@ -385,7 +386,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         # Generate face
         face_photo_url = ""
-        if age_group in ['toddler', 'young-child', 'pre-teen', 'early-teen']:
+        if age_group in ['infant', 'toddler', 'young-child', 'pre-teen', 'early-teen']:
             pass
         elif len(poses) > 1 and garment_type!="lower_garment":
             photo_file_name = f"{uuid.uuid4()}generatedface.png"
@@ -401,7 +402,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         mongoOperation().update_mongo_data(
             "photoshoot_data",
             {"id": user_id, "photoshoot_id": photoshoot_id},
-            {"status": "model_face_generated"}
+            {"status": "masking_generated"}
         )
 
 
@@ -440,7 +441,56 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             "Model posing with garment in motion, twirling or flipping skirt, studio setup",
             "Model with arms spread out, coat open wide, walking with confidence",
             "Model using accessory as a prop (hat, handbag), interacting naturally with it",
-            "Model gazing over sunglasses, strong jawline highlighted, glossy backdrop"
+            'Lower half shot - Model standing with legs shoulder-width apart, showcasing trouser fit and length against studio grey backdrop',
+            "Hip down view - Model with one leg stepped forward, highlighting jeans' design and pocket details with urban street background",
+            "Waist to feet - Model in walking stride, showing skirt's movement and flow against minimalist white studio setup",
+            "Lower body - Model with weight on one leg, displaying pants' side seam and fit with natural outdoor lighting",
+            "Legs focus - Model sitting on stool with legs crossed, featuring dress pants' crease and fabric against wooden backdrop",
+            "Hip level down - Model leaning against wall, showing shorts' length and style with brick wall industrial background",
+            'Lower torso - Model with hands in pockets, highlighting trouser waistband and belt details against concrete texture wall',
+            "Leg shot - Model in lunging position, showcasing leggings' stretch and fit with modern gym/studio lighting",
+            "Waist down - Model standing on stairs, displaying skirt's layered design and hemline with urban architectural background",
+            "Lower body angle - Model with one foot on elevated surface, showing boot-cut jeans' silhouette against rustic wooden fence",
+            'Upper half shot - Model standing straight with hands on hips, showcasing blouse details against white studio backdrop',
+            'Torso view - Model with arms crossed, highlighting blazer texture and fit with soft grey gradient background',
+            'Chest up shot - Model adjusting collar with one hand, emphasizing shirt design against minimalist concrete wall',
+            "Upper body - Model with one arm raised above head, showing top's drape and movement with natural window lighting",
+            'Waist up - Model leaning slightly forward, hands clasped behind back, featuring sweater details on rustic brick background',
+            'Bust level shot - Model with arms extended sideways, displaying jacket sleeves and shoulder line against black studio backdrop',
+            'Upper torso - Model holding lapels of coat, showing upper garment structure with moody dark lighting setup',
+            "Chest focus - Model with one hand on shoulder, other on waist, highlighting top's neckline against marble texture background",
+            'Shoulder up - Model adjusting cufflinks or sleeves, emphasizing shirt details with warm golden hour lighting',
+            "Upper body angle - Model with arms crossed at chest level, showcasing cardigan's button details against vintage wooden backdrop",
+            'Saree drape display - Model standing with pallu arranged, showcasing traditional drape and pleats against ornate palace background',
+            "Evening dress elegance - Model in formal stance, highlighting gown's silhouette and train with luxury hotel ballroom setting",
+            "Saree pallu flow - Model with pallu in motion, showing fabric's movement and border details with traditional courtyard backdrop",
+            'Cocktail dress pose - Model adjusting dress strap, emphasizing neckline and fit with upscale rooftop city view background',
+            "Traditional saree sit - Model sitting gracefully, displaying saree's fall and blouse design with carved stone architecture setting",
+            "Formal dress stance - Model with hands clasped, showcasing dress's structure and length with modern corporate lobby background",
+            "Saree walking pose - Model in motion, showing saree's grace and pleated movement with heritage building corridor backdrop",
+            "Party dress twirl - Model spinning, displaying dress's flare and fabric flow with glamorous nightclub lighting setup",
+            'Saree blouse focus - Model adjusting jewelry, highlighting blouse design and saree coordination with traditional Indian interior',
+            'Maxi dress breeze - Model outdoors with dress flowing, showcasing length and movement with scenic landscape background',
+            'Full dress display - Model standing straight with arms at sides, showcasing dress silhouette and length against white studio backdrop',
+            'Jumpsuit stance - Model with one hand on hip, other adjusting strap, highlighting one-piece design with modern architectural background',
+            "Romper pose - Model in playful stance with legs apart, showing garment's shorts and top integration against colorful graffiti wall",
+            'Maxi dress flow - Model walking with fabric in motion, displaying dress length and movement with natural outdoor garden setting',
+            'Overall showcase - Model with hands in pockets, casual stance highlighting denim one-piece against rustic barn background',
+            "Bodysuit emphasis - Model in stretching pose, showing garment's fitted silhouette and flexibility with contemporary dance studio lighting",
+            "Midi dress twirl - Model spinning with dress flowing, capturing garment's movement and shape against seamless grey backdrop",
+            'Catsuit display - Model in power pose with wide stance, showcasing fitted one-piece design with dramatic studio lighting',
+            "Wrap dress pose - Model adjusting wrap tie, showing dress's unique closure and drape with soft natural window lighting",
+            'Palazzo jumpsuit - Model with arms extended, displaying wide-leg one-piece silhouette against minimalist concrete wall background',
+            'Full body - Model standing straight facing camera with hands on hips, confident look showcasing complete outfit against white studio backdrop',
+            'Complete view - Model in relaxed stance with one leg slightly forward, arms crossed, looking to side against grey gradient background',
+            'Full figure - Model standing with one arm raised, leaning slightly back with dramatic lighting on textured concrete wall',
+            'Whole body - Model walking forward mid-stride, natural motion with wind effect against urban street background',
+            'Full length - Model standing sideways looking over shoulder, showing side profile and outfit shape with natural window lighting',
+            'Complete shot - Model leaning slightly on wall with hands in pockets, casual expression against brick texture backdrop',
+            'Full body angle - Model with arms crossed behind back, clean full outfit display with minimalist studio lighting',
+            'Entire figure - Model holding handbag with one hand, other on waist against modern city skyline background',
+            'Full view - Model adjusting sunglasses while looking down, fashion-forward angle with golden hour outdoor lighting',
+            'Complete pose - Model standing on one leg with other bent, playful posture showing full outfit against vibrant colored backdrop'
         ]
 
         for num, body_pose in enumerate(poses):
@@ -453,12 +503,13 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 'ethnicity': ethnicity,
                 'height': height,
                 'weight': weight,
+                'fitting': fitting,
                 'age': age,
                 'upper_garment_type': upper_garment_category,
                 'lower_garment_type': below_garment_category,
                 'pose': body_pose
             }
-            if age_group in ['toddler', 'young-child', 'pre-teen', 'early-teen']:
+            if age_group in ['infant', 'toddler', 'young-child', 'pre-teen', 'early-teen']:
                 print("coming to children")
                 image_prompt = single_generate_fashion_prompt(garment_type, sample_params)
 

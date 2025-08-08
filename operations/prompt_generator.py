@@ -21,6 +21,7 @@ def generate_fashion_prompt(
     ethnicity = user_params.get('ethnicity', 'indian')
     height = user_params.get('height', 'average')
     weight = user_params.get('weight', 'average')
+    fitting = user_params.get('fitting', 'Regular Fit')
     age = user_params.get('age', '25')
     upper_garment_type = user_params.get('upper_garment_type', '')
     lower_garment_type = user_params.get('lower_garment_type', '')
@@ -40,6 +41,7 @@ CRITICAL REQUIREMENTS:
 3. LOWER GARMENT: Wear complementary {lower_garment_type} that harmonizes with the upper garment - coordinate colors, maintain style consistency, ensure appropriate fit and length
 4. POSE: {body_pose} with natural, confident posture
 5. BACKGROUND: {background_description}
+6. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
@@ -60,14 +62,15 @@ CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
 2. LOWER GARMENT: Replicate the EXACT lower garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements and garment construction identically
 3. UPPER GARMENT: Wear any upper garment related to lower garment
-4. POSE: Only show half lower body pose and show lower garment detailed work
+4. POSE: {body_pose} with natural, confident posture
 5. BACKGROUND: {background_description}
+6. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
-- Show only lower garment showcase pose
 - Exact match if we have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
+- Clearly shows: if we have metal hook-and-bar in closure waistband then only show metal hook-and-bar with exact match
 - Clearly shows: if we have the button and pocket then exact match Button detailing, Pocket placement and size 
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
@@ -89,6 +92,7 @@ CRITICAL REQUIREMENTS:
    - If dress is above-knee/short: Add complementary lower garment (leggings, tights, or appropriate bottom wear) that enhances the dress style
 4. POSE: {body_pose} with natural, confident posture showcasing the garment's design
 5. BACKGROUND: {background_description}
+6. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
@@ -112,6 +116,7 @@ CRITICAL REQUIREMENTS:
 4. OUTFIT COORDINATION: Ensure both garments work harmoniously together while maintaining their individual reference accuracy
 5. POSE: {body_pose} with natural, confident posture showcasing the complete outfit
 6. BACKGROUND: {background_description}
+7. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
@@ -135,6 +140,7 @@ CRITICAL REQUIREMENTS:
 4. LAYERED STYLING: Ensure all garment layers work together cohesively while maintaining individual reference accuracy
 5. POSE: {body_pose} with natural, confident posture showcasing the complete layered ensemble
 6. BACKGROUND: {background_description}
+7. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
@@ -174,6 +180,7 @@ def single_generate_fashion_prompt(
     ethnicity = user_params.get('ethnicity', 'indian')
     height = user_params.get('height', 'average')
     weight = user_params.get('weight', 'average')
+    fitting = user_params.get('fitting', 'Regular Fit')
     age = user_params.get('age', '25')
     upper_garment_type = user_params.get('upper_garment_type', '')
     lower_garment_type = user_params.get('lower_garment_type', '')
@@ -193,6 +200,7 @@ Human model age: {age} years ({ethnicity})
 background: {background_description}
 pose: {body_pose} with natural, confident posture
 upper garment type: {upper_garment_type}
+GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - If upper garment is formal shirt then only wearing a shirt tucked into pants or a skirt.
@@ -214,14 +222,15 @@ Replicate the EXACT lower garment from reference image - match fabric texture, c
 
 Human model age: {age} years ({ethnicity})
 background: {background_description}
-pose: half lower body visible proper and make it lower garment visible properly
+pose: {body_pose} with natural, confident posture
 lower garment type: {lower_garment_type}
+GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
-- Show only lower garment showcase pose
 - Exact match if we have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
+- Clearly shows: if we have metal hook-and-bar in closure waistband then only show metal hook-and-bar with exact match
 - Clearly shows: if we have the button and pocket then exact match Button detailing, Pocket placement and size 
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
@@ -242,6 +251,7 @@ CRITICAL REQUIREMENTS:
    - If dress is above-knee/short: Add complementary lower garment (leggings, tights, or appropriate bottom wear) that enhances the dress style
 3. POSE: {body_pose} with natural, confident posture showcasing the garment's design
 4. BACKGROUND: {background_description}
+5. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
@@ -264,6 +274,7 @@ CRITICAL REQUIREMENTS:
 3. OUTFIT COORDINATION: Ensure both garments work harmoniously together while maintaining their individual reference accuracy
 4. POSE: {body_pose} with natural, confident posture showcasing the complete outfit
 5. BACKGROUND: {background_description}
+6. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
@@ -286,6 +297,7 @@ CRITICAL REQUIREMENTS:
 3. LAYERED STYLING: Ensure all garment layers work together cohesively while maintaining individual reference accuracy
 4. POSE: {body_pose} with natural, confident posture showcasing the complete layered ensemble
 5. BACKGROUND: {background_description}
+6. GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality

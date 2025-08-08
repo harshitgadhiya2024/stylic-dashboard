@@ -580,6 +580,7 @@ def ai_photoshoot():
             ethnicity = request.form.get("ethnicity")
             height = request.form.get("height")
             width = request.form.get("width")
+            fitting = request.form.get("fitting")
             age = request.form.get("age")
             upper_garment_type = request.form.get("upper_garment_type")
             lower_garment_type = request.form.get("lower_garment_type")
@@ -714,6 +715,7 @@ def ai_photoshoot():
                 "gender": gender,
                 "ethnicity": ethnicity,
                 "height": height,
+                "fitting": fitting,
                 "width": width,
                 "age": age,
                 "lower_garment_type": lower_garment_type,
