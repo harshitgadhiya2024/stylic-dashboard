@@ -593,8 +593,8 @@ def ai_photoshoot():
             photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": user_id}))
             total_pending_photos = 0
             for photoshoot in photoshoot_data:
-                status = photoshoot["status"]
-                if status != "completed":
+                status = photoshoot["is_completed"]
+                if not status:
                     total_pending_photos += len(photoshoot["selected_poses"])
 
             credit = credit - total_pending_photos
