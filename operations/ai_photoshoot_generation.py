@@ -475,7 +475,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         parts = []
         if upper_garment_image:
             exten = upper_garment_image.split(".")[-1]
-            if exten in ["jpg", "jpeg"]:
+            if exten.lower() in ["jpg", "jpeg"]:
                 exten = "jpeg"
             upper_garment_path = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment_image}"
             with open(upper_garment_path, "rb") as f:
@@ -488,7 +488,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         if below_garment_image:
             exten = below_garment_image.split(".")[-1]
-            if exten in ["jpg", "jpeg"]:
+            if exten.lower() in ["jpg", "jpeg"]:
                 exten = "jpeg"
             lower_garment_path = f"static/photoshoots_folders/{photoshoot_id}/{below_garment_image}"
             with open(lower_garment_path, "rb") as f:
