@@ -537,7 +537,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 output_filename = f"{uuid.uuid4()}_photoshoot_{file_index}.png"
                 filename=f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
                 image.save(filename)
-                all_generated_images.append(filename)
+                all_generated_images.append(output_filename)
 
         total_credit = len(all_generated_images)
 
