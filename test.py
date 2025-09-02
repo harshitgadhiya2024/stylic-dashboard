@@ -1,39 +1,92 @@
-fashion_poses = [
-    "Model standing straight, facing camera, hands on hips, confident look, full outfit in view",
-    "Model in relaxed stance, one leg slightly forward, arms crossed, looking to side",
-    "Model standing with one arm raised, leaning slightly back, dramatic lighting",
-    "Model walking forward, mid-stride, natural motion, wind in hair or fabric",
-    "Model standing sideways, looking over shoulder, showing side profile and outfit shape",
-    "Model leaning slightly on wall, hands in pockets, casual expression",
-    "Model with arms crossed behind back, clean backdrop, neutral lighting",
-    "Model holding a handbag with one hand, other hand on waist, urban background",
-    "Model adjusting sunglasses or collar, slightly looking down, fashion-forward angle",
-    "Model standing on one leg with the other bent, playful posture, vibrant mood",
-    "Model sitting on stool, one leg crossed over the other, hands on lap, straight back",
-    "Model leaning forward on knees, elbows on thighs, intense eye contact",
-    "Model lounging on couch, legs extended, arm behind head, relaxed elegance",
-    "Model sitting sideways on stairs, chin resting on hand, urban style",
-    "Model sitting cross-legged on floor, looking up slightly, natural pose",
-    "Model seated on high chair, legs crossed, arms resting casually, studio backdrop",
-    "Model with one knee up, seated on step, elbows resting on knee, thoughtful look",
-    "Model reclining slightly on floor with one arm supporting upper body, full outfit visible",
-    "Model sitting on window ledge, sunlight hitting face, casual urban vibe",
-    "Model sitting backwards on chair, arms resting on backrest, bold streetwear pose",
-    "Model in high-fashion stance, one foot forward, hips tilted, dramatic pose with shadows",
-    "Model holding flowing fabric in motion, elegant long dress, wind effect",
-    "Model in asymmetrical pose, arm lifted, intense makeup and styling",
-    "Model in power pose, hands on waist, wide-legged stance, blazer and heels",
-    "Model leaning dramatically to side, high contrast lighting, editorial look",
-    "Model crouching low with head turned toward camera, street style outfit",
-    "Model posing with garment in motion, twirling or flipping skirt, studio setup",
-    "Model with arms spread out, coat open wide, walking with confidence",
-    "Model using accessory as a prop (hat, handbag), interacting naturally with it",
-    "Model gazing over sunglasses, strong jawline highlighted, glossy backdrop"
-]
+# To run this code you need to install the following dependencies:
+# pip install google-genai
+
+import base64
+import mimetypes
+import os, uuid
+
+from PIL import Image
+from io import BytesIO
+from google import genai
+from google.genai import types
+from google.genai.types import MediaResolution
 
 
-mapping_dict = {}
-for num, var in enumerate(fashion_poses):
-    mapping_dict[f"pose_{num}"] = var
+def save_binary_file(file_name, data):
+    f = open(file_name, "wb")
+    f.write(data)
+    f.close()
+    print(f"File saved to to: {file_name}")
 
-print(mapping_dict)
+
+def generate():
+    client = genai.Client(
+        api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+    )
+
+    model = "gemini-2.5-flash-image-preview"
+    with open("garment.png", "rb") as f:
+        image_data = f.read()
+
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_bytes(
+                    mime_type="image/png",
+                    data=image_data,
+                ),
+                types.Part.from_text(text="""
+                    Could you please create a model photoshoot for given all poses with this given garment
+                    
+                    Replicate the EXACT garment from reference image - match fabric texture, color saturation, pattern details in whole garment, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
+                    
+                    Human model age: 25 years (Indian)
+                    GARMENT FITTING: regular fit
+                    total need to generate image (each pose has seperate image): 3
+                    
+                    pose1: Model seated on high chair, legs crossed, arms resting casually, studio backdrop
+                    pose2: Model sitting on window ledge, sunlight hitting face, casual urban vibe
+                    pose3: Model sitting backwards on chair, arms resting on backrest, bold streetwear pose
+                    
+                    TECHNICAL SPECIFICATIONS:
+                    
+                    - Ultra-high resolution (4K+), **specifically 2160x3840 pixels**, photorealistic quality
+                    - **Aspect ratio: 9:16 (vertical)**
+                    - Professional fashion photography lighting with soft shadows
+                    - Precise fabric texture rendering and authentic draping
+                    - Color-accurate reproduction matching reference materials
+                    - Sharp focus on model and garments with depth of field
+                    - Professional model positioning and natural body language
+                    - Accurate garment length and silhouette representation
+                    
+                    Ensure perfect visual consistency while maintaining natural, realistic appearance and professional fashion photography standards.
+                """),
+            ],
+        ),
+    ]
+    generate_content_config = types.GenerateContentConfig(
+        response_modalities=[
+            "IMAGE",
+            "TEXT",
+        ],
+        media_resolution=MediaResolution.MEDIA_RESOLUTION_HIGH
+    )
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-image-preview",
+        contents=contents,
+        config=generate_content_config
+    )
+    file_index = 0
+    for part in response.candidates[0].content.parts:
+        if part.text is not None:
+            print(part.text)
+        elif part.inline_data is not None:
+            file_index += 1
+            image = Image.open(BytesIO(part.inline_data.data))
+            filename = f"generated_image_{uuid.uuid4()}.png"
+            image.save(filename)
+
+
+if __name__ == "__main__":
+    generate()

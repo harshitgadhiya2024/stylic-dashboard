@@ -37,7 +37,7 @@ Create a professional fashion photoshoot image of a {model_description} wearing 
 
 CRITICAL REQUIREMENTS:
 1. FACE: Use the EXACT face from the reference face image - preserve all facial features, expressions, skin tone, and characteristics with 100% accuracy
-2. UPPER GARMENT: Replicate the EXACT upper garment ({upper_garment_type}) from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, sleeve partially folded upward and garment construction identically
+2. UPPER GARMENT: Replicate the EXACT upper garment ({upper_garment_type}) from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements and garment construction identically
 3. LOWER GARMENT: Wear complementary {lower_garment_type} that harmonizes with the upper garment - coordinate colors, maintain style consistency, ensure appropriate fit and length
 4. POSE: {body_pose} with natural, confident posture
 5. BACKGROUND: {background_description}
@@ -69,9 +69,8 @@ CRITICAL REQUIREMENTS:
 TECHNICAL SPECIFICATIONS:
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
-- Exact match if we have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
-- Clearly shows: if we have metal hook-and-bar in closure waistband then only show metal hook-and-bar with exact match
-- Clearly shows: if we have the button and pocket then exact match Button detailing, Pocket placement and size 
+- Exact match if garment have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
+- Clearly shows: if garment have metal hook-and-bar in closure waistband then only show metal hook-and-bar with exact match
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
 - Sharp focus on model and garments with depth of field
@@ -194,7 +193,7 @@ def single_generate_fashion_prompt(
         'upper_garment': f"""
 Could you please create a model photoshoot for this upper garment
 
-Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
+Replicate the EXACT upper garment from reference image - match fabric texture, color saturation, pattern details in whole garment, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
 
 Human model age: {age} years ({ethnicity})
 background: {background_description}
@@ -203,7 +202,7 @@ upper garment type: {upper_garment_type}
 GARMENT FITTING: {fitting}
 
 TECHNICAL SPECIFICATIONS:
-- If upper garment is formal shirt then only wearing a shirt tucked into pants or a skirt.
+- If upper garment is shirt and tshirt then don't shirt and tshirt tucked into pants or a skirt
 - Ultra-high resolution (4K+), photorealistic quality
 - Professional fashion photography lighting with soft shadows
 - Precise fabric texture rendering and authentic draping
@@ -231,7 +230,6 @@ TECHNICAL SPECIFICATIONS:
 - Professional fashion photography lighting with soft shadows
 - Exact match if we have elastic waistband then please focus on exact elastic waistband fit and cut waistband details
 - Clearly shows: if we have metal hook-and-bar in closure waistband then only show metal hook-and-bar with exact match
-- Clearly shows: if we have the button and pocket then exact match Button detailing, Pocket placement and size 
 - Precise fabric texture rendering and authentic draping
 - Color-accurate reproduction matching reference materials
 - Sharp focus on model and garments with depth of field

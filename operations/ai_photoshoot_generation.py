@@ -1,17 +1,14 @@
-import base64
-import random
-import uuid
-
-from flask import url_for, session
 from openai import OpenAI
-import os
-from PIL import Image
-
-from operations.mail_sending import emailOperation
 from operations.mongo_operation import mongoOperation
 from operations.prompt_generator import generate_fashion_prompt, single_generate_fashion_prompt
 from utils.constant import constant_dict
-from utils.html_format import htmlOperation
+import base64
+import os, uuid
+
+from PIL import Image
+from io import BytesIO
+from google import genai
+from google.genai import types
 
 # Configuration parameters (same as your original)
 model_generation_params = {
@@ -264,7 +261,8 @@ class GarmentPhotoshootGenerator:
                                   lower_garment, output_filename):
         """Generate photoshoot image with consistent face and garments"""
         try:
-            upper_garment = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment}"
+            if upper_garment:
+                upper_garment = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment}"
             lower_garment = f"static/photoshoots_folders/{photoshoot_id}/{lower_garment}"
 
             client = OpenAI(
@@ -343,73 +341,24 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             {"status": "processing"}
         )
 
-        generator = GarmentPhotoshootGenerator()
-        age_group = garment_mapping_dict.get("age_group")
         gender = garment_mapping_dict.get("gender")
         ethnicity = garment_mapping_dict.get("ethnicity")
-        height = garment_mapping_dict.get("height")
         fitting = garment_mapping_dict.get("fitting")
-        weight = garment_mapping_dict.get("width")
-        muscle_tone = "toned"
-        standing_pose = "confident"
-        facial_expression = "smile"
-        lighting = "natural"
-        background_view = "outdoor"
         age = garment_mapping_dict.get("age")
 
-        # Compose descriptions
-        model_type = f"{age_group} {ethnicity} {gender} ({age} years old)"
-        background = f"{background_view} with {lighting} lighting"
-        body_type = f"{standing_pose} with {facial_expression} expression"
-        body_structure = f"height: {height}, weight: {weight}, muscle tone: {muscle_tone}"
-        model_description = f"{model_type}, {body_type}, {body_structure}"
         poses = garment_mapping_dict.get("selected_poses", [])
 
         all_generated_images = []
 
-        face_params = {
-            "hair": {
-                "color": "black",
-            },
-            "skin": {
-                "tone": "light",
-                "texture": "smooth"
-            },
-            "age_group": age_group,
-            "age": age,
-            "gender": gender,
-            "expression": "neutral",
-            "ethnicity": ethnicity,
-            "lighting": "soft natural light"
-        }
-        garment_type = garment_mapping_dict.get("upload_garment_type")
-
-        # Generate face
-        face_photo_url = ""
-        if age_group in ['infant', 'toddler', 'young-child', 'pre-teen', 'early-teen']:
-            pass
-        elif len(poses) > 1 and garment_type!="lower_garment":
-            photo_file_name = f"{uuid.uuid4()}generatedface.png"
-            face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
-
-            # Fix the logic issue with face generation loop
-            while not face_photo_url:  # Changed from "while face_photo_url:" which was incorrect
-                face_photo_url = generator.generate_model_face(face_params, photo_file_name, photoshoot_id)
-            # all_generated_images.append(photo_file_name)
-        else:
-            pass
-
         mongoOperation().update_mongo_data(
             "photoshoot_data",
             {"id": user_id, "photoshoot_id": photoshoot_id},
-            {"status": "masking_generated"}
+            {"status": "process started"}
         )
 
 
         upper_garment_image = upper_garment_filename
         below_garment_image = lower_garment_filename
-        upper_garment_category = garment_mapping_dict.get("upper_garment_type")
-        below_garment_category = garment_mapping_dict.get("lower_garment_type")
 
         fashion_poses = [
             "Model standing straight, facing camera, hands on hips, confident look, full outfit in view",
@@ -492,57 +441,99 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             'Full view - Model adjusting sunglasses while looking down, fashion-forward angle with golden hour outdoor lighting',
             'Complete pose - Model standing on one leg with other bent, playful posture showing full outfit against vibrant colored backdrop'
         ]
-
+        poses_detailed = ""
         for num, body_pose in enumerate(poses):
             body_pose = body_pose.replace('["', "").replace('"]', "").replace('"', '')
             body_pose = fashion_poses[int(body_pose.split(".")[0].split("_")[-1])-1]
-            print(body_pose)
-            sample_params = {
-                'age_group': age_group,
-                'gender': gender,
-                'ethnicity': ethnicity,
-                'height': height,
-                'weight': weight,
-                'fitting': fitting,
-                'age': age,
-                'upper_garment_type': upper_garment_category,
-                'lower_garment_type': below_garment_category,
-                'pose': body_pose
-            }
-            if age_group in ['infant', 'toddler', 'young-child', 'pre-teen', 'early-teen']:
-                print("coming to children")
-                image_prompt = single_generate_fashion_prompt(garment_type, sample_params)
+            poses_detailed+=f"pose_{num}: {body_pose}\n\n"
 
-                output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
-                result = generator.single_generate_photoshoot_image(
-                    photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
-                    output_filename
-                )
-            elif len(poses)>1:
-                print("coming to multi photo")
-                image_prompt = generate_fashion_prompt(garment_type, sample_params)
+        image_prompt = f"""
+            Could you please create a model photoshoot for given all poses with this given garment
+            
+            Replicate the EXACT garment from reference image - match fabric texture, color saturation, pattern details in whole garment, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
+            
+            Human model age: {age} years old {gender} ({ethnicity})
+            GARMENT FITTING: {fitting}
+            total need to generate image (each pose has seperate image): {len(poses)}
+            
+            Poses detailed
+            {poses_detailed}
+            
+            TECHNICAL SPECIFICATIONS:
+            
+            - Ultra-high resolution (4K+), **specifically 2160x3840 pixels**, photorealistic quality
+            - **Aspect ratio: 9:16 (vertical)**
+            - Professional fashion photography lighting with soft shadows
+            - Precise fabric texture rendering and authentic draping
+            - Color-accurate reproduction matching reference materials
+            - Sharp focus on model and garments with depth of field
+            - Professional model positioning and natural body language
+            - Accurate garment length and silhouette representation
+            
+            Ensure perfect visual consistency while maintaining natural, realistic appearance and professional fashion photography standards.
+        """
+        parts = []
+        if upper_garment_image:
+            exten = upper_garment_image.split(".")[-1]
+            upper_garment_path = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment_image}"
+            with open(upper_garment_path, "rb") as f:
+                upper_image_data = f.read()
 
-                output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
-                result = generator.generate_photoshoot_image(
-                    photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
-                    output_filename
-                )
-            else:
-                print("coming to single photo")
-                image_prompt = single_generate_fashion_prompt(garment_type, sample_params)
+            parts.append(types.Part.from_bytes(
+                mime_type=f"image/{exten.lower()}",
+                data=upper_image_data,
+            ))
 
-                output_filename = f"{uuid.uuid4()}_photoshoot_{num + 1}.png"
-                result = generator.single_generate_photoshoot_image(
-                    photoshoot_id, image_prompt, face_photo_url, garment_type, upper_garment_image, below_garment_image,
-                    output_filename
-                )
+        if below_garment_image:
+            exten = below_garment_image.split(".")[-1]
+            lower_garment_path = f"static/photoshoots_folders/{photoshoot_id}/{below_garment_image}"
+            with open(lower_garment_path, "rb") as f:
+                lower_image_data = f.read()
 
+            parts.append(types.Part.from_bytes(
+                mime_type=f"image/{exten.lower()}",
+                data=lower_image_data,
+            ))
 
-            if result:
-                all_generated_images.append(output_filename)
-                print(f"Successfully generated: {result}")
-            else:
-                print(f"Failed to generate image for pose: {body_pose}")
+        parts.append(types.Part.from_text(text=image_prompt))
+
+        client = genai.Client(
+            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+        )
+
+        model_gemini = "gemini-2.5-flash-image-preview"
+
+        contents = [
+            types.Content(
+                role="user",
+                parts=parts,
+            ),
+        ]
+
+        generate_content_config = types.GenerateContentConfig(
+            response_modalities=[
+                "IMAGE",
+                "TEXT",
+            ]
+        )
+
+        response = client.models.generate_content(
+            model=model_gemini,
+            contents=contents,
+            config=generate_content_config
+        )
+
+        file_index = 0
+        for part in response.candidates[0].content.parts:
+            if part.text is not None:
+                print(part.text)
+            elif part.inline_data is not None:
+                file_index += 1
+                image = Image.open(BytesIO(part.inline_data.data))
+                output_filename = f"{uuid.uuid4()}_photoshoot_{file_index}.png"
+                filename=f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
+                image.save(filename)
+                all_generated_images.append(filename)
 
         total_credit = len(all_generated_images)
 
@@ -558,10 +549,6 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         for images in all_generated_images:
             base_url = constant_dict.get('domain_url', 'http://localhost:8060')  # Your domain
             garment_image_url = f"{base_url}/static/photoshoots_folders/{photoshoot_id}/{images}"
-            # garment_image_url = url_for('static',
-            #                                   filename=f'photoshoots_folders/{photoshoot_id}/{images}',
-            #                                   _external=True)
-            # garment_image_url = f"{constant_dict.get('domain_url')}/static/photoshoots_folders/{photoshoot_id}/{images}"
             all_images.append(garment_image_url)
 
         photoshoot_mapping = {

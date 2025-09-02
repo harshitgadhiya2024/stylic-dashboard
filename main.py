@@ -597,7 +597,7 @@ def ai_photoshoot():
                 if not status:
                     total_pending_photos += len(photoshoot["selected_poses"])
 
-            credit = credit - total_pending_photos
+            credit = credit - total_pending_photos - len(selected_poses)
             if credit<=0:
                 flash("You don't have sufficient credits..", "danger")
                 return redirect("ai-photoshoot")
