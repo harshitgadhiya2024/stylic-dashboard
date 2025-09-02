@@ -8,3 +8,4 @@ razorpay==1.4.1
 requests==2.31.0
 openai
 pillow
+google-genai
