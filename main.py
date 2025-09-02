@@ -33,9 +33,16 @@ razorpay_client.set_app_details({
 })
 
 COUPONS = {
-    "HAGH56SD": 15,
-    "WELCOME50": 10,
-    "SAVE10": 10
+    "SAVE15": 15,
+    "SAVE10": 10,
+    "SAVE5": 5,
+    "SAVE20": 20,
+    "SAVE25": 25,
+    "SAVE30": 30,
+    "SAVE35": 35,
+    "SAVE40": 40,
+    "SAVE45": 45,
+    "SAVE50": 50
 }
 
 executor = ProcessPoolExecutor(max_workers=5)
