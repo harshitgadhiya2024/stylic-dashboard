@@ -743,7 +743,7 @@ def ai_photoshoot():
                 pass
 
             with app.app_context():
-                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename)
+                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type)
 
             flash("Photoshoot Generation started successfully...", "success")
             return redirect("/ai-photoshoot")

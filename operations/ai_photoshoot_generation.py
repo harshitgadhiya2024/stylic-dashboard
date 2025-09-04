@@ -327,7 +327,7 @@ class GarmentPhotoshootGenerator:
 
 
 def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upper_garment_filename,
-                                        lower_garment_filename):
+                                        lower_garment_filename, lower_garment_type, upper_garment_type):
     """
     Background task for generating photoshoot images
     """
@@ -454,13 +454,16 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             
             Human model age: {age} years old {gender} ({ethnicity})
             GARMENT FITTING: {fitting}
+            lower garment type: {lower_garment_type}
+            upper garment type: {upper_garment_type}
             total need to generate image (each pose has seperate image): {len(poses)}
             
             Poses detailed
             {poses_detailed}
             
             TECHNICAL SPECIFICATIONS:
-            
+            - Use exact same lower garment type
+            - Use exact same upper garment type
             - Ultra-high resolution (4K+), **specifically 2160x3840 pixels**, photorealistic quality
             - **Aspect ratio: 9:16 (vertical)**
             - Professional fashion photography lighting with soft shadows
