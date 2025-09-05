@@ -590,6 +590,8 @@ def ai_photoshoot():
             fitting = request.form.get("fitting")
             age = request.form.get("age")
             upper_garment_type = request.form.get("upper_garment_type")
+            upper_garment_specs = request.form.get("upper_garment_specs")
+            lower_garment_specs = request.form.get("lower_garment_specs")
             lower_garment_type = request.form.get("lower_garment_type")
             selected_poses = request.form.get("selected_poses")
             selected_poses = selected_poses.replace('["', "").replace('"]', "").replace('"', '')
@@ -643,32 +645,32 @@ def ai_photoshoot():
                     flash("Your lower garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
 
-            elif garment_upload_type == "full_body_garment":
-                exten1 = upper_garment_image.filename.split(".")[-1]
-                if upper_garment_image and allowed_file(upper_garment_image.filename):
-                    upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
-                    filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
-                    upper_garment_image.save(filepath)
-                    upper_garment_image_url = url_for('static',
-                                                      filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
-                                                      _external=True)
-                    all_images.append(upper_garment_image_url)
-                else:
-                    flash("Your upper garment image not valid...", "danger")
-                    return redirect("/ai-photoshoot")
-
-                exten = lower_garment_image.filename.split(".")[-1]
-                if lower_garment_image and allowed_file(lower_garment_image.filename):
-                    lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
-                    filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
-                    lower_garment_image.save(filepath)
-                    lower_garment_image_url = url_for('static',
-                                                      filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
-                                                      _external=True)
-                    all_images.append(lower_garment_image_url)
-                else:
-                    flash("Your lower garment image not valid...", "danger")
-                    return redirect("/ai-photoshoot")
+            # elif garment_upload_type == "full_body_garment":
+            #     exten1 = upper_garment_image.filename.split(".")[-1]
+            #     if upper_garment_image and allowed_file(upper_garment_image.filename):
+            #         upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
+            #         filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
+            #         upper_garment_image.save(filepath)
+            #         upper_garment_image_url = url_for('static',
+            #                                           filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
+            #                                           _external=True)
+            #         all_images.append(upper_garment_image_url)
+            #     else:
+            #         flash("Your upper garment image not valid...", "danger")
+            #         return redirect("/ai-photoshoot")
+            #
+            #     exten = lower_garment_image.filename.split(".")[-1]
+            #     if lower_garment_image and allowed_file(lower_garment_image.filename):
+            #         lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
+            #         filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
+            #         lower_garment_image.save(filepath)
+            #         lower_garment_image_url = url_for('static',
+            #                                           filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
+            #                                           _external=True)
+            #         all_images.append(lower_garment_image_url)
+            #     else:
+            #         flash("Your lower garment image not valid...", "danger")
+            #         return redirect("/ai-photoshoot")
 
             elif garment_upload_type == "one_piece_garment":
                 exten1 = upper_garment_image.filename.split(".")[-1]
@@ -683,36 +685,35 @@ def ai_photoshoot():
                 else:
                     flash("Your one-piece garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
-            else:  # Default case for other garment types
-                if upper_garment_image:
-                    exten1 = upper_garment_image.filename.split(".")[-1]
-                    if allowed_file(upper_garment_image.filename):
-                        upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
-                        filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
-                        upper_garment_image.save(filepath)
-                        upper_garment_image_url = url_for('static',
-                                                          filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
-                                                          _external=True)
-                        all_images.append(upper_garment_image_url)
-                    else:
-                        flash("Your upper garment image not valid...", "danger")
-                        return redirect("/ai-photoshoot")
 
-                if lower_garment_image:
-                    exten = lower_garment_image.filename.split(".")[-1]
-                    if allowed_file(lower_garment_image.filename):
-                        lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
-                        filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
-                        lower_garment_image.save(filepath)
-                        lower_garment_image_url = url_for('static',
-                                                          filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
-                                                          _external=True)
-                        all_images.append(lower_garment_image_url)
-                    else:
-                        flash("Your lower garment image not valid...", "danger")
-                        return redirect("/ai-photoshoot")
-
-
+            # else:  # Default case for other garment types
+            #     if upper_garment_image:
+            #         exten1 = upper_garment_image.filename.split(".")[-1]
+            #         if allowed_file(upper_garment_image.filename):
+            #             upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
+            #             filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
+            #             upper_garment_image.save(filepath)
+            #             upper_garment_image_url = url_for('static',
+            #                                               filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
+            #                                               _external=True)
+            #             all_images.append(upper_garment_image_url)
+            #         else:
+            #             flash("Your upper garment image not valid...", "danger")
+            #             return redirect("/ai-photoshoot")
+            #
+            #     if lower_garment_image:
+            #         exten = lower_garment_image.filename.split(".")[-1]
+            #         if allowed_file(lower_garment_image.filename):
+            #             lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
+            #             filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
+            #             lower_garment_image.save(filepath)
+            #             lower_garment_image_url = url_for('static',
+            #                                               filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
+            #                                               _external=True)
+            #             all_images.append(lower_garment_image_url)
+            #         else:
+            #             flash("Your lower garment image not valid...", "danger")
+            #             return redirect("/ai-photoshoot")
 
             mapping_dict = {
                 "id": user_id,
@@ -727,6 +728,8 @@ def ai_photoshoot():
                 "age": age,
                 "lower_garment_type": lower_garment_type,
                 "upper_garment_type": upper_garment_type,
+                "lower_garment_specification": lower_garment_specs,
+                "upper_garment_specification": upper_garment_specs,
                 "selected_poses": selected_poses,
                 "all_images": all_images,
                 "total_credit": 0,
@@ -743,7 +746,7 @@ def ai_photoshoot():
                 pass
 
             with app.app_context():
-                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type)
+                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_upload_type)
 
             flash("Photoshoot Generation started successfully...", "success")
             return redirect("/ai-photoshoot")

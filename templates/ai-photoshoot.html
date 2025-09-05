@@ -341,20 +341,20 @@
                                                 href="#v-pills-profile" role="tab" aria-controls="v-pills-profile"
                                                 aria-selected="false" tabindex="-1">Only Bottom</a>
                                         </li>
-                                        <li><a class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill"
+                                        <!-- <li><a class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill"
                                                 href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
                                                 aria-selected="false" tabindex="-1">Full Body</a>
-                                        </li>
+                                        </li> -->
                                         <li><a class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill"
                                                 href="#v-pills-settings" role="tab" aria-controls="v-pills-settings"
-                                                aria-selected="false" tabindex="-1">One-piece
+                                                aria-selected="false" tabindex="-1">Full-body
                                                 Garment</a>
                                         </li>
-                                        <li><a class="nav-link" id="v-pills-dress-tab" data-bs-toggle="pill"
+                                        <!-- <li><a class="nav-link" id="v-pills-dress-tab" data-bs-toggle="pill"
                                                 href="#v-pills-dress" role="tab" aria-controls="v-pills-dress"
                                                 aria-selected="false" tabindex="-1">Dress
                                                 & Saree</a>
-                                        </li>
+                                        </li> -->
                                     </ul>
                                 </div>
                                 <div class="col-md-9 col-sm-12">
@@ -778,9 +778,27 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect1278"
+                                                                    style="font-weight: bold;">Upper Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="upper_garment_specs" id="exampleSelect1278">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect127812"
+                                                                    style="font-weight: bold;">Lower Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="lower_garment_specs" id="exampleSelect127812">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <p class="text-start" style="font-weight: bold;">Selected Pose:
-                                                        <span id="selectedCount">0</span> / 16
+                                                        <span id="selectedCount">0</span> / 8
                                                     </p>
                                                     <div class="row" id="poseContainer" style="margin-bottom: 20px;">
                                                     </div>
@@ -1214,6 +1232,24 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect1278"
+                                                                    style="font-weight: bold;">Upper Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="upper_garment_specs" id="exampleSelect1278">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect127812"
+                                                                    style="font-weight: bold;">Lower Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="lower_garment_specs" id="exampleSelect127812">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <p class="text-start" style="font-weight: bold;">Selected Pose:
                                                         <span id="selectedCount1">0</span> / 8
@@ -1536,32 +1572,33 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                            <div class="mb-3"><label class="form-label"
-                                                                    for="exampleSelect102"
-                                                                    style="font-weight: bold;">Select
-                                                                    Fitting <span style="color: red;">*</span></label>
-                                                                <select class="form-select" name="fitting"
-                                                                    id="exampleSelect102" required>
-                                                                    <option>Regular Fit</option>
-                                                                    <option>Skinny Fit</option>
-                                                                    <option>Slim Fit</option>
-                                                                    <option>Relaxed Fit</option>
-                                                                    <option>Loose Fit (Oversized Fit)</option>
-                                                                    <option>Bodycon Fit</option>
-                                                                    <option>Tapered Fit</option>
-                                                                    <option>Straight Fit</option>
-                                                                    <option>Boxy Fit</option>
-                                                                    <option>A-Line Fit</option>
-                                                                    <option>Flared Fit</option>
-                                                                    <option>Boyfriend Fit</option>
-                                                                    <option>Girlfriend Fit</option>
-                                                                    <option>Mom Fit</option>
-                                                                    <option>High-Waisted Fit</option>
-                                                                    <option>Low-Rise Fit</option>
-                                                                    <option>Athletic Fit (Muscle Fit)</option>
-                                                                </select>
+                                                                <div class="mb-3"><label class="form-label"
+                                                                        for="exampleSelect102"
+                                                                        style="font-weight: bold;">Select
+                                                                        Fitting <span
+                                                                            style="color: red;">*</span></label>
+                                                                    <select class="form-select" name="fitting"
+                                                                        id="exampleSelect102" required>
+                                                                        <option>Regular Fit</option>
+                                                                        <option>Skinny Fit</option>
+                                                                        <option>Slim Fit</option>
+                                                                        <option>Relaxed Fit</option>
+                                                                        <option>Loose Fit (Oversized Fit)</option>
+                                                                        <option>Bodycon Fit</option>
+                                                                        <option>Tapered Fit</option>
+                                                                        <option>Straight Fit</option>
+                                                                        <option>Boxy Fit</option>
+                                                                        <option>A-Line Fit</option>
+                                                                        <option>Flared Fit</option>
+                                                                        <option>Boyfriend Fit</option>
+                                                                        <option>Girlfriend Fit</option>
+                                                                        <option>Mom Fit</option>
+                                                                        <option>High-Waisted Fit</option>
+                                                                        <option>Low-Rise Fit</option>
+                                                                        <option>Athletic Fit (Muscle Fit)</option>
+                                                                    </select>
+                                                                </div>
                                                             </div>
-                                                        </div>
                                                             <div class="col-6">
                                                                 <div class="mb-3"><label for="demo-number-input"
                                                                         class="form-label"
@@ -1734,6 +1771,26 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
+                                                            <div class="col-6">
+                                                                <div class="mb-3"><label class="form-label"
+                                                                        for="exampleSelect1278"
+                                                                        style="font-weight: bold;">Upper Garment
+                                                                        Specification</label>
+                                                                    <input class="form-control" type="text"
+                                                                        name="upper_garment_specs"
+                                                                        id="exampleSelect1278">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="mb-3"><label class="form-label"
+                                                                        for="exampleSelect127812"
+                                                                        style="font-weight: bold;">Lower Garment
+                                                                        Specification</label>
+                                                                    <input class="form-control" type="text"
+                                                                        name="lower_garment_specs"
+                                                                        id="exampleSelect127812">
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <p class="text-start" style="font-weight: bold;">Selected Pose:
                                                             <span id="selectedCount2">0</span> / 8
@@ -1766,7 +1823,7 @@
 
                                                 <!-- Title -->
                                                 <div style="font-weight: 600; font-size: 1.5rem;">
-                                                    Upload <span style="color: #6f42c1;">One-Piece</span> <span
+                                                    Upload <span style="color: #6f42c1;">Full-Body</span> <span
                                                         style="color: #d63384;">Garment</span>
                                                     Image
                                                 </div>
@@ -2175,6 +2232,24 @@
                                                                     <option>women-Sharara</option>
                                                                     <option>women-Harem Pants</option>
                                                                 </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect1278"
+                                                                    style="font-weight: bold;">Upper Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="upper_garment_specs" id="exampleSelect1278">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect127812"
+                                                                    style="font-weight: bold;">Lower Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="lower_garment_specs" id="exampleSelect127812">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2689,6 +2764,24 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect1278"
+                                                                    style="font-weight: bold;">Upper Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="upper_garment_specs" id="exampleSelect1278">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label class="form-label"
+                                                                    for="exampleSelect127812"
+                                                                    style="font-weight: bold;">Lower Garment
+                                                                    Specification</label>
+                                                                <input class="form-control" type="text"
+                                                                    name="lower_garment_specs" id="exampleSelect127812">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <p class="text-start" style="font-weight: bold;">Selected Pose:
                                                         <span id="selectedCount4">0</span> / 8
@@ -3105,9 +3198,299 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const poses = ['https://app.stylic.ai/static/generated_poses/pose_new_1.png', 'https://app.stylic.ai/static/generated_poses/pose_new_10.png', 'https://app.stylic.ai/static/generated_poses/pose_new_11.png', 'https://app.stylic.ai/static/generated_poses/pose_new_12.png', 'https://app.stylic.ai/static/generated_poses/pose_new_13.png', 'https://app.stylic.ai/static/generated_poses/pose_new_14.png', 'https://app.stylic.ai/static/generated_poses/pose_new_15.png', 'https://app.stylic.ai/static/generated_poses/pose_new_16.png', 'https://app.stylic.ai/static/generated_poses/pose_new_17.png', 'https://app.stylic.ai/static/generated_poses/pose_new_18.png', 'https://app.stylic.ai/static/generated_poses/pose_new_19.png', 'https://app.stylic.ai/static/generated_poses/pose_new_2.png', 'https://app.stylic.ai/static/generated_poses/pose_new_20.png', 'https://app.stylic.ai/static/generated_poses/pose_new_21.png', 'https://app.stylic.ai/static/generated_poses/pose_new_22.png', 'https://app.stylic.ai/static/generated_poses/pose_new_23.png', 'https://app.stylic.ai/static/generated_poses/pose_new_24.png', 'https://app.stylic.ai/static/generated_poses/pose_new_25.png', 'https://app.stylic.ai/static/generated_poses/pose_new_26.png', 'https://app.stylic.ai/static/generated_poses/pose_new_27.png', 'https://app.stylic.ai/static/generated_poses/pose_new_28.png', 'https://app.stylic.ai/static/generated_poses/pose_new_29.png', 'https://app.stylic.ai/static/generated_poses/pose_new_3.png', 'https://app.stylic.ai/static/generated_poses/pose_new_30.png', 'https://app.stylic.ai/static/generated_poses/pose_new_31.png', 'https://app.stylic.ai/static/generated_poses/pose_new_32.png', 'https://app.stylic.ai/static/generated_poses/pose_new_33.png', 'https://app.stylic.ai/static/generated_poses/pose_new_34.png', 'https://app.stylic.ai/static/generated_poses/pose_new_35.png', 'https://app.stylic.ai/static/generated_poses/pose_new_36.png', 'https://app.stylic.ai/static/generated_poses/pose_new_37.png', 'https://app.stylic.ai/static/generated_poses/pose_new_38.png', 'https://app.stylic.ai/static/generated_poses/pose_new_39.png', 'https://app.stylic.ai/static/generated_poses/pose_new_4.png', 'https://app.stylic.ai/static/generated_poses/pose_new_40.png', 'https://app.stylic.ai/static/generated_poses/pose_new_41.png', 'https://app.stylic.ai/static/generated_poses/pose_new_42.png', 'https://app.stylic.ai/static/generated_poses/pose_new_43.png', 'https://app.stylic.ai/static/generated_poses/pose_new_44.png', 'https://app.stylic.ai/static/generated_poses/pose_new_45.png', 'https://app.stylic.ai/static/generated_poses/pose_new_46.png', 'https://app.stylic.ai/static/generated_poses/pose_new_47.png', 'https://app.stylic.ai/static/generated_poses/pose_new_48.png', 'https://app.stylic.ai/static/generated_poses/pose_new_49.png', 'https://app.stylic.ai/static/generated_poses/pose_new_5.png', 'https://app.stylic.ai/static/generated_poses/pose_new_50.png', 'https://app.stylic.ai/static/generated_poses/pose_new_51.png', 'https://app.stylic.ai/static/generated_poses/pose_new_52.png', 'https://app.stylic.ai/static/generated_poses/pose_new_53.png', 'https://app.stylic.ai/static/generated_poses/pose_new_54.png', 'https://app.stylic.ai/static/generated_poses/pose_new_55.png', 'https://app.stylic.ai/static/generated_poses/pose_new_56.png', 'https://app.stylic.ai/static/generated_poses/pose_new_57.png', 'https://app.stylic.ai/static/generated_poses/pose_new_58.png', 'https://app.stylic.ai/static/generated_poses/pose_new_59.png', 'https://app.stylic.ai/static/generated_poses/pose_new_6.png', 'https://app.stylic.ai/static/generated_poses/pose_new_60.png', 'https://app.stylic.ai/static/generated_poses/pose_new_61.png', 'https://app.stylic.ai/static/generated_poses/pose_new_62.png', 'https://app.stylic.ai/static/generated_poses/pose_new_63.png', 'https://app.stylic.ai/static/generated_poses/pose_new_64.png', 'https://app.stylic.ai/static/generated_poses/pose_new_65.png', 'https://app.stylic.ai/static/generated_poses/pose_new_66.png', 'https://app.stylic.ai/static/generated_poses/pose_new_67.png', 'https://app.stylic.ai/static/generated_poses/pose_new_68.png', 'https://app.stylic.ai/static/generated_poses/pose_new_69.png', 'https://app.stylic.ai/static/generated_poses/pose_new_7.png', 'https://app.stylic.ai/static/generated_poses/pose_new_70.png', 'https://app.stylic.ai/static/generated_poses/pose_new_71.png', 'https://app.stylic.ai/static/generated_poses/pose_new_72.png', 'https://app.stylic.ai/static/generated_poses/pose_new_73.png', 'https://app.stylic.ai/static/generated_poses/pose_new_74.png', 'https://app.stylic.ai/static/generated_poses/pose_new_75.png', 'https://app.stylic.ai/static/generated_poses/pose_new_76.png', 'https://app.stylic.ai/static/generated_poses/pose_new_77.png', 'https://app.stylic.ai/static/generated_poses/pose_new_78.png', 'https://app.stylic.ai/static/generated_poses/pose_new_79.png', 'https://app.stylic.ai/static/generated_poses/pose_new_8.png', 'https://app.stylic.ai/static/generated_poses/pose_new_9.png'];
-
-            const maxSelection = 16;
+            const poses = [
+                "https://app.stylic.ai/static/generated_poses/pose_new_1.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_10.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_11.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_12.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_13.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_14.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_15.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_16.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_17.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_18.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_19.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_2.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_20.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_21.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_22.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_23.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_24.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_25.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_26.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_27.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_28.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_29.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_3.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_30.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_31.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_32.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_33.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_34.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_35.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_36.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_37.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_38.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_39.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_4.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_40.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_41.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_42.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_43.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_44.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_45.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_46.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_47.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_48.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_49.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_5.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_50.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_51.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_52.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_53.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_54.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_55.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_56.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_57.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_58.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_59.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_6.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_60.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_61.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_62.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_63.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_64.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_65.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_66.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_67.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_68.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_69.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_7.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_70.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_71.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_72.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_73.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_74.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_75.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_76.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_77.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_78.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_79.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_8.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_9.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_0.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_1.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_2.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_3.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_4.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_5.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_6.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_7.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_8.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_9.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_10.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_11.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_12.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_13.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_14.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_15.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_16.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_17.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_18.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_19.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_20.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_21.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_22.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_23.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_24.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_25.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_26.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_27.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_28.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_29.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_30.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_31.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_32.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_33.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_34.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_35.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_36.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_37.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_38.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_39.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_40.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_41.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_42.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_43.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_44.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_45.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_46.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_47.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_48.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_49.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_50.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_51.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_52.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_53.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_54.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_55.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_56.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_57.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_58.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_59.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_60.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_61.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_62.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_63.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_64.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_65.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_66.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_67.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_68.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_69.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_70.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_71.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_72.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_73.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_74.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_75.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_76.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_77.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_78.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_79.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_80.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_81.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_82.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_83.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_85.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_86.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_87.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_88.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_89.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_90.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_91.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_92.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_93.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_94.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_95.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_96.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_97.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_98.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_99.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_100.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_101.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_102.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_103.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_104.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_105.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_106.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_107.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_108.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_109.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_110.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_111.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_112.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_113.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_114.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_115.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_116.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_117.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_118.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_119.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_120.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_121.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_122.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_123.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_124.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_125.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_126.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_127.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_128.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_129.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_130.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_131.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_132.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_133.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_134.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_135.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_136.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_137.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_138.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_139.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_140.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_141.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_142.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_143.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_144.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_145.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_146.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_147.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_148.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_149.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_150.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_151.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_152.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_153.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_154.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_155.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_156.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_157.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_158.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_159.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_160.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_161.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_162.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_163.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_164.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_165.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_166.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_167.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_168.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_169.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_170.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_171.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_172.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_173.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_174.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_175.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_176.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_177.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_178.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_179.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_180.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_181.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_183.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_188.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_189.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_190.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_191.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_192.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_193.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_194.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_195.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_196.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_197.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_198.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_199.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_200.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_201.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_202.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_203.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_204.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_205.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_206.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_207.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_208.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_209.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_210.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_211.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_212.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_213.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_214.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_215.png.png",
+                "https://app.stylic.ai/static/generated_poses/pose_new_216.png.png"
+            ]
+            const maxSelection = 8;
 
             // Tab configurations
             const tabConfigs = [
