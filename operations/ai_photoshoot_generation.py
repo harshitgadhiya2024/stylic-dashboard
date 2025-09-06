@@ -1,8 +1,5 @@
-from openai import OpenAI
 from operations.mongo_operation import mongoOperation
-from operations.prompt_generator import generate_fashion_prompt, single_generate_fashion_prompt
 from utils.constant import constant_dict
-import base64
 import os, uuid
 
 from PIL import Image
@@ -10,321 +7,49 @@ from io import BytesIO
 from google import genai
 from google.genai import types
 
-# Configuration parameters (same as your original)
-model_generation_params = {
-    "model_type": {
-        "age_group": {
-            "child": ["toddler", "young_child", "pre_teen"],
-            "teen": ["early_teen", "mid_teen", "late_teen"],
-            "adult": ["young_adult", "middle_aged", "mature_adult", "elderly"]
-        },
-        "gender": ["male", "female", "non_binary"],
-        "ethnicity": ["caucasian", "african", "asian", "indian", "hispanic", "middle_eastern", "mixed", "other"]
-    },
-    "body_structure": {
-        "height": ["very_short", "short", "average", "tall", "very_tall"],
-        "build": {
-            "weight": ["underweight", "slim", "average", "heavy", "obese"],
-            "muscle_tone": ["skinny", "toned", "athletic", "muscular", "bodybuilder"],
-            "body_shape": ["pear", "apple", "hourglass", "rectangle", "inverted_triangle"]
-        }
-    },
-    "body_type": {
-        "standing_pose": ["neutral", "confident", "sitting_casual", "action_pose", "relaxed"],
-        "facial_expression": ["neutral", "smile", "serious", "joyful", "contemplative"],
-        "hand_position": ["at_sides", "on_hips", "crossed", "gesturing", "in_pockets"]
-    },
-    "background": {
-        "lighting": ["natural", "studio", "soft", "golden_hour"],
-        "background": ["white", "neutral", "outdoor", "studio", "abstract", "contextual"],
-        "camera_angle": ["eye_level", "slight_high", "slight_low", "close_up", "full_body"]
-    },
-    "body_pose": [
-        "Full-View Front",
-        "Close-Up Front",
-        "Full-View Back",
-        "Full-View Left Side Angle",
-        "Full-View Right Side Angle",
-        "Detail Shot (Front)",
-        "Profile View Left",
-        "Profile View Right",
-        "Close-Up Back",
-        "Close-Up Profile View",
-        "Bottom Detailed Shot",
-        "Bottom Close-Up Front",
-        "Bottom Full-View Front",
-        "Bottom Profile View",
-        "Bottom Full-View Back",
-        "Three-Quarter Front Left",
-        "Three-Quarter Front Right",
-        "Three-Quarter Back Left",
-        "Three-Quarter Back Right",
-        "Upper Body Profile Left",
-        "Upper Body Profile Right",
-        "Detail Shot (Back)",
-        "Side Detail Shot",
-        "Bottom Close-Up Back",
-        "Bottom Three-Quarter View",
-        "Full Body Side Angle",
-        "Torso Detail Shot"
-    ],
-}
 
-FACE_PARAMETERS = {
-    "facial_structure": {
-        "face_shape": ["oval", "round", "square", "heart-shaped", "diamond", "oblong"],
-        "jawline": ["soft", "defined", "sharp", "angular"],
-        "cheekbones": ["subtle", "moderate", "prominent", "high"]
-    },
-    "eyes": {
-        "shape": ["almond", "round", "hooded", "deep-set", "upturned", "downturned"],
-        "color": ["brown", "dark brown", "hazel", "green", "blue", "gray", "amber"],
-        "size": ["small", "medium", "large"],
-        "eyebrows": ["thin", "medium", "thick", "arched", "straight", "bushy"]
-    },
-    "nose": {
-        "shape": ["straight", "button", "roman", "aquiline", "snub", "broad"],
-        "size": ["small", "medium", "large"]
-    },
-    "mouth": {
-        "lips": ["thin", "medium", "full", "very full"],
-        "shape": ["straight", "bow-shaped", "wide", "small"]
-    },
-    "hair": {
-        "color": ["black", "dark brown", "brown", "light brown", "blonde", "platinum", "red", "auburn", "gray",
-                  "white"],
-        "texture": ["straight", "wavy", "curly", "coily"],
-        "length": ["very short", "short", "medium", "long", "very long"],
-        "style": ["loose", "ponytail", "bun", "braided", "tousled", "sleek"]
-    },
-    "skin": {
-        "tone": ["very fair", "fair", "light", "medium", "olive", "tan", "dark", "very dark"],
-        "texture": ["smooth", "slightly textured", "freckled"]
-    },
-    "age": ["toddler", "young-child", "pre-teen", "early-teen", "mid-teen", "late-teen", "young-adult", "middle-aged",
-            "mature-adult", "elderly"],
-    "gender": ["male", "female", "non_binary"],
-    "expression": ["neutral", "slight smile", "warm smile", "serious", "contemplative", "confident"],
-    "lighting": ["soft natural light", "dramatic lighting", "golden hour", "studio lighting", "side lighting"]
-}
+def calculate_estimated_cost(num_poses, has_upper_garment=True, has_lower_garment=True):
+    """
+    Calculate estimated cost for photoshoot generation
+    """
+    # Base costs per request
+    text_input_cost_per_1k_tokens = 0.000075
+    text_output_cost_per_1k_tokens = 0.0003
+    image_input_cost = 0.00315
+    estimated_image_generation_cost = 0.04
 
+    # Estimate tokens per request
+    avg_input_tokens = 500
+    avg_output_tokens = 100
 
-class GarmentPhotoshootGenerator:
-    def _init_(self):
-        pass
+    # Calculate input images per request
+    garment_images = (1 if has_upper_garment else 0) + (1 if has_lower_garment else 0)
 
-    def validate_images(self, *image_paths):
-        """Validate that all required images exist and are readable"""
-        for path in image_paths:
-            if not os.path.exists(path):
-                raise FileNotFoundError(f"Image not found: {path}")
-            try:
-                with Image.open(path) as img:
-                    img.verify()
-            except Exception as e:
-                raise ValueError(f"Invalid image file {path}: {e}")
+    # Base request cost
+    base_request_cost = (
+            (avg_input_tokens * text_input_cost_per_1k_tokens / 1000) +
+            (avg_output_tokens * text_output_cost_per_1k_tokens / 1000) +
+            (garment_images * image_input_cost) +
+            estimated_image_generation_cost
+    )
 
-    def optimize_image_size(self, image_path, max_size=(1024, 1024)):
-        """Resize image if it's too large for API"""
-        with Image.open(image_path) as img:
-            if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
-                img.thumbnail(max_size, Image.Resampling.LANCZOS)
-                optimized_path = f"optimized_{os.path.basename(image_path)}"
-                img.save(optimized_path, quality=95)
-                return optimized_path
-        return image_path
+    # Subsequent requests include reference image
+    subsequent_request_cost = base_request_cost + image_input_cost
 
-    def generate_model_face(self, face_params, output_filename, photoshoot_id):
-        """Generate a consistent model face based on parameters"""
-        try:
-            prompt = self.create_face_prompt(face_params)
-            print(f"Generating face with prompt: {prompt}")
-            client = OpenAI(
-                api_key=constant_dict.get("openai_key"))
+    # Total cost calculation
+    total_requests = num_poses
+    if num_poses > 1:
+        total_cost = base_request_cost + ((num_poses - 1) * subsequent_request_cost)
+    else:
+        total_cost = base_request_cost
 
-            result = client.images.generate(
-                model="gpt-image-1",
-                prompt=prompt
-            )
-
-            image_base64 = result.data[0].b64_json
-            image_bytes = base64.b64decode(image_base64)
-
-            # Save the image to a file
-            with open(f"static/photoshoots_folders/{photoshoot_id}/{output_filename}", "wb") as f:
-                f.write(image_bytes)
-
-            return output_filename
-
-        except Exception as e:
-            print(f"Error generating face: {e}")
-            return None
-
-    def create_face_prompt(self, params):
-        """Create detailed face generation prompt"""
-        try:
-            prompt_parts = []
-
-            # Basic description
-            prompt_parts.append(
-                f"{params['ethnicity']} Professional headshot portrait of a {params['age']} years of {params['gender']} person")
-
-            # Hair
-            hair_desc = f"{params['hair']['color']} hair color"
-            prompt_parts.append(hair_desc)
-
-            # Skin
-            prompt_parts.append(f"{params['skin']['tone']} {params['skin']['texture']} skin")
-
-            # Expression and lighting
-            prompt_parts.append(f"{params['expression']} expression")
-            prompt_parts.append(f"photographed with {params['lighting']}")
-
-            # Quality descriptors
-            prompt_parts.append("high resolution, photorealistic, professional photography, clean background")
-
-            return ", ".join(prompt_parts)
-
-        except Exception as e:
-            print(f"Error creating face prompt: {e}")
-            return ""
-
-    def generate_photoshoot_image(self, photoshoot_id, image_prompt, face_image, garment_type, upper_garment,
-                                  lower_garment, output_filename):
-        """Generate photoshoot image with consistent face and garments"""
-        try:
-            upper_garment = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment}"
-            lower_garment = f"static/photoshoots_folders/{photoshoot_id}/{lower_garment}"
-            face_image = f"static/photoshoots_folders/{photoshoot_id}/{face_image}"
-
-            client = OpenAI(
-                api_key=constant_dict.get("openai_key"))
-
-            if garment_type == "upper_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(face_image, "rb"), open(upper_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            elif garment_type == "lower_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(face_image, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            elif garment_type == "full_body_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(face_image, "rb"), open(upper_garment, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            elif garment_type == "one_piece_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(face_image, "rb"), open(upper_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-            elif garment_type == "full_body_dress_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(face_image, "rb"), open(upper_garment, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-            else:
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(face_image, "rb"), open(upper_garment, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            image_base64 = result.data[0].b64_json
-            image_bytes = base64.b64decode(image_base64)
-
-            with open(f"static/photoshoots_folders/{photoshoot_id}/{output_filename}", "wb") as f:
-                f.write(image_bytes)
-            return "done"
-
-        except Exception as e:
-            print(f"Error generating photoshoot image: {e}")
-            return None
-
-    def single_generate_photoshoot_image(self, photoshoot_id, image_prompt, face_image, garment_type, upper_garment,
-                                  lower_garment, output_filename):
-        """Generate photoshoot image with consistent face and garments"""
-        try:
-            if upper_garment:
-                upper_garment = f"static/photoshoots_folders/{photoshoot_id}/{upper_garment}"
-            lower_garment = f"static/photoshoots_folders/{photoshoot_id}/{lower_garment}"
-
-            client = OpenAI(
-                api_key=constant_dict.get("openai_key"))
-
-            if garment_type == "upper_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(upper_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            elif garment_type == "lower_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            elif garment_type == "full_body_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(upper_garment, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            elif garment_type == "one_piece_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(upper_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-            elif garment_type == "full_body_dress_garment":
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(upper_garment, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-            else:
-                result = client.images.edit(
-                    model="gpt-image-1",
-                    image=[open(upper_garment, "rb"), open(lower_garment, "rb")],
-                    prompt=image_prompt,
-                    input_fidelity="high"
-                )
-
-            image_base64 = result.data[0].b64_json
-            image_bytes = base64.b64decode(image_base64)
-
-            with open(f"static/photoshoots_folders/{photoshoot_id}/{output_filename}", "wb") as f:
-                f.write(image_bytes)
-            return "done"
-
-        except Exception as e:
-            print(f"Error generating photoshoot image: {e}")
-            return None
-
+    return {
+        'total_requests': total_requests,
+        'estimated_total_cost': round(total_cost, 4),
+        'cost_per_image': round(total_cost / num_poses, 4),
+        'base_request_cost': round(base_request_cost, 4),
+        'subsequent_request_cost': round(subsequent_request_cost, 4)
+    }
 
 def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upper_garment_filename,
                                         lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_type):
@@ -334,29 +59,27 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
     try:
         # Update status to processing
         user_id = garment_mapping_dict.get("id")
-
+        all_generated_images = []
         mongoOperation().update_mongo_data(
             "photoshoot_data",
             {"id": user_id, "photoshoot_id": photoshoot_id},
             {"status": "processing"}
         )
 
+        client = genai.Client(
+            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+        )
+
+        model_gemini = "gemini-2.5-flash-image-preview"
+
         gender = garment_mapping_dict.get("gender")
+        height = garment_mapping_dict.get("height")
+        weight = garment_mapping_dict.get("weight")
+        age_group = garment_mapping_dict.get("age_group")
         ethnicity = garment_mapping_dict.get("ethnicity")
         fitting = garment_mapping_dict.get("fitting")
         age = garment_mapping_dict.get("age")
-
         poses = garment_mapping_dict.get("selected_poses", [])
-
-        all_generated_images = []
-
-        mongoOperation().update_mongo_data(
-            "photoshoot_data",
-            {"id": user_id, "photoshoot_id": photoshoot_id},
-            {"status": "process started"}
-        )
-
-
         upper_garment_image = upper_garment_filename
         below_garment_image = lower_garment_filename
 
@@ -928,7 +651,14 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
    "Model demonstrating traditional sitting technique, gathering draped fabric appropriately around legs before sitting, showcasing proper lower body draping etiquette",
 ]
 
-        poses_detailed = ""
+        generate_content_config = types.GenerateContentConfig(
+            response_modalities=[
+                "IMAGE",
+                "TEXT",
+            ]
+        )
+
+        body_poses = []
         for num, body_pose in enumerate(poses):
             body_pose = body_pose.replace('["', "").replace('"]', "").replace('"', '')
             if ".png.png" in body_pose:
@@ -938,138 +668,26 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 index_num = int(body_pose.split(".")[0].split("_")[-1])-1
                 body_pose = fashion_poses[index_num]
 
-            poses_detailed += f"Image {num+1}: {body_pose}\n\n"
+            body_poses.append(body_pose)
 
-            # body_pose = fashion_poses[int(body_pose.split(".")[0].split("_")[-1])-1]
-            # poses_detailed+=f"pose_{num}: {body_pose}\n\n"
-
+        model_description = f"A {height}, {weight} {ethnicity} {gender} model, age {age} {age_group}."
+        garmentdescription = ""
         if garment_type=="upper_garment":
-            garment_detailing = f"""
-                UPPER GARMENT: Use & Replicate the EXACT uploaded garment image
-                - Replicate every detail from the reference image
-                - Maintain identical fabrics, color, texture, and construction
-                
-                LOWER GARMENT SELECTION:
-                - Specifications: {lower_garment_specs}
-                - Style: Choose complementary fit that enhances the uploaded upper garment
-                - Ensure harmonious color coordination and style balance
-            """
-
+            garmentdescription = f"The model is wearing a {fitting} {upper_garment_type}."
         elif garment_type=="lower_garment":
-            garment_detailing = f"""
-                LOWER GARMENT: Use & Replicate the EXACT uploaded garment image
-                - Replicate every detail from the reference image
-                - Maintain identical fabrics, color, texture, and construction
-                
-                UPPER GARMENT SELECTION:
-                - Specifications: {upper_garment_specs}
-                - Style: Choose complementary fit that enhances the uploaded lower garment
-                - Ensure harmonious color coordination and style balance
-            """
+            garmentdescription = f"The model is wearing a {lower_garment_type}."
         else:
-            garment_detailing = """
-                ONE_PIECE & DRESSES & SAREE & ETHNIC & TRADITIONAL GARMENT: Use the EXACT uploaded garment image
-                - Replicate every detail from the reference image
-                - Maintain identical color, texture, and construction
-                - Show complete garment from neckline to hemline
-            """
+            garmentdescription = f"The model is wearing a {fitting} {upper_garment_type} and {lower_garment_type}."
 
-        # image_prompt_new = f"""
-        #     Create a professional model photoshoot for all specified poses featuring the uploaded upper garment with exact replication and complementary styling.
-        #
-        #     GARMENT REPLICATION REQUIREMENTS:
-        #     - Replicate the EXACT uploaded garment with 100% accuracy
-        #     - Match fabric texture, color saturation, pattern details, weave structure
-        #     - Preserve all construction elements: buttons, seams, collars, cuffs, hardware
-        #     - Maintain identical fit, drape, and silhouette
-        #     - Reproduce all style elements and design details precisely
-        #
-        #     MODEL SPECIFICATIONS:
-        #     - Age: {age} years old
-        #     - Gender: {gender}
-        #     - Ethnicity: {ethnicity}
-        #     - Garment fitting: {fitting}
-        #
-        #     GARMENT STYLING:
-        #     {garment_detailing}
-        #
-        #     POSE REQUIREMENTS:
-        #     Total images to generate: {len(poses)}
-        #     Each pose requires a separate image with consistent styling.
-        #
-        #     {poses_detailed}
-        #
-        #     TECHNICAL SPECIFICATIONS:
-        #     - Resolution: Ultra-high 4K+ quality, exactly 2160x3840 pixels
-        #     - Aspect ratio: 9:16 (vertical orientation)
-        #     - Professional fashion photography lighting with controlled soft shadows
-        #     - Precise fabric texture rendering with authentic material draping
-        #     - Color-accurate reproduction matching reference garment exactly
-        #     - Sharp focus on model and garments with subtle depth of field
-        #     - Professional model positioning with natural, confident body language
-        #     - Accurate garment proportions and silhouette representation
-        #     - Studio-quality lighting setup with proper highlight and shadow balance
-        #
-        #     BACKGROUND CONSISTENCY:
-        #     - CRITICAL: Use the EXACT same background across ALL poses
-        #     - Maintain identical background lighting, texture, and color throughout the entire photoshoot
-        #     - No background variations or changes between different poses
-        #     - Consistent studio backdrop or setting for visual continuity
-        #     - Background should complement the garments without distraction
-        #
-        #     QUALITY STANDARDS:
-        #     - Maintain perfect visual consistency across all poses
-        #     - IDENTICAL BACKGROUND: Same backdrop, lighting, and setting in every single image
-        #     - Natural, realistic appearance with professional fashion photography aesthetics
-        #     - Ensure garment details are clearly visible and accurately represented
-        #     - Professional retouching standards while preserving authenticity
-        #     - Consistent environmental elements throughout the entire photoshoot series
-        #
-        #     Ensure perfect visual consistency while maintaining natural, realistic appearance and professional fashion photography standards.
-        # """
+        if upper_garment_specs:
+            garmentdescription+=f" Upper garment details: {upper_garment_specs}"
 
-        image_prompt = f"""
-            Could you please create a model photoshoot for given all poses with this given garment
+        if lower_garment_specs:
+            garmentdescription+=f" Lower garment details: {lower_garment_specs}"
 
-            Replicate the EXACT garment from reference image - match fabric texture, color saturation, pattern details in whole garment, fit precision, style elements, Clearly shows: Button detailing and garment construction identically
+        promptDetails = f"{model_description} {garmentdescription}"
 
-            Human model age: {age} years old {gender} ({ethnicity})
-            GARMENT FITTING: {fitting}
-            
-            CRITICAL REQUIREMENT: Generate {len(poses)} SEPARATE individual images
-            - Each pose must be in its own distinct image
-            - Do NOT combine multiple poses in a single image
-            - Create one individual image per pose listed below
-            - Total output: {len(poses)} separate image files
-            
-            GARMENT STYLING:
-            {garment_detailing}
-
-            INDIVIDUAL POSE REQUIREMENTS:
-            Generate the following poses as SEPARATE images:
-            {poses_detailed}
-            
-            BACKGROUND CONSISTENCY:
-            - CRITICAL: Use the EXACT same background across ALL separate poses images
-            - Maintain identical background lighting, texture, and color throughout the entire photoshoot
-            - No background variations or changes between different poses
-            - Consistent studio backdrop or setting for visual continuity
-            - Background should complement the garments without distraction
-
-            TECHNICAL SPECIFICATIONS:
-            - Use exact same lower garment type
-            - Use exact same upper garment type
-            - Ultra-high resolution (4K+), **specifically 2160x3840 pixels**, photorealistic quality
-            - **Aspect ratio: 9:16 (vertical)**
-            - Professional fashion photography lighting with soft shadows
-            - Precise fabric texture rendering and authentic draping
-            - Color-accurate reproduction matching reference materials
-            - Sharp focus on model and garments with depth of field
-            - Professional model positioning and natural body language
-            - Accurate garment length and silhouette representation
-
-            Ensure perfect visual consistency while maintaining natural, realistic appearance and professional fashion photography standards.
-        """
+        base_image_prompt = f'Create a photorealistic image of a model wearing this exact garment. {promptDetails}. The final image should only contain the model photoshoot. The model should be in the following pose: "{body_poses[0]}". Background: "The model is in a beautiful, lush natural setting, like a park or forest with soft, dappled sunlight.". Ensure the model\'s face and body are consistent for subsequent images.'
 
         parts = []
         if upper_garment_image:
@@ -1098,47 +716,78 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 data=lower_image_data,
             ))
 
-        parts.append(types.Part.from_text(text=image_prompt))
+        parts.append(types.Part.from_text(text=base_image_prompt))
 
-        client = genai.Client(
-            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
-        )
-
-        model_gemini = "gemini-2.5-flash-image-preview"
-
-        contents = [
+        base_contents = [
             types.Content(
                 role="user",
                 parts=parts,
             ),
         ]
 
-        generate_content_config = types.GenerateContentConfig(
-            response_modalities=[
-                "IMAGE",
-                "TEXT",
-            ]
-        )
-
         response = client.models.generate_content(
             model=model_gemini,
-            contents=contents,
+            contents=base_contents,
             config=generate_content_config
         )
 
-        file_index = 0
+        base_image_filename=""
         for part in response.candidates[0].content.parts:
             if part.text is not None:
                 print(part.text)
             elif part.inline_data is not None:
-                file_index += 1
                 image = Image.open(BytesIO(part.inline_data.data))
-                output_filename = f"{uuid.uuid4()}_photoshoot_{file_index}.png"
-                filename=f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
-                image.save(filename)
+                output_filename = f"{uuid.uuid4()}_photoshoot_0.png"
+                base_image_filename=f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
+                image.save(base_image_filename)
                 all_generated_images.append(output_filename)
 
+        if base_image_filename:
+            parts.pop()
+            with open(base_image_filename, "rb") as f:
+                base_image_data = f.read()
+
+            parts.append(types.Part.from_bytes(
+                mime_type=f"image/png",
+                data=base_image_data,
+            ))
+
+            for unique_num, pose_detail in enumerate(body_poses[1:]):
+                image_prompt = f'Using the model, face, and background from the reference image, create a new photorealistic image. The model should be wearing the provided garment and be in the following pose: "{pose_detail}". Maintain the exact same model, face, and background. The final image must only contain the model photoshoot.'
+                parts.append(types.Part.from_text(text=image_prompt))
+
+                pose_contents = [
+                    types.Content(
+                        role="user",
+                        parts=parts,
+                    ),
+                ]
+
+                response = client.models.generate_content(
+                    model=model_gemini,
+                    contents=pose_contents,
+                    config=generate_content_config
+                )
+
+                for part in response.candidates[0].content.parts:
+                    if part.text is not None:
+                        print(part.text)
+                    elif part.inline_data is not None:
+                        image = Image.open(BytesIO(part.inline_data.data))
+                        output_filename = f"{uuid.uuid4()}_photoshoot_{unique_num+1}.png"
+                        base_image_filename = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
+                        image.save(base_image_filename)
+                        all_generated_images.append(output_filename)
+
+                parts.pop()
+
         total_credit = len(all_generated_images)
+        cost_estimate = calculate_estimated_cost(
+            num_poses=len(body_poses),
+            has_upper_garment=bool(upper_garment_filename),
+            has_lower_garment=bool(lower_garment_filename)
+        )
+        print(f"Estimated total cost: ${cost_estimate['estimated_total_cost']}")
 
         user_id = garment_mapping_dict.get("id")
         user_data = list(mongoOperation().get_spec_data_from_coll("company_data", {"id": user_id}))
