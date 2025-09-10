@@ -52,7 +52,7 @@ def calculate_estimated_cost(num_poses, has_upper_garment=True, has_lower_garmen
     }
 
 def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upper_garment_filename,
-                                        lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_type):
+                                        lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_type, background_description):
     """
     Background task for generating photoshoot images
     """
@@ -687,7 +687,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         promptDetails = f"{model_description} {garmentdescription}"
 
-        base_image_prompt = f'Create a photorealistic image of a model wearing this exact garment. {promptDetails}. The final image should only contain the model photoshoot. The model should be in the following pose: "{body_poses[0]}". Background: "The model is in a beautiful, lush natural setting, like a park or forest with soft, dappled sunlight.". Ensure the model\'s face and body are consistent for subsequent images.'
+        base_image_prompt = f'Create a photorealistic image of a model wearing this exact garment. {promptDetails}. The final image should only contain the model photoshoot. The model should be in the following pose: "{body_poses[0]}". Background: "{background_description}". Ensure the model\'s face and body are consistent for subsequent images.'
 
         parts = []
         if upper_garment_image:

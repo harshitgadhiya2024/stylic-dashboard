@@ -588,6 +588,7 @@ def ai_photoshoot():
             height = request.form.get("height")
             width = request.form.get("width")
             fitting = request.form.get("fitting")
+            background_description = request.form.get("background_description")
             age = request.form.get("age")
             upper_garment_type = request.form.get("upper_garment_type")
             upper_garment_specs = request.form.get("upper_garment_specs")
@@ -720,6 +721,7 @@ def ai_photoshoot():
                 "photoshoot_id": photoshoot_id,
                 "upload_garment_type": garment_upload_type,
                 "age_group": age_group,
+                "background_description": background_description,
                 "gender": gender,
                 "ethnicity": ethnicity,
                 "height": height,
@@ -746,7 +748,7 @@ def ai_photoshoot():
                 pass
 
             with app.app_context():
-                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_upload_type)
+                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_upload_type, background_description)
 
             flash("Photoshoot Generation started successfully...", "success")
             return redirect("/ai-photoshoot")
