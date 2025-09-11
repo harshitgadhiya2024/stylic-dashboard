@@ -672,12 +672,12 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         model_description = f"A {height}, {weight} {ethnicity} {gender} model, age {age} {age_group}."
         garmentdescription = ""
-        if garment_type=="upper_garment":
-            garmentdescription = f"The model is wearing a {fitting} {upper_garment_type}."
-        elif garment_type=="lower_garment":
-            garmentdescription = f"The model is wearing a {lower_garment_type}."
-        else:
-            garmentdescription = f"The model is wearing a {fitting} {upper_garment_type} and {lower_garment_type}."
+        # if garment_type=="upper_garment":
+        #     garmentdescription = f"The model is wearing a {fitting} {upper_garment_type}."
+        # elif garment_type=="lower_garment":
+        #     garmentdescription = f"The model is wearing a {lower_garment_type}."
+        # else:
+        #     garmentdescription = f"The model is wearing a {fitting} {upper_garment_type} and {lower_garment_type}."
 
         if upper_garment_specs:
             garmentdescription+=f" Upper garment details: {upper_garment_specs}"
@@ -685,9 +685,60 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         if lower_garment_specs:
             garmentdescription+=f" Lower garment details: {lower_garment_specs}"
 
-        promptDetails = f"{model_description} {garmentdescription}"
+        # promptDetails = f"{model_description} {garmentdescription}"
 
-        base_image_prompt = f'Create a photorealistic image of a model wearing this exact garment. {promptDetails}. The final image should only contain the model photoshoot. The model should be in the following pose: "{body_poses[0]}". Background: "{background_description}". Ensure the model\'s face and body are consistent for subsequent images.'
+        base_image_prompt = f'''
+            PROFESSIONAL GARMENT PHOTOSHOOT REQUEST
+            
+            OBJECTIVE:
+            Generate a comprehensive model photo featuring a professional model showcasing the provided reference garment with commercial-grade quality and precision.
+            
+            MODEL SPECIFICATIONS:
+            - Age: {age} years
+            - Ethnicity: {ethnicity}
+            - Gender: {gender}
+            - Pose: {body_poses[0]}
+            - Background: {background_description}
+            - Professional fashion model appearance
+            
+            GARMENT DETAILING:
+            {garmentdescription}
+            
+            GARMENT REQUIREMENTS:
+            - CRITICAL: Exact replication of reference garment required
+            - Match all design elements with 100% accuracy:
+              * Fabric texture and weave pattern
+              * Color saturation and tone precision
+              * Pattern details and placement
+              * Garment construction and seaming
+              * Style elements and embellishments
+              * Fit characteristics: Regular fit silhouette
+            - NO creative interpretation or modifications allowed
+            - Maintain authentic draping and fabric behavior
+            
+            TECHNICAL SPECIFICATIONS:
+            - Resolution: Ultra-high definition 4K+ (minimum 2160x3840 pixels)
+            - Aspect Ratio: 9:16 vertical orientation (portrait format)
+            - Image Quality: Photorealistic, commercial photography standard
+            - Lighting: Professional fashion photography setup with:
+              * Soft, diffused key lighting
+              * Controlled shadow definition
+              * Balanced exposure across garment and model
+            - Focus: Tack-sharp primary subject with appropriate depth of field
+            - Color Accuracy: True-to-life color reproduction matching reference materials
+            - Composition: Professional fashion photography framing and positioning
+            
+            QUALITY STANDARDS:
+            - Commercial fashion photography grade
+            - Suitable for e-commerce and marketing applications
+            - Consistent lighting and color temperature across pose
+            - Natural model positioning with authentic body language
+            - Precise garment representation without distortion
+            - Professional studio environment aesthetic
+            
+            DELIVERABLES:
+            high-resolution image, each featuring the specified pose while maintaining visual consistency and professional photography standards throughout the series.
+        '''
 
         parts = []
         if upper_garment_image:
@@ -753,7 +804,14 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             ))
 
             for unique_num, pose_detail in enumerate(body_poses[1:]):
-                image_prompt = f'Using the model, face, and background from the reference image, create a new photorealistic image. The model should be wearing the provided garment and be in the following pose: "{pose_detail}". Maintain the exact same model, face, and background. The final image must only contain the model photoshoot.'
+                image_prompt = f'''
+                    Using the exact same model face, and background from the reference image, create a new photorealistic image. The model should be wearing the provided reference garment.
+                    
+                    PHOTOSHOOT REQUIREMENT
+                    Exact pose: {pose_detail}
+                    
+                    Maintain the exact same model face, and background. The final image must only contain the model photoshoot.
+                '''
                 parts.append(types.Part.from_text(text=image_prompt))
 
                 pose_contents = [
