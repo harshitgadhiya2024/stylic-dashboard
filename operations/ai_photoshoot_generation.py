@@ -661,7 +661,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         body_poses = []
         for num, body_pose in enumerate(poses):
             body_pose = body_pose.replace('["', "").replace('"]', "").replace('"', '')
-            if ".png.png" in body_pose:
+            if ".png.webp" in body_pose:
                 index_num = int(body_pose.split(".")[0].split("_")[-1])
                 body_pose = main_poses[index_num]
             else:
