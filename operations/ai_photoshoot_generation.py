@@ -1,3 +1,4 @@
+import subprocess
 from operations.mongo_operation import mongoOperation
 from utils.constant import constant_dict
 import os, uuid
@@ -7,6 +8,80 @@ from io import BytesIO
 from google import genai
 from google.genai import types
 
+
+def generate_model_face(face_params, output_filename, photoshoot_id):
+    """Generate a consistent model face based on parameters"""
+    try:
+        prompt = create_face_prompt(face_params)
+        print(f"Generating face with prompt: {prompt}")
+        generate_content_config = types.GenerateContentConfig(
+            response_modalities=[
+                "IMAGE",
+                "TEXT",
+            ]
+        )
+        client = genai.Client(
+            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+        )
+
+        model_gemini = "gemini-2.5-flash-image-preview"
+        parts = []
+        parts.append(types.Part.from_text(text=prompt))
+        base_contents = [
+            types.Content(
+                role="user",
+                parts=parts,
+            ),
+        ]
+
+        response = client.models.generate_content(
+            model=model_gemini,
+            contents=base_contents,
+            config=generate_content_config
+        )
+
+        for part in response.candidates[0].content.parts:
+            if part.text is not None:
+                print(part.text)
+            elif part.inline_data is not None:
+                image = Image.open(BytesIO(part.inline_data.data))
+                image_path = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
+                image.save(image_path)
+
+        return output_filename
+
+    except Exception as e:
+        print(f"Error generating face: {e}")
+        return None
+
+def create_face_prompt(params):
+    """Create detailed face generation prompt"""
+    try:
+        prompt_parts = []
+
+        # Basic description
+        prompt_parts.append(
+            f"{params['ethnicity']} headshot portrait of a {params['age']} years of {params['gender']} person")
+
+        # Hair
+        hair_desc = f"{params['hair']['color']} hair color"
+        prompt_parts.append(hair_desc)
+
+        # Skin
+        prompt_parts.append(f"{params['skin']['tone']} {params['skin']['texture']} skin")
+
+        # Expression and lighting
+        prompt_parts.append(f"{params['expression']} expression")
+        prompt_parts.append(f"photographed with {params['lighting']}")
+
+        # Quality descriptors
+        prompt_parts.append("high resolution, photorealistic, clean background, Don't wear anything only give face image")
+
+        return ", ".join(prompt_parts)
+
+    except Exception as e:
+        print(f"Error creating face prompt: {e}")
+        return ""
 
 def calculate_estimated_cost(num_poses, has_upper_garment=True, has_lower_garment=True):
     """
@@ -51,8 +126,23 @@ def calculate_estimated_cost(num_poses, has_upper_garment=True, has_lower_garmen
         'subsequent_request_cost': round(subsequent_request_cost, 4)
     }
 
+
+def upscale_image(input_image: str, output_image: str):
+    try:
+        # Ensure the binary has execute permission
+        # subprocess.run(["chmod", "u+x", "realesrgan-ncnn-vulkan"], check=True)
+
+        # Run realesrgan with input and output
+        subprocess.run(
+            ["./realesrgan-ncnn-vulkan", "-i", input_image, "-o", output_image, "-n", "realesrgan-x4plus"],
+            check=True
+        )
+        return True
+    except:
+        return False
+
 def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upper_garment_filename,
-                                        lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_type, background_description):
+                                        lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_type, background_description, selected_background=None):
     """
     Background task for generating photoshoot images
     """
@@ -66,12 +156,6 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             {"status": "processing"}
         )
 
-        client = genai.Client(
-            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
-        )
-
-        model_gemini = "gemini-2.5-flash-image-preview"
-
         gender = garment_mapping_dict.get("gender")
         height = garment_mapping_dict.get("height")
         weight = garment_mapping_dict.get("weight")
@@ -80,6 +164,8 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
         fitting = garment_mapping_dict.get("fitting")
         age = garment_mapping_dict.get("age")
         poses = garment_mapping_dict.get("selected_poses", [])
+        pose_input_method = garment_mapping_dict.get("pose_input_method", "predefined")
+        pose_descriptions = garment_mapping_dict.get("pose_descriptions", [])
         upper_garment_image = upper_garment_filename
         below_garment_image = lower_garment_filename
 
@@ -651,6 +737,12 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
    "Model demonstrating traditional sitting technique, gathering draped fabric appropriately around legs before sitting, showcasing proper lower body draping etiquette",
 ]
 
+        client = genai.Client(
+            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+        )
+
+        model_gemini = "gemini-2.5-flash-image-preview"
+
         generate_content_config = types.GenerateContentConfig(
             response_modalities=[
                 "IMAGE",
@@ -658,87 +750,64 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             ]
         )
 
+        photo_file_name = f"{uuid.uuid4()}generatedface.png"
+
+        # face_params = {
+        #     "hair": {
+        #         "color": "black",
+        #     },
+        #     "skin": {
+        #         "tone": "light",
+        #         "texture": "smooth"
+        #     },
+        #     "age_group": age_group,
+        #     "age": age,
+        #     "gender": gender,
+        #     "expression": "neutral",
+        #     "ethnicity": ethnicity,
+        #     "lighting": "soft natural light"
+        # }
+        #
+        # face_photo_url = generate_model_face(face_params, photo_file_name, photoshoot_id)
+        # while not face_photo_url:
+        #     face_photo_url = generate_model_face(face_params, photo_file_name, photoshoot_id)
+        #     print("Retrying face generation...")
+
+        # face_photo_url = f"static/photoshoots_folders/{photoshoot_id}/{face_photo_url}"
+        mongoOperation().update_mongo_data(
+            "photoshoot_data",
+            {"id": user_id, "photoshoot_id": photoshoot_id},
+            {"status": "masking_generated"}
+        )
+
+        # Handle background description - use selected background image if provided
+        final_background_description = background_description
+        if selected_background:
+            final_background_description = f"Use the exact same background from the provided background image."
+        elif not background_description:
+            final_background_description = "Professional studio background with soft, even lighting that complements the garment"
+
         body_poses = []
-        for num, body_pose in enumerate(poses):
-            body_pose = body_pose.replace('["', "").replace('"]', "").replace('"', '')
-            if ".png.webp" in body_pose:
-                index_num = int(body_pose.split(".")[0].split("_")[-1])
-                body_pose = main_poses[index_num]
-            else:
-                index_num = int(body_pose.split(".")[0].split("_")[-1])-1
-                body_pose = fashion_poses[index_num]
+        if pose_input_method == "predefined":
+            # Original predefined poses logic
+            for num, body_pose in enumerate(poses):
+                body_pose = body_pose.replace('["', "").replace('"]', "").replace('"', '')
+                if ".png.webp" in body_pose:
+                    index_num = int(body_pose.split(".")[0].split("_")[-1])
+                    body_pose = main_poses[index_num]
+                else:
+                    index_num = int(body_pose.split(".")[0].split("_")[-1])-1
+                    body_pose = fashion_poses[index_num]
+                body_poses.append(body_pose)
+        elif pose_input_method == "upload" or pose_input_method == "prompts":
+            # Use the analyzed pose descriptions directly
+            body_poses = pose_descriptions if pose_descriptions else []
 
-            body_poses.append(body_pose)
-
-        model_description = f"A {height}, {weight} {ethnicity} {gender} model, age {age} {age_group}."
         garmentdescription = ""
-        # if garment_type=="upper_garment":
-        #     garmentdescription = f"The model is wearing a {fitting} {upper_garment_type}."
-        # elif garment_type=="lower_garment":
-        #     garmentdescription = f"The model is wearing a {lower_garment_type}."
-        # else:
-        #     garmentdescription = f"The model is wearing a {fitting} {upper_garment_type} and {lower_garment_type}."
-
         if upper_garment_specs:
             garmentdescription+=f" Upper garment details: {upper_garment_specs}"
-
         if lower_garment_specs:
             garmentdescription+=f" Lower garment details: {lower_garment_specs}"
-
-        # promptDetails = f"{model_description} {garmentdescription}"
-
-        base_image_prompt = f'''
-            PROFESSIONAL GARMENT PHOTOSHOOT REQUEST
-            
-            OBJECTIVE:
-            Generate a comprehensive model photo featuring a professional model showcasing the provided reference garment with commercial-grade quality and precision.
-            
-            MODEL SPECIFICATIONS:
-            - Age: {age} years
-            - Ethnicity: {ethnicity}
-            - Gender: {gender}
-            - Pose: {body_poses[0]}
-            - Background: {background_description}
-            - Professional fashion model appearance
-            
-            GARMENT DETAILING:
-            {garmentdescription}
-            
-            GARMENT REQUIREMENTS:
-            - CRITICAL: Exact replication of reference garment required
-            - Match all design elements with 100% accuracy:
-              * Fabric texture and weave pattern
-              * Color saturation and tone precision
-              * Pattern details and placement
-              * Garment construction and seaming
-              * Style elements and embellishments
-              * Fit characteristics: Regular fit silhouette
-            - NO creative interpretation or modifications allowed
-            - Maintain authentic draping and fabric behavior
-            
-            TECHNICAL SPECIFICATIONS:
-            - Resolution: Ultra-high definition 4K+ (minimum 2160x3840 pixels)
-            - Aspect Ratio: 9:16 vertical orientation (portrait format)
-            - Image Quality: Photorealistic, commercial photography standard
-            - Lighting: Professional fashion photography setup with:
-              * Soft, diffused key lighting
-              * Controlled shadow definition
-              * Balanced exposure across garment and model
-            - Focus: Tack-sharp primary subject with appropriate depth of field
-            - Color Accuracy: True-to-life color reproduction matching reference materials
-            - Composition: Professional fashion photography framing and positioning
-            
-            QUALITY STANDARDS:
-            - Commercial fashion photography grade
-            - Suitable for e-commerce and marketing applications
-            - Consistent lighting and color temperature across pose
-            - Natural model positioning with authentic body language
-            - Precise garment representation without distortion
-            - Professional studio environment aesthetic
-            
-            DELIVERABLES:
-            high-resolution image, each featuring the specified pose while maintaining visual consistency and professional photography standards throughout the series.
-        '''
 
         parts = []
         if upper_garment_image:
@@ -767,77 +836,164 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 data=lower_image_data,
             ))
 
-        parts.append(types.Part.from_text(text=base_image_prompt))
+        generated_first_image_path = ""
+        if garment_type=="upper_garment":
+            body_poses.append("zommed detailing view: detailing and zommed view for focusing on chest side")
+        for unique_num, pose_detail in enumerate(body_poses):
+            if unique_num==0:
+                if selected_background:
+                    try:
+                        background_image_path = f"static/background_images/{selected_background}"
+                        if os.path.exists(background_image_path):
+                            with open(background_image_path, "rb") as f:
+                                background_image_data = f.read()
+                            parts.append(types.Part.from_bytes(
+                                mime_type="image/webp",
+                                data=background_image_data,
+                            ))
+                            print(f"Added background image: {selected_background}")
+                        else:
+                            print(f"Background image not found: {background_image_path}")
+                    except Exception as e:
+                        print(f"Error loading background image: {e}")
 
-        base_contents = [
-            types.Content(
-                role="user",
-                parts=parts,
-            ),
-        ]
-
-        response = client.models.generate_content(
-            model=model_gemini,
-            contents=base_contents,
-            config=generate_content_config
-        )
-
-        base_image_filename=""
-        for part in response.candidates[0].content.parts:
-            if part.text is not None:
-                print(part.text)
-            elif part.inline_data is not None:
-                image = Image.open(BytesIO(part.inline_data.data))
-                output_filename = f"{uuid.uuid4()}_photoshoot_0.png"
-                base_image_filename=f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
-                image.save(base_image_filename)
-                all_generated_images.append(output_filename)
-
-        if base_image_filename:
-            parts.pop()
-            with open(base_image_filename, "rb") as f:
-                base_image_data = f.read()
-
-            parts.append(types.Part.from_bytes(
-                mime_type=f"image/png",
-                data=base_image_data,
-            ))
-
-            for unique_num, pose_detail in enumerate(body_poses[1:]):
                 image_prompt = f'''
-                    Using the exact same model face, and background from the reference image, create a new photorealistic image. The model should be wearing the provided reference garment.
+                    Create a professional fashion photoshoot image of a {age} years {age_group} old {ethnicity} {gender} wearing the specified outfit with given garment.
+    
+                    CRITICAL REQUIREMENTS:
+                    1. BACKGROUND: Use the EXACT background from the reference background image - preserve all characteristics with 100% accuracy
+                    2. OUTFIT COORDINATION: Ensure both garments work harmoniously together while maintaining their individual reference accuracy
+    
+                    GARMENT REQUIREMENTS:
+                    - CRITICAL: Exact replication of reference garment required
+                    - Match all design elements with 100% accuracy:
+                      * Fabric texture and weave pattern
+                      * Color saturation and tone precision
+                      * Pattern details and placement
+                      * Garment construction and seaming
+                      * Style elements and embellishments
+                      * Fit characteristics: Regular fit silhouette
+                    - NO creative interpretation or modifications allowed
+                    - Maintain authentic draping and fabric behavior
+          
+                    MODEL SPECIFICATIONS (MUST REMAIN CONSISTENT):
+                    - Age: {age} years ({age_group})
+                    - Ethnicity: {ethnicity}
+                    - Gender: {gender}
+                    - Height: {height}
+                    - Build: {weight}
+                    - Professional fashion model appearance with natural, authentic expression
+    
+                    GARMENT SPECIFICATIONS (EXACT REPLICATION REQUIRED):
+                    {garmentdescription}
                     
-                    PHOTOSHOOT REQUIREMENT
-                    Exact pose: {pose_detail}
-                    
-                    Maintain the exact same model face, and background. The final image must only contain the model photoshoot.
+                    BACKGROUND SPECIFICATIONS (EXACT REPLICATION REQUIRED):
+                    {final_background_description}
+    
+                    POSE SPECIFICATIONS (EXACT REPLICATION REQUIRED):
+                    {pose_detail}
+    
+                    TECHNICAL SPECIFICATIONS:
+                    - Ultra-high resolution (4K+), photorealistic quality
+                    - Professional fashion photography lighting with soft shadows
+                    - Precise fabric texture rendering and authentic draping for both pieces
+                    - Color-accurate reproduction matching all reference materials
+                    - Sharp focus on model and both garments with depth of field
+                    - Professional model positioning and natural body language
+                    - Seamless integration of all reference elements
+    
+                    QUALITY STANDARDS:
+                    - Commercial e-commerce photography grade
+                    - Suitable for high-end fashion marketing
+                    - Perfect garment representation without any distortion
+                    - Natural, professional model positioning
+                    - Clean, professional studio aesthetic
+                    - Consistent visual style for series continuity
+    
+                    Ensure perfect visual consistency across all elements while maintaining natural, realistic appearance and professional fashion photography standards.          
                 '''
-                parts.append(types.Part.from_text(text=image_prompt))
+            else:
+                if generated_first_image_path and unique_num==1:
+                    with open(generated_first_image_path, "rb") as f:
+                        generated_first_image_path_image_data = f.read()
+                    parts.append(types.Part.from_bytes(
+                        mime_type="image/png",
+                        data=generated_first_image_path_image_data,
+                    ))
+                image_prompt = f'''
+                    Use exact same background and model face as uploaded model image and need to change only pose
+                    
+                    POSE SPECIFICATIONS (EXACT REPLICATION REQUIRED):
+                    {pose_detail}
+                    
+                    GARMENT REQUIREMENTS:
+                    - CRITICAL: Exact replication of reference garment required
+                    - Match all design elements with 100% accuracy:
+                      * Fabric texture and weave pattern
+                      * Color saturation and tone precision
+                      * Pattern details and placement
+                      * Garment construction and seaming
+                      * Style elements and embellishments
+                      * Fit characteristics: Regular fit silhouette
+                    - NO creative interpretation or modifications allowed
+                    - Maintain authentic draping and fabric behavior
+          
+                    TECHNICAL SPECIFICATIONS:
+                    - Ultra-high resolution (4K+), photorealistic quality
+                    - Professional fashion photography lighting with soft shadows
+                    - Precise fabric texture rendering and authentic draping for both pieces
+                    - Color-accurate reproduction matching all reference materials
+                    - Sharp focus on model and both garments with depth of field
+                    - Professional model positioning and natural body language
+                    - Seamless integration of all reference elements
 
-                pose_contents = [
-                    types.Content(
-                        role="user",
-                        parts=parts,
-                    ),
-                ]
+                    QUALITY STANDARDS:
+                    - Commercial e-commerce photography grade
+                    - Suitable for high-end fashion marketing
+                    - Perfect garment representation without any distortion
+                    - Natural, professional model positioning
+                    - Clean, professional studio aesthetic
+                    - Consistent visual style for series continuity
 
-                response = client.models.generate_content(
-                    model=model_gemini,
-                    contents=pose_contents,
-                    config=generate_content_config
-                )
+                    Ensure perfect visual consistency across all elements while maintaining natural, realistic appearance and professional fashion photography standards.          
+                '''
 
-                for part in response.candidates[0].content.parts:
-                    if part.text is not None:
-                        print(part.text)
-                    elif part.inline_data is not None:
-                        image = Image.open(BytesIO(part.inline_data.data))
-                        output_filename = f"{uuid.uuid4()}_photoshoot_{unique_num+1}.png"
-                        base_image_filename = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
-                        image.save(base_image_filename)
+            parts.append(types.Part.from_text(text=image_prompt))
+
+            pose_contents = [
+                types.Content(
+                    role="user",
+                    parts=parts,
+                ),
+            ]
+
+            response = client.models.generate_content(
+                model=model_gemini,
+                contents=pose_contents,
+                config=generate_content_config
+            )
+
+            for part in response.candidates[0].content.parts:
+                if part.text is not None:
+                    print(part.text)
+                elif part.inline_data is not None:
+                    image = Image.open(BytesIO(part.inline_data.data))
+                    output_filename = f"{uuid.uuid4()}_photoshoot_{unique_num + 1}.png"
+                    base_image_filename = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
+                    image.save(base_image_filename)
+                    upscaled_filename = f"static/photoshoots_folders/{photoshoot_id}/upscaled_{output_filename}"
+                    response_upscale = upscale_image(base_image_filename, upscaled_filename)
+                    if response_upscale:
+                        all_generated_images.append("upscaled_" + output_filename)
+                    else:
                         all_generated_images.append(output_filename)
 
-                parts.pop()
+                    if unique_num==0:
+                        generated_first_image_path=base_image_filename
+                        parts.pop()
+                        parts.pop()
+                    else:
+                        parts.pop()
 
         total_credit = len(all_generated_images)
         cost_estimate = calculate_estimated_cost(

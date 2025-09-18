@@ -1,54 +1,60 @@
-import cv2
-import numpy as np
-from PIL import Image
-import requests
-import os
+import base64
+from openai import OpenAI
 
+try:
+    client = OpenAI(api_key="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")
 
-def download_model():
-    """Download the model if it doesn't exist"""
-    model_url = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth"
-    model_path = "RealESRGAN_x4plus.pth"
+    pose_analysis_prompt = """
+    POSE ANALYSIS REQUEST
 
-    if not os.path.exists(model_path):
-        print("Downloading model...")
-        response = requests.get(model_url)
-        with open(model_path, 'wb') as f:
-            f.write(response.content)
-        print("Model downloaded!")
-    return model_path
+    Analyze this image and provide a detailed description of the person's pose and body positioning ONLY. 
 
+    IMPORTANT INSTRUCTIONS:
+    - Focus EXCLUSIVELY on body positioning, stance, and pose
+    - DO NOT describe clothing, garments, fabrics, colors, or fashion items
+    - DO NOT describe background, setting, or environment
+    - DO NOT describe facial features, hair, or accessories
+    - Focus on: arm positions, leg positions, body angle, stance, posture, hand placement
 
-def enhance_image_simple(input_path, output_path, scale=2):
-    """Simple enhancement without problematic dependencies"""
+    Provide a clear, detailed description of the pose that could be used to instruct a model to recreate the same body positioning.
 
-    # Read image
-    img = cv2.imread(input_path)
+    Example format: "Model standing with left hand on hip, right arm extended outward, weight shifted to right leg, head turned slightly to the left, confident upright posture"
 
-    # Method 1: Advanced OpenCV enhancement
-    # Noise reduction
-    denoised = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    POSE DESCRIPTION:
+    """
 
-    # Edge-preserving filter
-    smooth = cv2.edgePreservingFilter(denoised, flags=1, sigma_s=150, sigma_r=0.25)
+    # Generate content with image using GPT-4 Vision
+    response = client.chat.completions.create(
+        model="gpt-4-vision-preview",  # or "gpt-4o" for the newer model
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": pose_analysis_prompt
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{image_base64}",
+                            "detail": "high"
+                        }
+                    }
+                ]
+            }
+        ],
+        max_tokens=500,
+        temperature=0.3
+    )
 
-    # Sharpening
-    gaussian_3 = cv2.GaussianBlur(smooth, (0, 0), 2.0)
-    unsharp_mask = cv2.addWeighted(smooth, 1.5, gaussian_3, -0.5, 0)
+    if response and response.choices and response.choices[0].message.content:
+        # Clean up the response to extract just the pose description
+        pose_description = response.choices[0].message.content.strip()
+        return pose_description
 
-    # High-quality upscaling
-    height, width = unsharp_mask.shape[:2]
-    upscaled = cv2.resize(unsharp_mask, (width * scale, height * scale),
-                          interpolation=cv2.INTER_LANCZOS4)
+    return "Model in natural standing pose"
 
-    # Final sharpening
-    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-    final = cv2.filter2D(upscaled, -1, kernel)
-
-    cv2.imwrite(output_path, final)
-    return final
-
-
-# Usage (requires installing real-esrgan)
-# pip install realesrgan
-upscaled_img = enhance_image_simple('generated_image_24c50410-1ea7-47fb-bbf8-c8aba57ba30b.png', 'enhanced_output.jpg', scale=2)
+except Exception as e:
+    print(f"Error analyzing pose from image: {str(e)}")
+    return "Model in natural standing pose"

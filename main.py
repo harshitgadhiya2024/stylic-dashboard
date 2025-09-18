@@ -556,7 +556,7 @@ def dashboard():
         total_photos = 0
         pending_photoshoot = 0
         for photoshoot in photoshoot_data:
-            status = photoshoot["status"]
+            status = photoshoot.get("status", "not")
             if status=="completed":
                 total_photos+=len(photoshoot["selected_poses"])
             else:
@@ -589,16 +589,104 @@ def ai_photoshoot():
             width = request.form.get("width")
             fitting = request.form.get("fitting")
             background_description = request.form.get("background_description")
+            selected_background = request.form.get("selected_background")
             age = request.form.get("age")
             upper_garment_type = request.form.get("upper_garment_type")
             upper_garment_specs = request.form.get("upper_garment_specs")
             lower_garment_specs = request.form.get("lower_garment_specs")
             lower_garment_type = request.form.get("lower_garment_type")
-            selected_poses = request.form.get("selected_poses")
-            selected_poses = selected_poses.replace('["', "").replace('"]', "").replace('"', '')
-            selected_poses = selected_poses.split(",") if selected_poses else []
+
+            # Generate photoshoot ID early for use in pose processing
+            photoshoot_id = str(uuid.uuid4())
+
+            # Handle different pose input methods
+            try:
+                pose_input_method = request.form.get("pose_input_method", "predefined")
+                selected_poses = []
+                pose_descriptions = []
+
+                print(f"DEBUG: Pose input method received: {pose_input_method}")
+                print(f"DEBUG: Form data keys: {list(request.form.keys())}")
+                print(f"DEBUG: Files keys: {list(request.files.keys())}")
+
+            except Exception as e:
+                print(f"ERROR: Failed to initialize pose processing: {str(e)}")
+                flash("Error initializing pose processing. Please try again.", "danger")
+                return redirect("/ai-photoshoot")
+
+            if pose_input_method == "predefined":
+                # Original predefined poses logic
+                selected_poses_raw = request.form.get("selected_poses")
+                if selected_poses_raw:
+                    selected_poses_raw = selected_poses_raw.replace('["', "").replace('"]', "").replace('"', '')
+                    selected_poses = selected_poses_raw.split(",") if selected_poses_raw else []
+
+                if not selected_poses:
+                    flash("Please select at least one pose.", "danger")
+                    return redirect("/ai-photoshoot")
+
+            elif pose_input_method == "upload":
+                # Handle uploaded pose images
+                try:
+                    from operations.pose_image_analyzer import analyze_multiple_pose_images, save_uploaded_pose_images, validate_pose_image
+                except ImportError as e:
+                    print(f"Import error: {str(e)}")
+                    flash("System error. Please try again.", "danger")
+                    return redirect("/ai-photoshoot")
+
+                pose_images = request.files.getlist("pose_images")
+                if not pose_images or all(not img.filename for img in pose_images):
+                    flash("Please upload at least one pose image.", "danger")
+                    return redirect("/ai-photoshoot")
+
+                valid_images = [img for img in pose_images if img.filename and validate_pose_image(img)]
+
+                if not valid_images:
+                    flash("Please upload valid pose images (PNG, JPG, JPEG, GIF, BMP, WEBP).", "danger")
+                    return redirect("/ai-photoshoot")
+
+                if len(valid_images) > 8:
+                    flash("You can only upload up to 8 pose images.", "danger")
+                    return redirect("/ai-photoshoot")
+
+                # Save uploaded images and analyze poses
+                try:
+                    saved_paths = save_uploaded_pose_images(valid_images, photoshoot_id)
+                    pose_descriptions = analyze_multiple_pose_images(saved_paths)
+                    selected_poses = [f"uploaded_pose_{i+1}" for i in range(len(pose_descriptions))]
+                except Exception as e:
+                    print(f"Error processing uploaded pose images: {str(e)}")
+                    flash("Error processing uploaded pose images. Please try again.", "danger")
+                    return redirect("/ai-photoshoot")
+
+            elif pose_input_method == "prompts":
+                # Handle text prompts
+                pose_prompts = request.form.getlist("pose_prompts[]")
+                pose_prompts = [prompt.strip() for prompt in pose_prompts if prompt.strip()]
+
+                if not pose_prompts:
+                    flash("Please enter at least one pose description.", "danger")
+                    return redirect("/ai-photoshoot")
+
+                if len(pose_prompts) > 8:
+                    flash("You can only enter up to 8 pose descriptions.", "danger")
+                    return redirect("/ai-photoshoot")
+
+                pose_descriptions = pose_prompts
+                selected_poses = [f"text_prompt_{i+1}" for i in range(len(pose_descriptions))]
+
+            # Fallback validation - ensure we have poses
+            if not selected_poses:
+                print("ERROR: No poses selected or provided")
+                flash("Please select or provide at least one pose.", "danger")
+                return redirect("/ai-photoshoot")
+
             age = int(age) if age else 25
-            print(selected_poses)
+            print(f"DEBUG: Final pose input method: {pose_input_method}")
+            print(f"DEBUG: Final selected poses: {selected_poses}")
+            print(f"DEBUG: Final pose descriptions: {pose_descriptions}")
+            print(f"DEBUG: Number of poses: {len(selected_poses)}")
+            print("DEBUG: Pose processing completed successfully")
 
             photoshoot_data = list(mongoOperation().get_spec_data_from_coll("photoshoot_data", {"id": user_id}))
             total_pending_photos = 0
@@ -612,7 +700,6 @@ def ai_photoshoot():
                 flash("You don't have sufficient credits..", "danger")
                 return redirect("ai-photoshoot")
 
-            photoshoot_id = str(uuid.uuid4())
             all_images = []
             os.makedirs(f"static/photoshoots_folders/{photoshoot_id}", exist_ok=True)
             lower_garment_filename = ""
@@ -646,33 +733,6 @@ def ai_photoshoot():
                     flash("Your lower garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
 
-            # elif garment_upload_type == "full_body_garment":
-            #     exten1 = upper_garment_image.filename.split(".")[-1]
-            #     if upper_garment_image and allowed_file(upper_garment_image.filename):
-            #         upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
-            #         filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
-            #         upper_garment_image.save(filepath)
-            #         upper_garment_image_url = url_for('static',
-            #                                           filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
-            #                                           _external=True)
-            #         all_images.append(upper_garment_image_url)
-            #     else:
-            #         flash("Your upper garment image not valid...", "danger")
-            #         return redirect("/ai-photoshoot")
-            #
-            #     exten = lower_garment_image.filename.split(".")[-1]
-            #     if lower_garment_image and allowed_file(lower_garment_image.filename):
-            #         lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
-            #         filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
-            #         lower_garment_image.save(filepath)
-            #         lower_garment_image_url = url_for('static',
-            #                                           filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
-            #                                           _external=True)
-            #         all_images.append(lower_garment_image_url)
-            #     else:
-            #         flash("Your lower garment image not valid...", "danger")
-            #         return redirect("/ai-photoshoot")
-
             elif garment_upload_type == "one_piece_garment":
                 exten1 = upper_garment_image.filename.split(".")[-1]
                 if upper_garment_image and allowed_file(upper_garment_image.filename):
@@ -687,34 +747,6 @@ def ai_photoshoot():
                     flash("Your one-piece garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
 
-            # else:  # Default case for other garment types
-            #     if upper_garment_image:
-            #         exten1 = upper_garment_image.filename.split(".")[-1]
-            #         if allowed_file(upper_garment_image.filename):
-            #             upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
-            #             filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
-            #             upper_garment_image.save(filepath)
-            #             upper_garment_image_url = url_for('static',
-            #                                               filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
-            #                                               _external=True)
-            #             all_images.append(upper_garment_image_url)
-            #         else:
-            #             flash("Your upper garment image not valid...", "danger")
-            #             return redirect("/ai-photoshoot")
-            #
-            #     if lower_garment_image:
-            #         exten = lower_garment_image.filename.split(".")[-1]
-            #         if allowed_file(lower_garment_image.filename):
-            #             lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
-            #             filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
-            #             lower_garment_image.save(filepath)
-            #             lower_garment_image_url = url_for('static',
-            #                                               filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
-            #                                               _external=True)
-            #             all_images.append(lower_garment_image_url)
-            #         else:
-            #             flash("Your lower garment image not valid...", "danger")
-            #             return redirect("/ai-photoshoot")
 
             mapping_dict = {
                 "id": user_id,
@@ -722,6 +754,7 @@ def ai_photoshoot():
                 "upload_garment_type": garment_upload_type,
                 "age_group": age_group,
                 "background_description": background_description,
+                "selected_background": selected_background,
                 "gender": gender,
                 "ethnicity": ethnicity,
                 "height": height,
@@ -733,6 +766,8 @@ def ai_photoshoot():
                 "lower_garment_specification": lower_garment_specs,
                 "upper_garment_specification": upper_garment_specs,
                 "selected_poses": selected_poses,
+                "pose_input_method": pose_input_method,
+                "pose_descriptions": pose_descriptions,
                 "all_images": all_images,
                 "total_credit": 0,
                 "is_credit_debited": False,
@@ -747,16 +782,28 @@ def ai_photoshoot():
             except:
                 pass
 
-            with app.app_context():
-                executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_upload_type, background_description)
+            try:
+                print("DEBUG: Starting background task submission...")
+                with app.app_context():
+                    executor.submit(generate_photoshoot_background_task, mapping_dict, photoshoot_id, upper_garment_filename, lower_garment_filename, lower_garment_type, upper_garment_type, lower_garment_specs, upper_garment_specs, garment_upload_type, background_description, selected_background)
 
-            flash("Photoshoot Generation started successfully...", "success")
-            return redirect("/ai-photoshoot")
+                print("DEBUG: Background task submitted successfully")
+                flash("Photoshoot Generation started successfully...", "success")
+                return redirect("/ai-photoshoot")
+
+            except Exception as e:
+                print(f"ERROR: Failed to submit background task: {str(e)}")
+                flash("Error starting photoshoot generation. Please try again.", "danger")
+                return redirect("/ai-photoshoot")
         else:
             return render_template("ai-photoshoot.html", login_dict=login_dict)
 
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
         print(f"{datetime.now()}: Error in ai photoshoot route: {str(e)}")
+        print(f"Full error traceback:\n{error_details}")
+        flash("An unexpected error occurred. Please try again.", "danger")
         return redirect("/ai-photoshoot")
 
 
@@ -1037,7 +1084,7 @@ def order_history():
         total_photos = 0
         pending_photoshoot = 0
         for photoshoot in photoshoot_data:
-            status = photoshoot["status"]
+            status = photoshoot.get("status", "not completed")
             if status=="completed":
                 total_photos+=len(photoshoot["selected_poses"])
             else:

@@ -5,4 +5,9 @@
 *.iml
 *.log
 /h1
-/static/photoshoots_folders
+/static/photoshoots_folders/*
+/output_image/*
+/input_image/*
+/poses_photo/*
+/mac_os/*
+/static/background_images/*

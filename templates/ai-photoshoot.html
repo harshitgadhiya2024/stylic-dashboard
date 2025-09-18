@@ -44,6 +44,48 @@
             font-size: 14px;
             font-weight: 500;
         }
+
+        .background-card {
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .background-card:hover {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+
+        .background-card.selected {
+            border-color: #007bff;
+            background-color: #e9f3ff;
+            transform: scale(1.05);
+        }
+
+        .background-img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .background-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .background-selection-container {
+            margin: 20px 0;
+        }
     </style>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
@@ -805,12 +847,71 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p class="text-start" style="font-weight: bold;">Selected Pose:
-                                                        <span id="selectedCount">0</span> / 8
-                                                    </p>
-                                                    <div class="row" id="poseContainer" style="margin-bottom: 20px;">
+
+                                                    <!-- Background Image Selection -->
+                                                    <div class="background-selection-container">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <label class="form-label" style="font-weight: bold;">Select Background Image (Optional)</label>
+                                                                <div class="background-grid" id="backgroundGrid1">
+                                                                    <!-- Background images will be loaded here -->
+                                                                </div>
+                                                                <input type="hidden" name="selected_background" id="selectedBackground1" value="">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <input type="hidden" name="selected_poses" id="selectedPosesInput">
+
+                                                    <!-- Pose Input Method Selection -->
+                                                    <div class="row mb-4">
+                                                        <div class="col-12">
+                                                            <label class="form-label" style="font-weight: bold;">Choose Pose Input Method <span style="color: red;">*</span></label>
+                                                            <div class="btn-group w-100" role="group" aria-label="Pose input methods">
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="predefined_poses" value="predefined" checked>
+                                                                <label class="btn btn-outline-primary" for="predefined_poses">Select Predefined Poses</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="upload_poses" value="upload">
+                                                                <label class="btn btn-outline-primary" for="upload_poses">Upload Pose Images</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="text_prompts" value="prompts">
+                                                                <label class="btn btn-outline-primary" for="text_prompts">Enter Pose Prompts</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Predefined Poses Section -->
+                                                    <div id="predefined_poses_section" class="pose-input-section">
+                                                        <p class="text-start" style="font-weight: bold;">Selected Pose:
+                                                            <span id="selectedCount">0</span> / 8
+                                                        </p>
+                                                        <div class="row" id="poseContainer" style="margin-bottom: 20px;">
+                                                        </div>
+                                                        <input type="hidden" name="selected_poses" id="selectedPosesInput">
+                                                    </div>
+
+                                                    <!-- Upload Pose Images Section -->
+                                                    <div id="upload_poses_section" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Upload Pose Images (Max 8)</label>
+                                                            <input type="file" class="form-control" name="pose_images" id="pose_images" multiple accept="image/*">
+                                                            <small class="text-muted">Upload images showing the poses you want. We'll extract pose information from these images.</small>
+                                                        </div>
+                                                        <div id="uploaded_poses_preview" class="row"></div>
+                                                    </div>
+
+                                                    <!-- Text Prompts Section -->
+                                                    <div id="text_prompts_section" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Enter Pose Descriptions (Max 8)</label>
+                                                            <div id="pose_prompts_container">
+                                                                <div class="input-group mb-2">
+                                                                    <input type="text" class="form-control pose-prompt" name="pose_prompts[]" placeholder="Describe the pose (e.g., Model standing with hands on hips, confident pose)">
+                                                                    <button class="btn btn-outline-danger remove-prompt" type="button" style="display: none;">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                            <button type="button" class="btn btn-outline-primary btn-sm" id="add_pose_prompt">Add Another Pose</button>
+                                                            <small class="text-muted d-block mt-2">Describe the poses you want the model to perform. Focus on body positioning and stance.</small>
+                                                        </div>
+                                                    </div>
                                                     <button id="submitBtn" type="submit" class="btn btn-primary"
                                                         style="width: 100%;">
                                                         <span id="submitText">Create Photoshoot</span>
@@ -1267,12 +1368,71 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p class="text-start" style="font-weight: bold;">Selected Pose:
-                                                        <span id="selectedCount1">0</span> / 8
-                                                    </p>
-                                                    <div class="row" id="poseContainer1" style="margin-bottom: 20px;">
+
+                                                    <!-- Background Image Selection -->
+                                                    <div class="background-selection-container">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <label class="form-label" style="font-weight: bold;">Select Background Image (Optional)</label>
+                                                                <div class="background-grid" id="backgroundGrid2">
+                                                                    <!-- Background images will be loaded here -->
+                                                                </div>
+                                                                <input type="hidden" name="selected_background" id="selectedBackground2" value="">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <input type="hidden" name="selected_poses" id="selectedPosesInput1">
+
+                                                    <!-- Pose Input Method Selection -->
+                                                    <div class="row mb-4">
+                                                        <div class="col-12">
+                                                            <label class="form-label" style="font-weight: bold;">Choose Pose Input Method <span style="color: red;">*</span></label>
+                                                            <div class="btn-group w-100" role="group" aria-label="Pose input methods">
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="predefined_poses1" value="predefined" checked>
+                                                                <label class="btn btn-outline-primary" for="predefined_poses1">Select Predefined Poses</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="upload_poses1" value="upload">
+                                                                <label class="btn btn-outline-primary" for="upload_poses1">Upload Pose Images</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="text_prompts1" value="prompts">
+                                                                <label class="btn btn-outline-primary" for="text_prompts1">Enter Pose Prompts</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Predefined Poses Section -->
+                                                    <div id="predefined_poses_section1" class="pose-input-section">
+                                                        <p class="text-start" style="font-weight: bold;">Selected Pose:
+                                                            <span id="selectedCount1">0</span> / 8
+                                                        </p>
+                                                        <div class="row" id="poseContainer1" style="margin-bottom: 20px;">
+                                                        </div>
+                                                        <input type="hidden" name="selected_poses" id="selectedPosesInput1">
+                                                    </div>
+
+                                                    <!-- Upload Pose Images Section -->
+                                                    <div id="upload_poses_section1" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Upload Pose Images (Max 8)</label>
+                                                            <input type="file" class="form-control" name="pose_images" id="pose_images1" multiple accept="image/*">
+                                                            <small class="text-muted">Upload images showing the poses you want. We'll extract pose information from these images.</small>
+                                                        </div>
+                                                        <div id="uploaded_poses_preview1" class="row"></div>
+                                                    </div>
+
+                                                    <!-- Text Prompts Section -->
+                                                    <div id="text_prompts_section1" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Enter Pose Descriptions (Max 8)</label>
+                                                            <div id="pose_prompts_container1">
+                                                                <div class="input-group mb-2">
+                                                                    <input type="text" class="form-control pose-prompt" name="pose_prompts[]" placeholder="Describe the pose (e.g., Model standing with hands on hips, confident pose)">
+                                                                    <button class="btn btn-outline-danger remove-prompt" type="button" style="display: none;">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                            <button type="button" class="btn btn-outline-primary btn-sm" id="add_pose_prompt1">Add Another Pose</button>
+                                                            <small class="text-muted d-block mt-2">Describe the poses you want the model to perform. Focus on body positioning and stance.</small>
+                                                        </div>
+                                                    </div>
                                                     <button id="submitBtn" type="submit" class="btn btn-primary"
                                                         style="width: 100%;">
                                                         <span id="submitText">Create Photoshoot</span>
@@ -1816,13 +1976,70 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <p class="text-start" style="font-weight: bold;">Selected Pose:
-                                                            <span id="selectedCount2">0</span> / 8
-                                                        </p>
-                                                        <div class="row" id="poseContainer2"
-                                                            style="margin-bottom: 20px;"></div>
-                                                        <input type="hidden" name="selected_poses"
-                                                            id="selectedPosesInput2">
+
+                                                        <!-- Background Image Selection -->
+                                                        <div class="background-selection-container">
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <label class="form-label" style="font-weight: bold;">Select Background Image (Optional)</label>
+                                                                    <div class="background-grid" id="backgroundGrid3">
+                                                                        <!-- Background images will be loaded here -->
+                                                                    </div>
+                                                                    <input type="hidden" name="selected_background" id="selectedBackground3" value="">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Pose Input Method Selection -->
+                                                        <div class="row mb-4">
+                                                            <div class="col-12">
+                                                                <label class="form-label" style="font-weight: bold;">Choose Pose Input Method <span style="color: red;">*</span></label>
+                                                                <div class="btn-group w-100" role="group" aria-label="Pose input methods">
+                                                                    <input type="radio" class="btn-check" name="pose_input_method" id="predefined_poses2" value="predefined" checked>
+                                                                    <label class="btn btn-outline-primary" for="predefined_poses2">Select Predefined Poses</label>
+
+                                                                    <input type="radio" class="btn-check" name="pose_input_method" id="upload_poses2" value="upload">
+                                                                    <label class="btn btn-outline-primary" for="upload_poses2">Upload Pose Images</label>
+
+                                                                    <input type="radio" class="btn-check" name="pose_input_method" id="text_prompts2" value="prompts">
+                                                                    <label class="btn btn-outline-primary" for="text_prompts2">Enter Pose Prompts</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Predefined Poses Section -->
+                                                        <div id="predefined_poses_section2" class="pose-input-section">
+                                                            <p class="text-start" style="font-weight: bold;">Selected Pose:
+                                                                <span id="selectedCount2">0</span> / 8
+                                                            </p>
+                                                            <div class="row" id="poseContainer2" style="margin-bottom: 20px;"></div>
+                                                            <input type="hidden" name="selected_poses" id="selectedPosesInput2">
+                                                        </div>
+
+                                                        <!-- Upload Pose Images Section -->
+                                                        <div id="upload_poses_section2" class="pose-input-section" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label class="form-label" style="font-weight: bold;">Upload Pose Images (Max 8)</label>
+                                                                <input type="file" class="form-control" name="pose_images" id="pose_images2" multiple accept="image/*">
+                                                                <small class="text-muted">Upload images showing the poses you want. We'll extract pose information from these images.</small>
+                                                            </div>
+                                                            <div id="uploaded_poses_preview2" class="row"></div>
+                                                        </div>
+
+                                                        <!-- Text Prompts Section -->
+                                                        <div id="text_prompts_section2" class="pose-input-section" style="display: none;">
+                                                            <div class="mb-3">
+                                                                <label class="form-label" style="font-weight: bold;">Enter Pose Descriptions (Max 8)</label>
+                                                                <div id="pose_prompts_container2">
+                                                                    <div class="input-group mb-2">
+                                                                        <input type="text" class="form-control pose-prompt" name="pose_prompts[]" placeholder="Describe the pose (e.g., Model standing with hands on hips, confident pose)">
+                                                                        <button class="btn btn-outline-danger remove-prompt" type="button" style="display: none;">Remove</button>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" class="btn btn-outline-primary btn-sm" id="add_pose_prompt2">Add Another Pose</button>
+                                                                <small class="text-muted d-block mt-2">Describe the poses you want the model to perform. Focus on body positioning and stance.</small>
+                                                            </div>
+                                                        </div>
                                                         <button id="submitBtn" type="submit" class="btn btn-primary"
                                                             style="width: 100%;">
                                                             <span id="submitText">Create Photoshoot</span>
@@ -2285,12 +2502,71 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p class="text-start" style="font-weight: bold;">Selected Pose:
-                                                        <span id="selectedCount3">0</span> / 8
-                                                    </p>
-                                                    <div class="row" id="poseContainer3" style="margin-bottom: 20px;">
+
+                                                    <!-- Background Image Selection -->
+                                                    <div class="background-selection-container">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <label class="form-label" style="font-weight: bold;">Select Background Image (Optional)</label>
+                                                                <div class="background-grid" id="backgroundGrid4">
+                                                                    <!-- Background images will be loaded here -->
+                                                                </div>
+                                                                <input type="hidden" name="selected_background" id="selectedBackground4" value="">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <input type="hidden" name="selected_poses" id="selectedPosesInput3">
+
+                                                    <!-- Pose Input Method Selection -->
+                                                    <div class="row mb-4">
+                                                        <div class="col-12">
+                                                            <label class="form-label" style="font-weight: bold;">Choose Pose Input Method <span style="color: red;">*</span></label>
+                                                            <div class="btn-group w-100" role="group" aria-label="Pose input methods">
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="predefined_poses3" value="predefined" checked>
+                                                                <label class="btn btn-outline-primary" for="predefined_poses3">Select Predefined Poses</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="upload_poses3" value="upload">
+                                                                <label class="btn btn-outline-primary" for="upload_poses3">Upload Pose Images</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="text_prompts3" value="prompts">
+                                                                <label class="btn btn-outline-primary" for="text_prompts3">Enter Pose Prompts</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Predefined Poses Section -->
+                                                    <div id="predefined_poses_section3" class="pose-input-section">
+                                                        <p class="text-start" style="font-weight: bold;">Selected Pose:
+                                                            <span id="selectedCount3">0</span> / 8
+                                                        </p>
+                                                        <div class="row" id="poseContainer3" style="margin-bottom: 20px;">
+                                                        </div>
+                                                        <input type="hidden" name="selected_poses" id="selectedPosesInput3">
+                                                    </div>
+
+                                                    <!-- Upload Pose Images Section -->
+                                                    <div id="upload_poses_section3" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Upload Pose Images (Max 8)</label>
+                                                            <input type="file" class="form-control" name="pose_images" id="pose_images3" multiple accept="image/*">
+                                                            <small class="text-muted">Upload images showing the poses you want. We'll extract pose information from these images.</small>
+                                                        </div>
+                                                        <div id="uploaded_poses_preview3" class="row"></div>
+                                                    </div>
+
+                                                    <!-- Text Prompts Section -->
+                                                    <div id="text_prompts_section3" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Enter Pose Descriptions (Max 8)</label>
+                                                            <div id="pose_prompts_container3">
+                                                                <div class="input-group mb-2">
+                                                                    <input type="text" class="form-control pose-prompt" name="pose_prompts[]" placeholder="Describe the pose (e.g., Model standing with hands on hips, confident pose)">
+                                                                    <button class="btn btn-outline-danger remove-prompt" type="button" style="display: none;">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                            <button type="button" class="btn btn-outline-primary btn-sm" id="add_pose_prompt3">Add Another Pose</button>
+                                                            <small class="text-muted d-block mt-2">Describe the poses you want the model to perform. Focus on body positioning and stance.</small>
+                                                        </div>
+                                                    </div>
                                                     <button id="submitBtn" type="submit" class="btn btn-primary"
                                                         style="width: 100%;">
                                                         <span id="submitText">Create Photoshoot</span>
@@ -2823,12 +3099,71 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p class="text-start" style="font-weight: bold;">Selected Pose:
-                                                        <span id="selectedCount4">0</span> / 8
-                                                    </p>
-                                                    <div class="row" id="poseContainer4" style="margin-bottom: 20px;">
+
+                                                    <!-- Background Image Selection -->
+                                                    <div class="background-selection-container">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <label class="form-label" style="font-weight: bold;">Select Background Image (Optional)</label>
+                                                                <div class="background-grid" id="backgroundGrid5">
+                                                                    <!-- Background images will be loaded here -->
+                                                                </div>
+                                                                <input type="hidden" name="selected_background" id="selectedBackground5" value="">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <input type="hidden" name="selected_poses" id="selectedPosesInput4">
+
+                                                    <!-- Pose Input Method Selection -->
+                                                    <div class="row mb-4">
+                                                        <div class="col-12">
+                                                            <label class="form-label" style="font-weight: bold;">Choose Pose Input Method <span style="color: red;">*</span></label>
+                                                            <div class="btn-group w-100" role="group" aria-label="Pose input methods">
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="predefined_poses4" value="predefined" checked>
+                                                                <label class="btn btn-outline-primary" for="predefined_poses4">Select Predefined Poses</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="upload_poses4" value="upload">
+                                                                <label class="btn btn-outline-primary" for="upload_poses4">Upload Pose Images</label>
+
+                                                                <input type="radio" class="btn-check" name="pose_input_method" id="text_prompts4" value="prompts">
+                                                                <label class="btn btn-outline-primary" for="text_prompts4">Enter Pose Prompts</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Predefined Poses Section -->
+                                                    <div id="predefined_poses_section4" class="pose-input-section">
+                                                        <p class="text-start" style="font-weight: bold;">Selected Pose:
+                                                            <span id="selectedCount4">0</span> / 8
+                                                        </p>
+                                                        <div class="row" id="poseContainer4" style="margin-bottom: 20px;">
+                                                        </div>
+                                                        <input type="hidden" name="selected_poses" id="selectedPosesInput4">
+                                                    </div>
+
+                                                    <!-- Upload Pose Images Section -->
+                                                    <div id="upload_poses_section4" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Upload Pose Images (Max 8)</label>
+                                                            <input type="file" class="form-control" name="pose_images" id="pose_images4" multiple accept="image/*">
+                                                            <small class="text-muted">Upload images showing the poses you want. We'll extract pose information from these images.</small>
+                                                        </div>
+                                                        <div id="uploaded_poses_preview4" class="row"></div>
+                                                    </div>
+
+                                                    <!-- Text Prompts Section -->
+                                                    <div id="text_prompts_section4" class="pose-input-section" style="display: none;">
+                                                        <div class="mb-3">
+                                                            <label class="form-label" style="font-weight: bold;">Enter Pose Descriptions (Max 8)</label>
+                                                            <div id="pose_prompts_container4">
+                                                                <div class="input-group mb-2">
+                                                                    <input type="text" class="form-control pose-prompt" name="pose_prompts[]" placeholder="Describe the pose (e.g., Model standing with hands on hips, confident pose)">
+                                                                    <button class="btn btn-outline-danger remove-prompt" type="button" style="display: none;">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                            <button type="button" class="btn btn-outline-primary btn-sm" id="add_pose_prompt4">Add Another Pose</button>
+                                                            <small class="text-muted d-block mt-2">Describe the poses you want the model to perform. Focus on body positioning and stance.</small>
+                                                        </div>
+                                                    </div>
                                                     <button id="submitBtn" type="submit" class="btn btn-primary"
                                                         style="width: 100%;">
                                                         <span id="submitText">Create Photoshoot</span>
@@ -3367,6 +3702,188 @@
             });
 
             console.log('Pose selection script loaded successfully');
+
+            // Handle pose input method switching
+            function handlePoseInputMethodChange() {
+                const poseInputMethods = document.querySelectorAll('input[name="pose_input_method"]');
+
+                poseInputMethods.forEach(method => {
+                    method.addEventListener('change', function() {
+                        const tabIndex = this.id.match(/\d+/) ? this.id.match(/\d+/)[0] : '';
+                        const suffix = tabIndex ? tabIndex : '';
+
+                        // Hide all sections
+                        const predefinedSection = document.getElementById(`predefined_poses_section${suffix}`);
+                        const uploadSection = document.getElementById(`upload_poses_section${suffix}`);
+                        const promptsSection = document.getElementById(`text_prompts_section${suffix}`);
+
+                        if (predefinedSection) predefinedSection.style.display = 'none';
+                        if (uploadSection) uploadSection.style.display = 'none';
+                        if (promptsSection) promptsSection.style.display = 'none';
+
+                        // Show selected section
+                        if (this.value === 'predefined' && predefinedSection) {
+                            predefinedSection.style.display = 'block';
+                        } else if (this.value === 'upload' && uploadSection) {
+                            uploadSection.style.display = 'block';
+                        } else if (this.value === 'prompts' && promptsSection) {
+                            promptsSection.style.display = 'block';
+                        }
+                    });
+                });
+            }
+
+            // Handle pose image uploads
+            function handlePoseImageUploads() {
+                const poseImageInputs = document.querySelectorAll('input[id^="pose_images"]');
+
+                poseImageInputs.forEach(input => {
+                    input.addEventListener('change', function() {
+                        const tabIndex = this.id.match(/\d+/) ? this.id.match(/\d+/)[0] : '';
+                        const suffix = tabIndex ? tabIndex : '';
+                        const previewContainer = document.getElementById(`uploaded_poses_preview${suffix}`);
+
+                        if (!previewContainer) return;
+
+                        previewContainer.innerHTML = '';
+
+                        if (this.files.length > 8) {
+                            alert('You can only upload up to 8 pose images.');
+                            this.value = '';
+                            return;
+                        }
+
+                        Array.from(this.files).forEach((file, index) => {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const col = document.createElement('div');
+                                col.className = 'col-6 col-sm-4 col-md-3 mb-3';
+
+                                const card = document.createElement('div');
+                                card.className = 'pose-card';
+                                card.style.border = '2px solid #28a745';
+                                card.style.backgroundColor = '#e9f7ef';
+
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = 'pose-img';
+                                img.style.width = '100%';
+                                img.style.height = 'auto';
+
+                                const label = document.createElement('div');
+                                label.className = 'pose-label';
+                                label.textContent = `Uploaded Pose ${index + 1}`;
+
+                                card.appendChild(img);
+                                card.appendChild(label);
+                                col.appendChild(card);
+                                previewContainer.appendChild(col);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    });
+                });
+            }
+
+            // Handle pose prompt management
+            function handlePosePrompts() {
+                const addButtons = document.querySelectorAll('button[id^="add_pose_prompt"]');
+
+                addButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const tabIndex = this.id.match(/\d+/) ? this.id.match(/\d+/)[0] : '';
+                        const suffix = tabIndex ? tabIndex : '';
+                        const container = document.getElementById(`pose_prompts_container${suffix}`);
+
+                        if (!container) return;
+
+                        const currentPrompts = container.querySelectorAll('.input-group');
+                        if (currentPrompts.length >= 8) {
+                            alert('You can only add up to 8 pose prompts.');
+                            return;
+                        }
+
+                        const inputGroup = document.createElement('div');
+                        inputGroup.className = 'input-group mb-2';
+
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'form-control pose-prompt';
+                        input.name = 'pose_prompts[]';
+                        input.placeholder = 'Describe the pose (e.g., Model standing with hands on hips, confident pose)';
+
+                        const removeButton = document.createElement('button');
+                        removeButton.className = 'btn btn-outline-danger remove-prompt';
+                        removeButton.type = 'button';
+                        removeButton.textContent = 'Remove';
+                        removeButton.addEventListener('click', function() {
+                            inputGroup.remove();
+                            updateRemoveButtons(container);
+                        });
+
+                        inputGroup.appendChild(input);
+                        inputGroup.appendChild(removeButton);
+                        container.appendChild(inputGroup);
+
+                        updateRemoveButtons(container);
+                    });
+                });
+
+                function updateRemoveButtons(container) {
+                    const removeButtons = container.querySelectorAll('.remove-prompt');
+                    removeButtons.forEach((button, index) => {
+                        button.style.display = removeButtons.length > 1 ? 'block' : 'none';
+                    });
+                }
+            }
+
+            // Handle background image selection
+            function loadBackgroundImages() {
+                const backgroundGrids = document.querySelectorAll('[id^="backgroundGrid"]');
+
+                backgroundGrids.forEach((grid, index) => {
+                    const gridNumber = index + 1;
+
+                    // Generate background images (assuming we have 98 images numbered 1-98)
+                    for (let i = 1; i <= 98; i++) {
+                        const backgroundCard = document.createElement('div');
+                        backgroundCard.className = 'background-card';
+                        backgroundCard.setAttribute('data-background', `${i}.webp`);
+
+                        const backgroundImg = document.createElement('img');
+                        backgroundImg.src = `/static/background_images/${i}.webp`;
+                        backgroundImg.className = 'background-img';
+                        backgroundImg.alt = `Background ${i}`;
+
+                        backgroundCard.appendChild(backgroundImg);
+
+                        // Add click event listener
+                        backgroundCard.addEventListener('click', function() {
+                            // Remove selected class from all cards in this grid
+                            grid.querySelectorAll('.background-card').forEach(card => {
+                                card.classList.remove('selected');
+                            });
+
+                            // Add selected class to clicked card
+                            this.classList.add('selected');
+
+                            // Update hidden input
+                            const hiddenInput = document.getElementById(`selectedBackground${gridNumber}`);
+                            if (hiddenInput) {
+                                hiddenInput.value = this.getAttribute('data-background');
+                            }
+                        });
+
+                        grid.appendChild(backgroundCard);
+                    }
+                });
+            }
+
+            // Initialize new functionality
+            handlePoseInputMethodChange();
+            handlePoseImageUploads();
+            handlePosePrompts();
+            loadBackgroundImages();
         });
 
     </script>
