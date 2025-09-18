@@ -9,3 +9,4 @@ requests==2.31.0
 openai
 pillow
 google-genai
+anthropic==0.67.0
