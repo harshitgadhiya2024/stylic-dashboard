@@ -4,7 +4,7 @@ import os
 import anthropic
 
 
-def analyze_pose_from_image(image_path, api_key="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"):
+def analyze_pose_from_image(image_path, api_key=None):
     """
     Analyze pose from an image using Claude Sonnet 4.
 

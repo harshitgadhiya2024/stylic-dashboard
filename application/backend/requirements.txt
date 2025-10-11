@@ -37,9 +37,6 @@ pydantic-settings==2.1.0
 # Logging & Monitoring
 python-json-logger==2.0.7
 
-# CORS
-python-cors==1.0.0
-
 # Validation
 email-validator==2.1.0
 

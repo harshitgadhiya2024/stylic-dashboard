@@ -14,7 +14,7 @@ class MongoService:
     """MongoDB operations service"""
     
     def __init__(self):
-        self.db_name = "stylic"
+        self.db_name = "stylic_ai_new"
     
     def get_db(self) -> AsyncIOMotorDatabase:
         """Get database instance"""

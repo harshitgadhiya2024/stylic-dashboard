@@ -150,38 +150,37 @@ async def root():
 
 
 # Import and include routers
-# Note: These will be created in the next steps
-# from app.api.v1.endpoints import auth, users, photoshoots, payments, credits
-# 
-# app.include_router(
-#     auth.router,
-#     prefix=f"{settings.API_V1_PREFIX}/auth",
-#     tags=["Authentication"]
-# )
-# 
-# app.include_router(
-#     users.router,
-#     prefix=f"{settings.API_V1_PREFIX}/users",
-#     tags=["Users"]
-# )
-# 
-# app.include_router(
-#     photoshoots.router,
-#     prefix=f"{settings.API_V1_PREFIX}/photoshoots",
-#     tags=["Photoshoots"]
-# )
-# 
-# app.include_router(
-#     payments.router,
-#     prefix=f"{settings.API_V1_PREFIX}/payments",
-#     tags=["Payments"]
-# )
-# 
-# app.include_router(
-#     credits.router,
-#     prefix=f"{settings.API_V1_PREFIX}/credits",
-#     tags=["Credits"]
-# )
+from app.api.v1.endpoints import auth, users, photoshoots, payments, credits
+
+app.include_router(
+    auth.router,
+    prefix=f"{settings.API_V1_PREFIX}/auth",
+    tags=["Authentication"]
+)
+
+app.include_router(
+    users.router,
+    prefix=f"{settings.API_V1_PREFIX}/users",
+    tags=["Users"]
+)
+
+app.include_router(
+    photoshoots.router,
+    prefix=f"{settings.API_V1_PREFIX}/photoshoots",
+    tags=["Photoshoots"]
+)
+
+app.include_router(
+    payments.router,
+    prefix=f"{settings.API_V1_PREFIX}/payments",
+    tags=["Payments"]
+)
+
+app.include_router(
+    credits.router,
+    prefix=f"{settings.API_V1_PREFIX}/credits",
+    tags=["Credits"]
+)
 
 
 if __name__ == "__main__":

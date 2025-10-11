@@ -331,3 +331,115 @@ async def download_image(
             detail="Failed to download image"
         )
 
+
+@router.get("/{photoshoot_id}/download-all")
+async def download_all_images(
+    photoshoot_id: str,
+    current_user: dict = Depends(get_current_active_user)
+):
+    """
+    Download all photoshoot images as ZIP
+
+    Returns ZIP file containing all images
+    """
+    try:
+        user_id = current_user["id"]
+
+        # Verify photoshoot belongs to user
+        photoshoot = await photoshoot_service.get_photoshoot(user_id, photoshoot_id)
+        if not photoshoot:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Photoshoot not found"
+            )
+
+        # Get all images
+        all_images = photoshoot.get("all_images", [])
+        if not all_images:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No images found"
+            )
+
+        # Create ZIP file in memory
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            photoshoot_dir = os.path.join(
+                settings.UPLOAD_DIR,
+                "photoshoots",
+                photoshoot_id
+            )
+
+            for image_url in all_images:
+                # Extract filename from URL
+                image_name = image_url.split("/")[-1]
+                image_path = os.path.join(photoshoot_dir, image_name)
+
+                if os.path.exists(image_path):
+                    zip_file.write(image_path, arcname=image_name)
+
+        zip_buffer.seek(0)
+
+        return StreamingResponse(
+            zip_buffer,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f"attachment; filename=photoshoot_{photoshoot_id}.zip"
+            }
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error downloading all images: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to download images"
+        )
+
+
+@router.delete("/{photoshoot_id}", response_model=dict)
+async def delete_photoshoot(
+    photoshoot_id: str,
+    current_user: dict = Depends(get_current_active_user)
+):
+    """
+    Delete photoshoot
+
+    - Removes photoshoot record
+    - Does not delete files (for safety)
+    """
+    try:
+        user_id = current_user["id"]
+
+        # Verify photoshoot exists
+        photoshoot = await photoshoot_service.get_photoshoot(user_id, photoshoot_id)
+        if not photoshoot:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Photoshoot not found"
+            )
+
+        # Delete from database
+        await mongo_service.delete_one(
+            "photoshoot_data",
+            {"id": user_id, "photoshoot_id": photoshoot_id}
+        )
+
+        logger.info(f"Photoshoot deleted: {photoshoot_id} for user: {user_id}")
+
+        return {
+            "success": True,
+            "message": "Photoshoot deleted successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting photoshoot: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete photoshoot"
+        )
+

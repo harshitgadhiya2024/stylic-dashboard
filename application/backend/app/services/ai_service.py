@@ -7,8 +7,7 @@ from typing import Dict, Any, Optional, List
 from PIL import Image
 from io import BytesIO
 import anthropic
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from app.core.config import settings
 from app.core.logging import logger
 
@@ -29,9 +28,8 @@ class AIService:
         
         # Initialize Google AI client
         if settings.GOOGLE_AI_API_KEY:
-            self.google_client = genai.Client(
-                api_key=settings.GOOGLE_AI_API_KEY
-            )
+            genai.configure(api_key=settings.GOOGLE_AI_API_KEY)
+            self.google_client = genai
     
     async def analyze_pose_from_image(
         self,

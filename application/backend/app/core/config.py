@@ -2,7 +2,7 @@
 Application configuration management using Pydantic Settings
 """
 from typing import List, Optional
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 import secrets
 
@@ -59,13 +59,13 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE: int = 10485760  # 10MB
     ALLOWED_IMAGE_EXTENSIONS: str = "png,jpg,jpeg,gif,bmp,webp"
     UPLOAD_DIR: str = "uploads"
-    
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FILE: str = "logs/app.log"
     LOG_MAX_BYTES: int = 10485760  # 10MB
     LOG_BACKUP_COUNT: int = 5
-    
+
     # CORS
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:19006"
     CORS_ALLOW_CREDENTIALS: bool = True
@@ -99,18 +99,18 @@ class Settings(BaseSettings):
         "SAVE50": 50
     }
     
-    @validator("CORS_ORIGINS", pre=True)
-    def parse_cors_origins(cls, v):
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",")]
-        return v
-    
-    @validator("ALLOWED_IMAGE_EXTENSIONS", pre=True)
-    def parse_allowed_extensions(cls, v):
-        if isinstance(v, str):
-            return [ext.strip() for ext in v.split(",")]
-        return v
-    
+    def get_cors_origins_list(self) -> List[str]:
+        """Parse CORS origins from comma-separated string"""
+        if isinstance(self.CORS_ORIGINS, str):
+            return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+        return self.CORS_ORIGINS
+
+    def get_allowed_extensions_list(self) -> List[str]:
+        """Parse allowed extensions from comma-separated string"""
+        if isinstance(self.ALLOWED_IMAGE_EXTENSIONS, str):
+            return [ext.strip() for ext in self.ALLOWED_IMAGE_EXTENSIONS.split(",")]
+        return self.ALLOWED_IMAGE_EXTENSIONS
+
     class Config:
         env_file = ".env"
         case_sensitive = True

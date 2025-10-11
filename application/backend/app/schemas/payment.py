@@ -10,6 +10,8 @@ class CreateOrderRequest(BaseModel):
     """Create order request schema"""
     amount: int = Field(..., gt=0)
     credit: int = Field(..., gt=0)
+    currency: str = "INR"
+    coupon_code: Optional[str] = None
 
 
 class CreateOrderResponse(BaseModel):
@@ -19,6 +21,7 @@ class CreateOrderResponse(BaseModel):
     amount: int
     currency: str = "INR"
     key_id: str
+    discount: int = 0
 
 
 class VerifyPaymentRequest(BaseModel):
@@ -71,8 +74,24 @@ class CreditHistoryItem(BaseModel):
 
 class CreditHistoryResponse(BaseModel):
     """Credit history response schema"""
-    success: bool = True
-    data: list[CreditHistoryItem]
-    current_credit: int
-    total: int
+    transaction_id: str
+    type: str  # "credit" or "debit"
+    amount: int
+    description: str
+    payment_amount: int = 0
+    status: str = "completed"
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class CreditPackage(BaseModel):
+    """Credit package schema"""
+    id: str
+    name: str
+    credits: int
+    amount: int
+    description: str
+    popular: bool = False
 

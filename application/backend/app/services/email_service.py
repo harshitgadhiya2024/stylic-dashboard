@@ -231,3 +231,101 @@ class EmailService:
 </html>
         """
 
+    def get_welcome_email_template(self, username: str) -> str:
+        """Get welcome email template"""
+        return f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Stylic AI!</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; }}
+        .email-container {{ max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }}
+        .header {{ background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0; }}
+        .header-title {{ color: #ffffff; font-size: 32px; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }}
+        .content {{ padding: 40px 30px; }}
+        .greeting {{ font-size: 24px; color: #2d3748; margin-bottom: 20px; font-weight: 700; text-align: center; }}
+        .message {{ font-size: 16px; color: #4a5568; margin-bottom: 30px; line-height: 1.7; text-align: center; }}
+        .cta-button {{ display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 16px; }}
+        .footer {{ background-color: #2d3748; color: #a0aec0; text-align: center; padding: 30px; font-size: 14px; }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1 class="header-title">Welcome Aboard!</h1>
+        </div>
+        <div class="content">
+            <div class="greeting">Hello {username}! 👋</div>
+            <div class="message">
+                We're thrilled to welcome you to the Stylic AI family! You've just joined thousands of creators who are transforming their ideas into stunning visuals with the power of AI.
+            </div>
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="{settings.DOMAIN_URL}/ai-photoshoot" class="cta-button">Start Creating Now</a>
+            </div>
+        </div>
+        <div class="footer">
+            <div><strong>Stylic AI</strong><br>Making AI accessible for everyone</div>
+            <div style="margin-top: 20px; font-size: 12px; color: #718096;">© 2025 Stylic AI. All rights reserved.</div>
+        </div>
+    </div>
+</body>
+</html>
+        """
+
+    def get_forgot_password_template(self, reset_link: str) -> str:
+        """Get forgot password email template"""
+        return f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password - Stylic AI</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; }}
+        .email-container {{ max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }}
+        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; border-radius: 8px 8px 0 0; }}
+        .header-title {{ color: #ffffff; font-size: 28px; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }}
+        .content {{ padding: 40px 30px; }}
+        .greeting {{ font-size: 20px; color: #2d3748; margin-bottom: 20px; font-weight: 600; }}
+        .message {{ font-size: 16px; color: #4a5568; margin-bottom: 30px; line-height: 1.7; }}
+        .reset-button {{ display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 600; font-size: 16px; }}
+        .footer {{ background-color: #2d3748; color: #a0aec0; text-align: center; padding: 30px; font-size: 14px; }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1 class="header-title">Password Reset</h1>
+        </div>
+        <div class="content">
+            <div class="greeting">Hello there! 👋</div>
+            <div class="message">
+                We received a request to reset your password for your Stylic AI account. Click the button below to create a new password.
+            </div>
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="{reset_link}" class="reset-button">Reset My Password</a>
+            </div>
+            <div style="font-size: 14px; color: #718096; margin-top: 30px; padding: 20px; background-color: #f7fafc; border-radius: 8px;">
+                <strong>Button not working?</strong> Copy and paste this link into your browser:<br>
+                <a href="{reset_link}" style="color: #667eea; word-break: break-all;">{reset_link}</a>
+            </div>
+        </div>
+        <div class="footer">
+            <div><strong>Stylic AI</strong><br>Making AI accessible for everyone</div>
+            <div style="margin-top: 20px; font-size: 12px; color: #718096;">© 2025 Stylic AI. All rights reserved.</div>
+        </div>
+    </div>
+</body>
+</html>
+        """
+
+
+# Create global email service instance
+email_service = EmailService()
+

@@ -73,3 +73,6 @@ def get_logger(name: str) -> logging.Logger:
     """Get a logger instance with the given name"""
     return logging.getLogger(name)
 
+
+# Create default logger instance
+logger = get_logger(__name__)
