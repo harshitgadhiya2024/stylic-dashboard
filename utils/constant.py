@@ -18,5 +18,6 @@ constant_dict = {
     "smtp_server": "smtp.hostinger.com",
     "smtp_port": 587,
     "email_address": "info@stylic.ai",
-    "email_password": "Har@#0401"
+    "email_password": "Har@#0401",
+    "gemini_api_key": os.getenv("GEMINI_API_KEY")
 }

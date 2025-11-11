@@ -21,7 +21,7 @@ def generate_model_face(face_params, output_filename, photoshoot_id):
             ]
         )
         client = genai.Client(
-            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+            api_key=constant_dict.get("gemini_api_key"),
         )
 
         model_gemini = "gemini-2.5-flash-image-preview"
@@ -82,50 +82,6 @@ def create_face_prompt(params):
     except Exception as e:
         print(f"Error creating face prompt: {e}")
         return ""
-
-def calculate_estimated_cost(num_poses, has_upper_garment=True, has_lower_garment=True):
-    """
-    Calculate estimated cost for photoshoot generation
-    """
-    # Base costs per request
-    text_input_cost_per_1k_tokens = 0.000075
-    text_output_cost_per_1k_tokens = 0.0003
-    image_input_cost = 0.00315
-    estimated_image_generation_cost = 0.04
-
-    # Estimate tokens per request
-    avg_input_tokens = 500
-    avg_output_tokens = 100
-
-    # Calculate input images per request
-    garment_images = (1 if has_upper_garment else 0) + (1 if has_lower_garment else 0)
-
-    # Base request cost
-    base_request_cost = (
-            (avg_input_tokens * text_input_cost_per_1k_tokens / 1000) +
-            (avg_output_tokens * text_output_cost_per_1k_tokens / 1000) +
-            (garment_images * image_input_cost) +
-            estimated_image_generation_cost
-    )
-
-    # Subsequent requests include reference image
-    subsequent_request_cost = base_request_cost + image_input_cost
-
-    # Total cost calculation
-    total_requests = num_poses
-    if num_poses > 1:
-        total_cost = base_request_cost + ((num_poses - 1) * subsequent_request_cost)
-    else:
-        total_cost = base_request_cost
-
-    return {
-        'total_requests': total_requests,
-        'estimated_total_cost': round(total_cost, 4),
-        'cost_per_image': round(total_cost / num_poses, 4),
-        'base_request_cost': round(base_request_cost, 4),
-        'subsequent_request_cost': round(subsequent_request_cost, 4)
-    }
-
 
 def upscale_image(input_image: str, output_image: str):
     try:
@@ -738,7 +694,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 ]
 
         client = genai.Client(
-            api_key="AIzaSyBXyMioJM4k5YLKsYx6VkrZ6VSztsERC0w",
+            api_key=constant_dict.get("gemini_api_key"),
         )
 
         model_gemini = "gemini-2.5-flash-image-preview"
@@ -979,9 +935,9 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 if part.text is not None:
                     print(part.text)
                 elif part.inline_data is not None:
-                    image = Image.open(BytesIO(part.inline_data.data))
                     output_filename = f"{uuid.uuid4()}_photoshoot_{unique_num + 1}.png"
                     base_image_filename = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
+                    image = Image.open(BytesIO(part.inline_data.data))
                     image.save(base_image_filename)
                     upscaled_filename = f"static/photoshoots_folders/{photoshoot_id}/upscaled_{output_filename}"
                     response_upscale = upscale_image(base_image_filename, upscaled_filename)
@@ -998,13 +954,6 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                         parts.pop()
 
         total_credit = len(all_generated_images)
-        cost_estimate = calculate_estimated_cost(
-            num_poses=len(body_poses),
-            has_upper_garment=bool(upper_garment_filename),
-            has_lower_garment=bool(lower_garment_filename)
-        )
-        print(f"Estimated total cost: ${cost_estimate['estimated_total_cost']}")
-
         user_id = garment_mapping_dict.get("id")
         user_data = list(mongoOperation().get_spec_data_from_coll("company_data", {"id": user_id}))
 
