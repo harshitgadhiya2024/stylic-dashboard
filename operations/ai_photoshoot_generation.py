@@ -103,11 +103,11 @@ def upscale_image(input_image: str, output_image: str):
         # Ensure the binary has execute permission
         # subprocess.run(["chmod", "u+x", "realesrgan-ncnn-vulkan"], check=True)
 
-        # Run realesrgan with input and output
-        subprocess.run(
-            ["./realesrgan-ncnn-vulkan", "-i", input_image, "-o", output_image, "-n", "realesrgan-x4plus"],
-            check=True
-        )
+        # # Run realesrgan with input and output
+        # subprocess.run(
+        #     ["./realesrgan-ncnn-vulkan", "-i", input_image, "-o", output_image, "-n", "realesrgan-x4plus"],
+        #     check=True
+        # )
         return True
     except:
         return False
@@ -959,60 +959,20 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                     base_image_filename = f"{temp_folder}/{output_filename}"
                     image.save(base_image_filename)
 
-                    # Try to upscale the image
-                    upscaled_filename = f"{temp_folder}/upscaled_{output_filename}"
-                    response_upscale = upscale_image(base_image_filename, upscaled_filename)
+                    # Upload base image
+                    success, message, s3_url = upload_image_to_s3(
+                        image_data=image,
+                        filename=output_filename,
+                        folder=f"photoshoots/{photoshoot_id}",
+                        user_id=user_id,
+                        content_type="image/png"
+                    )
 
-                    # Upload to S3
-                    if response_upscale and os.path.exists(upscaled_filename):
-                        # Upload upscaled version
-                        with open(upscaled_filename, 'rb') as f:
-                            upscaled_image_data = f.read()
-
-                        success, message, s3_url = upload_image_to_s3(
-                            image_data=upscaled_image_data,
-                            filename=f"upscaled_{output_filename}",
-                            folder=f"photoshoots/{photoshoot_id}",
-                            user_id=user_id,
-                            content_type="image/png"
-                        )
-
-                        if success:
-                            all_generated_images.append(s3_url)
-                            print(f"Upscaled image uploaded to S3: {s3_url}")
-                        else:
-                            print(f"Failed to upload upscaled image: {message}")
-                            # Fallback to base image
-                            success, message, s3_url = upload_image_to_s3(
-                                image_data=image,
-                                filename=output_filename,
-                                folder=f"photoshoots/{photoshoot_id}",
-                                user_id=user_id,
-                                content_type="image/png"
-                            )
-                            if success:
-                                all_generated_images.append(s3_url)
-
-                        # Clean up temporary files
-                        try:
-                            os.remove(upscaled_filename)
-                        except:
-                            pass
+                    if success:
+                        all_generated_images.append(s3_url)
+                        print(f"Base image uploaded to S3: {s3_url}")
                     else:
-                        # Upload base image
-                        success, message, s3_url = upload_image_to_s3(
-                            image_data=image,
-                            filename=output_filename,
-                            folder=f"photoshoots/{photoshoot_id}",
-                            user_id=user_id,
-                            content_type="image/png"
-                        )
-
-                        if success:
-                            all_generated_images.append(s3_url)
-                            print(f"Base image uploaded to S3: {s3_url}")
-                        else:
-                            print(f"Failed to upload base image: {message}")
+                        print(f"Failed to upload base image: {message}")
 
                     if unique_num==0:
                         # Keep the first image for reference in subsequent generations
