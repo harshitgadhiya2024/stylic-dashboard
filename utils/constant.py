@@ -19,5 +19,10 @@ constant_dict = {
     "smtp_port": 587,
     "email_address": "info@stylic.ai",
     "email_password": "Har@#0401",
-    "gemini_api_key": os.getenv("GEMINI_API_KEY")
+    "gemini_api_key": os.getenv("GEMINI_API_KEY"),
+    "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
+    "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
+    "AWS_REGION": os.getenv("AWS_REGION"),
+    "S3_BUCKET_NAME": os.getenv("S3_BUCKET_NAME"),
+    "S3_UPLOAD_FOLDER": os.getenv("S3_UPLOAD_FOLDER")
 }

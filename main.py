@@ -4,6 +4,7 @@ import requests
 from operations.ai_photoshoot_generation import generate_photoshoot_background_task
 from operations.mongo_operation import mongoOperation
 from operations.mail_sending import emailOperation
+from operations.photo_uploader import upload_file
 from utils.constant import constant_dict
 import os, json, re
 from flask import (Flask, render_template, request, flash, session, send_file, jsonify, send_from_directory, url_for)
@@ -701,7 +702,9 @@ def ai_photoshoot():
                 return redirect("ai-photoshoot")
 
             all_images = []
-            os.makedirs(f"static/photoshoots_folders/{photoshoot_id}", exist_ok=True)
+            # Create temporary folder for processing (will be cleaned up after upload)
+            temp_folder = f"static/photoshoots_folders/{photoshoot_id}"
+            os.makedirs(temp_folder, exist_ok=True)
             lower_garment_filename = ""
             upper_garment_filename = ""
 
@@ -709,12 +712,24 @@ def ai_photoshoot():
                 exten = upper_garment_image.filename.split(".")[-1]
                 if upper_garment_image and allowed_file(upper_garment_image.filename):
                     upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten}"
-                    filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
-                    upper_garment_image.save(filepath)
-                    upper_garment_image_url = url_for('static',
-                                                      filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
-                                                      _external=True)
-                    all_images.append(upper_garment_image_url)
+
+                    # Save temporarily for processing
+                    temp_filepath = os.path.join(temp_folder, upper_garment_filename)
+                    upper_garment_image.save(temp_filepath)
+
+                    # Upload to S3
+                    success, message, s3_url = upload_file(
+                        file=upper_garment_image,
+                        folder=f"photoshoots/{photoshoot_id}",
+                        user_id=user_id
+                    )
+
+                    if success:
+                        all_images.append(s3_url)
+                        print(f"Upper garment uploaded to S3: {s3_url}")
+                    else:
+                        flash(f"Failed to upload upper garment: {message}", "danger")
+                        return redirect("/ai-photoshoot")
                 else:
                     flash("Your upper garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
@@ -723,12 +738,24 @@ def ai_photoshoot():
                 exten = lower_garment_image.filename.split(".")[-1]
                 if lower_garment_image and allowed_file(lower_garment_image.filename):
                     lower_garment_filename = f"{uuid.uuid4()}lowergarment.{exten}"
-                    filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", lower_garment_filename)
-                    lower_garment_image.save(filepath)
-                    lower_garment_image_url = url_for('static',
-                                                      filename=f'photoshoots_folders/{photoshoot_id}/{lower_garment_filename}',
-                                                      _external=True)
-                    all_images.append(lower_garment_image_url)
+
+                    # Save temporarily for processing
+                    temp_filepath = os.path.join(temp_folder, lower_garment_filename)
+                    lower_garment_image.save(temp_filepath)
+
+                    # Upload to S3
+                    success, message, s3_url = upload_file(
+                        file=lower_garment_image,
+                        folder=f"photoshoots/{photoshoot_id}",
+                        user_id=user_id
+                    )
+
+                    if success:
+                        all_images.append(s3_url)
+                        print(f"Lower garment uploaded to S3: {s3_url}")
+                    else:
+                        flash(f"Failed to upload lower garment: {message}", "danger")
+                        return redirect("/ai-photoshoot")
                 else:
                     flash("Your lower garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
@@ -737,12 +764,24 @@ def ai_photoshoot():
                 exten1 = upper_garment_image.filename.split(".")[-1]
                 if upper_garment_image and allowed_file(upper_garment_image.filename):
                     upper_garment_filename = f"{uuid.uuid4()}uppergarment.{exten1}"
-                    filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", upper_garment_filename)
-                    upper_garment_image.save(filepath)
-                    upper_garment_image_url = url_for('static',
-                                                      filename=f'photoshoots_folders/{photoshoot_id}/{upper_garment_filename}',
-                                                      _external=True)
-                    all_images.append(upper_garment_image_url)
+
+                    # Save temporarily for processing
+                    temp_filepath = os.path.join(temp_folder, upper_garment_filename)
+                    upper_garment_image.save(temp_filepath)
+
+                    # Upload to S3
+                    success, message, s3_url = upload_file(
+                        file=upper_garment_image,
+                        folder=f"photoshoots/{photoshoot_id}",
+                        user_id=user_id
+                    )
+
+                    if success:
+                        all_images.append(s3_url)
+                        print(f"One-piece garment uploaded to S3: {s3_url}")
+                    else:
+                        flash(f"Failed to upload one-piece garment: {message}", "danger")
+                        return redirect("/ai-photoshoot")
                 else:
                     flash("Your one-piece garment image not valid...", "danger")
                     return redirect("/ai-photoshoot")
@@ -1133,12 +1172,19 @@ def developer_api():
         total_credit = photoshoot_data[0]["total_credit"]
         is_credit_debited = photoshoot_data[0]["is_credit_debited"]
         output_filename = f"{uuid.uuid4()}_photoshoot.png"
-        filepath = os.path.join(f"static/photoshoots_folders/{photoshoot_id}", output_filename)
-        photoimage.save(filepath)
-        upper_garment_image_url = url_for('static',
-                                          filename=f'photoshoots_folders/{photoshoot_id}/{output_filename}',
-                                          _external=True)
-        all_images.append(upper_garment_image_url)
+
+        # Upload to S3 instead of saving locally
+        success, message, s3_url = upload_file(
+            file=photoimage,
+            folder=f"photoshoots/{photoshoot_id}",
+            user_id=user_id
+        )
+
+        if success:
+            all_images.append(s3_url)
+            print(f"Developer API image uploaded to S3: {s3_url}")
+        else:
+            return {"photoshoot": f"upload failed: {message}"}
 
         if is_credit_debited:
             photoshoot_mapping = {

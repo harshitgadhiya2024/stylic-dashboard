@@ -1,5 +1,6 @@
 import subprocess
 from operations.mongo_operation import mongoOperation
+from operations.photo_uploader import upload_image_to_s3
 from utils.constant import constant_dict
 import os, uuid
 
@@ -45,10 +46,24 @@ def generate_model_face(face_params, output_filename, photoshoot_id):
                 print(part.text)
             elif part.inline_data is not None:
                 image = Image.open(BytesIO(part.inline_data.data))
-                image_path = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
-                image.save(image_path)
 
-        return output_filename
+                # Upload to S3 instead of saving locally
+                success, message, s3_url = upload_image_to_s3(
+                    image_data=image,
+                    filename=output_filename,
+                    folder=f"photoshoots/{photoshoot_id}",
+                    user_id=face_params.get("user_id", ""),
+                    content_type="image/png"
+                )
+
+                if success:
+                    print(f"Face image uploaded to S3: {s3_url}")
+                    return s3_url
+                else:
+                    print(f"Failed to upload face image to S3: {message}")
+                    return None
+
+        return None
 
     except Exception as e:
         print(f"Error generating face: {e}")
@@ -936,21 +951,80 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                     print(part.text)
                 elif part.inline_data is not None:
                     output_filename = f"{uuid.uuid4()}_photoshoot_{unique_num + 1}.png"
-                    base_image_filename = f"static/photoshoots_folders/{photoshoot_id}/{output_filename}"
                     image = Image.open(BytesIO(part.inline_data.data))
+
+                    # Save temporarily for upscaling
+                    temp_folder = f"static/photoshoots_folders/{photoshoot_id}"
+                    os.makedirs(temp_folder, exist_ok=True)
+                    base_image_filename = f"{temp_folder}/{output_filename}"
                     image.save(base_image_filename)
-                    upscaled_filename = f"static/photoshoots_folders/{photoshoot_id}/upscaled_{output_filename}"
+
+                    # Try to upscale the image
+                    upscaled_filename = f"{temp_folder}/upscaled_{output_filename}"
                     response_upscale = upscale_image(base_image_filename, upscaled_filename)
-                    if response_upscale:
-                        all_generated_images.append("upscaled_" + output_filename)
+
+                    # Upload to S3
+                    if response_upscale and os.path.exists(upscaled_filename):
+                        # Upload upscaled version
+                        with open(upscaled_filename, 'rb') as f:
+                            upscaled_image_data = f.read()
+
+                        success, message, s3_url = upload_image_to_s3(
+                            image_data=upscaled_image_data,
+                            filename=f"upscaled_{output_filename}",
+                            folder=f"photoshoots/{photoshoot_id}",
+                            user_id=user_id,
+                            content_type="image/png"
+                        )
+
+                        if success:
+                            all_generated_images.append(s3_url)
+                            print(f"Upscaled image uploaded to S3: {s3_url}")
+                        else:
+                            print(f"Failed to upload upscaled image: {message}")
+                            # Fallback to base image
+                            success, message, s3_url = upload_image_to_s3(
+                                image_data=image,
+                                filename=output_filename,
+                                folder=f"photoshoots/{photoshoot_id}",
+                                user_id=user_id,
+                                content_type="image/png"
+                            )
+                            if success:
+                                all_generated_images.append(s3_url)
+
+                        # Clean up temporary files
+                        try:
+                            os.remove(upscaled_filename)
+                        except:
+                            pass
                     else:
-                        all_generated_images.append(output_filename)
+                        # Upload base image
+                        success, message, s3_url = upload_image_to_s3(
+                            image_data=image,
+                            filename=output_filename,
+                            folder=f"photoshoots/{photoshoot_id}",
+                            user_id=user_id,
+                            content_type="image/png"
+                        )
+
+                        if success:
+                            all_generated_images.append(s3_url)
+                            print(f"Base image uploaded to S3: {s3_url}")
+                        else:
+                            print(f"Failed to upload base image: {message}")
 
                     if unique_num==0:
+                        # Keep the first image for reference in subsequent generations
                         generated_first_image_path=base_image_filename
                         parts.pop()
                         parts.pop()
                     else:
+                        # Clean up temporary base file for non-first images
+                        try:
+                            os.remove(base_image_filename)
+                        except:
+                            pass
                         parts.pop()
 
         total_credit = len(all_generated_images)
@@ -962,11 +1036,9 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             remaining_credit = user_credit - total_credit
             mongoOperation().update_mongo_data("company_data", {"id": user_id}, {"credit": remaining_credit})
 
+        # all_generated_images now contains S3 URLs directly
         all_images = garment_mapping_dict.get("all_images", [])
-        for images in all_generated_images:
-            base_url = constant_dict.get('domain_url', 'http://localhost:8060')  # Your domain
-            garment_image_url = f"{base_url}/static/photoshoots_folders/{photoshoot_id}/{images}"
-            all_images.append(garment_image_url)
+        all_images.extend(all_generated_images)
 
         photoshoot_mapping = {
             "is_credit_debited": True,
@@ -978,6 +1050,16 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
 
         mongoOperation().update_mongo_data("photoshoot_data", {"id": user_id, "photoshoot_id": photoshoot_id},
                                            photoshoot_mapping)
+
+        # Clean up temporary files and folder
+        try:
+            import shutil
+            temp_folder = f"static/photoshoots_folders/{photoshoot_id}"
+            if os.path.exists(temp_folder):
+                shutil.rmtree(temp_folder)
+                print(f"Cleaned up temporary folder: {temp_folder}")
+        except Exception as cleanup_error:
+            print(f"Error cleaning up temporary files: {cleanup_error}")
 
         return {
             'status': 'completed',

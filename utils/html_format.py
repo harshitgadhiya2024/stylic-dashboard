@@ -176,7 +176,7 @@ class htmlOperation():
                 <body>
                     <div class="email-container">
                         <div class="header">
-                            <img src="https://app.stylic.ai/static/external/logo.png" alt="Stylic AI Logo" class="logo">
+                            <img src="http://127.0.0.1:8060/static/external/logo.png" alt="Stylic AI Logo" class="logo">
                             <h1 class="header-title">Email Verification</h1>
                         </div>
                         
@@ -540,7 +540,7 @@ class htmlOperation():
                     <div class="email-container">
                         <!-- Header -->
                         <div class="header">
-                            <img src="https://app.stylic.ai/static/external/logo.png" alt="Stylic AI Logo" class="logo">
+                            <img src="http://127.0.0.1:8060/static/external/logo.png" alt="Stylic AI Logo" class="logo">
                             <h1 class="header-title">Password Reset</h1>
                         </div>
 
@@ -840,7 +840,7 @@ class htmlOperation():
                 <body>
                     <div class="email-container">
                         <div class="header">
-                            <img src="https://app.stylic.ai/static/external/logo.png" alt="Stylic AI Logo" class="logo">
+                            <img src="http://127.0.0.1:8060/static/external/logo.png" alt="Stylic AI Logo" class="logo">
                             <h1 class="header-title">Welcome Aboard!</h1>
                             <div class="welcome-badge">🎉 New Member</div>
                         </div>
@@ -889,7 +889,7 @@ class htmlOperation():
                             </div>
                             
                             <div class="cta-container">
-                                <a href="https://app.stylic.ai/ai-photoshoot" class="cta-button">Start Creating Now</a>
+                                <a href="http://127.0.0.1:8060/ai-photoshoot" class="cta-button">Start Creating Now</a>
                             </div>
                             
                             <div class="tips-section">
@@ -1277,7 +1277,7 @@ class htmlOperation():
                 <body>
                     <div class="email-container">
                         <div class="header">
-                            <img src="https://app.stylic.ai/static/external/logo.png" alt="Stylic AI Logo" class="logo">
+                            <img src="http://127.0.0.1:8060/static/external/logo.png" alt="Stylic AI Logo" class="logo">
                             <div class="success-icon">✅</div>
                             <h1 class="header-title">Payment Successful!</h1>
                         </div>
@@ -1352,7 +1352,7 @@ class htmlOperation():
                             </div>
                             
                             <div class="cta-container">
-                                <a href="https://app.stylic.ai/" class="cta-button">Start Creating</a>
+                                <a href="http://127.0.0.1:8060/" class="cta-button">Start Creating</a>
                                 <a href="{invoice_url}" class="cta-button secondary">Download Invoice</a>
                             </div>
                             
