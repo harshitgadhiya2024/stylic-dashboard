@@ -24,7 +24,5 @@ RUN chmod u+x realesrgan-ncnn-vulkan
 
 EXPOSE 8060
 
-ENV NAME World
-
 # Run the Flask server
 CMD ["python3", "main.py"]
