@@ -9,7 +9,7 @@ print(f"{datetime.utcnow()}: Secreat key of stylic backend: {secreat_key}")
 load_dotenv()
 
 MONGO_URL = os.getenv("MONGO_URL") or "mongodb+srv://infostylicai:gUgH6G9oDimFRWIS@stylicai.tio3ghn.mongodb.net/"
-
+print(f"mongourl: {MONGO_URL}")
 constant_dict = {
     "mongo_url": MONGO_URL,
     "secreat_key": secreat_key,
