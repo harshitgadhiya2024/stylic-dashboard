@@ -781,6 +781,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
             garmentdescription+=f" Upper garment details: {upper_garment_specs}"
         if lower_garment_specs:
             garmentdescription+=f" Lower garment details: {lower_garment_specs}"
+        print("pose_defining successfully")
 
         parts = []
         if upper_garment_image:
@@ -808,6 +809,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                 mime_type=f"image/{exten.lower()}",
                 data=lower_image_data,
             ))
+        print("upload upper and below successfully...")
 
         generated_first_image_path = ""
         for unique_num, pose_detail in enumerate(body_poses):
@@ -939,6 +941,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                     parts=parts,
                 ),
             ]
+            print("image generating successfully")
 
             response = client.models.generate_content(
                 model=model_gemini,
@@ -958,6 +961,7 @@ def generate_photoshoot_background_task(garment_mapping_dict, photoshoot_id, upp
                     os.makedirs(temp_folder, exist_ok=True)
                     base_image_filename = f"{temp_folder}/{output_filename}"
                     image.save(base_image_filename)
+                    print(f"stored image: {output_filename}")
 
                     # Upload base image
                     success, message, s3_url = upload_image_to_s3(
